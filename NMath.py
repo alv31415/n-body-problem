@@ -1,21 +1,15 @@
 from math import sqrt
 import numpy as np
 
-def vec_norm(vec):
-    assert len(vec) == 3, "Require a 3D vector"
+def ten_norm(ten, axis = 1, sqrt = True):
 
-    return sqrt(np.sum(vec**2))
-
-def mat_norm(mat):
-    n = len(mat)
-    mat_norm = np.zeros(n)
-
-    for i in range(n):
-        mat_norm[i] = vec_norm(mat[i])
-
-    return mat_norm
+    if sqrt:
+        return np.sqrt(np.sum(ten**2, axis = axis))
+    else:
+        return np.sum(ten**2, axis = axis)
 
 def vec_cross(vec1, vec2):
+
     i = vec1[1]*vec2[2] - vec1[2]*vec2[1]
     j = vec1[2] * vec2[0] - vec1[0] * vec2[2]
     k = vec1[0]*vec2[1] - vec1[1]*vec2[0]
