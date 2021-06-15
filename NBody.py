@@ -10,7 +10,7 @@ class NBody:
 
         self.n = len(init_positions)
         self.check_update_input(init_positions, init_velocities, masses)
-        self.G = 6.67408e-11
+        self.G = 1#6.67408e-11
 
         # tensor of distances between any 2 objects
         self.distances = np.zeros(shape = (self.n, self.n,3))

@@ -40,13 +40,13 @@ class EulerCromer:
         for t in range(1, self.steps):
             print(f"Time {t*self.delta}")
             self.integration_step(t)
-            print(self.nbody.energy)
-            print(self.nbody.total_linear_momentum)
-            print(self.nbody.total_angular_momentum)
+        print(self.nbody.energy)
+        print(self.nbody.total_linear_momentum)
+        print(self.nbody.total_angular_momentum)
 
-    def show_orbits(self, animate = False, seed = 42, animation_steps = 1):
+    def show_orbits(self, animate = False, seed = 42, animation_steps = 1, twodims = True):
 
-        plotter = OrbitPlotter(self.nbody.n, self.position_orbit, seed = seed, animation_steps = animation_steps)
+        plotter = OrbitPlotter(self.nbody.n, self.position_orbit, self.delta, self.steps, seed = seed, animation_steps = animation_steps, twodims = twodims)
 
         if animate:
             plotter.animate_orbit()

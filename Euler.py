@@ -37,12 +37,16 @@ class Euler:
 
     def get_orbits(self):
         for t in range(1, self.steps):
-            print(f"Time {t*self.delta}")
+            #print(f"Time {t*self.delta}")
             self.integration_step(t)
 
-    def show_orbits(self, animate = False, seed = 42, animation_steps = 1):
+        print(self.nbody.energy)
+        print(self.nbody.total_linear_momentum)
+        print(self.nbody.total_angular_momentum)
 
-        plotter = OrbitPlotter(self.nbody.n, self.position_orbit, seed = seed, animation_steps = animation_steps)
+    def show_orbits(self, animate = False, seed = 42, animation_steps = 1, twodims = True):
+
+        plotter = OrbitPlotter(self.nbody.n, self.position_orbit, self.delta, self.steps, seed = seed, animation_steps = animation_steps, twodims = twodims)
 
         if animate:
             plotter.animate_orbit()
