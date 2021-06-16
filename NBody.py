@@ -26,6 +26,8 @@ class NBody:
         self.angular_momentum = self.get_amomentum()
         self.total_linear_momentum = np.sum(self.linear_momentum, axis = 0)
         self.total_angular_momentum = np.sum(self.angular_momentum, axis = 0)
+        self.kinetic_energy = 0
+        self.gpe = 0
         self.energy = self.get_energy()
         self.acceleration = self.get_acceleration()
 
@@ -108,6 +110,8 @@ class NBody:
         :return: the total energy of the system, given as the sum of kinetic and gravitational potential energy
         """
         kinetic_energy = np.sum(nmath.ten_norm(self.linear_momentum, axis = 1, sqrt = False) / self.masses)/2
+        self.kinetic_energy = kinetic_energy
+
         gpe = 0
 
         for i in range(self.n):
@@ -115,6 +119,7 @@ class NBody:
                 gpe += (self.masses[i]*self.masses[j])/nmath.ten_norm(self.distances[i,j], axis = 0)
 
         gpe *= (-self.G)
+        self.gpe = gpe
 
         return kinetic_energy + gpe
 
