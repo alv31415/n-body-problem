@@ -47,9 +47,9 @@ class Integrator:
         for t in range(1, self.steps):
             print(f"Time {t*self.delta}")
             self.integration_step(t)
-        #print(self.nbody.energy)
-        #print(self.nbody.total_linear_momentum)
-        #print(self.nbody.total_angular_momentum)
+        print(f"Total Energy: {self.nbody.energy}")
+        print(f"Total Linear Momentum: {self.nbody.total_linear_momentum}")
+        print(f"Total Angular Momentum: {self.nbody.total_angular_momentum}")
 
     def show_orbits(self, animate = False, seed = 42, animation_steps = 1, twodims = True, grid = False):
 

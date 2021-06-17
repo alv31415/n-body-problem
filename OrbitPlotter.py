@@ -48,7 +48,6 @@ class OrbitPlotter:
 
     def animation_func_orbit_3D(self, frame):
         plt.cla()
-        self.ax.annotate(f"t = {round(frame * self.delta, 2)}", xy = self.integrator.nbody.com[:2])
         for i,orbit in enumerate(self.position_orbit[:,:frame*self.animation_steps,:]):
             if frame == self.n - 1:
                 self.ax.plot3D(orbit[:,0], orbit[:,1], orbit[:,2], label = f"Orbit {i+1}", c = self.colours[i])
@@ -59,9 +58,10 @@ class OrbitPlotter:
             if (len(orbit) > 0):
                 self.ax.scatter3D(orbit[-1, 0], orbit[-1, 1], orbit[-1,2], c = self.colours[i], s=10)
 
+        self.ax.annotate(f"t = {round(frame * self.delta * self.animation_steps, 1)}", xy=self.integrator.nbody.com[:2])
+
     def animation_func_orbit_2D(self, frame):
         plt.cla()
-        self.ax.annotate(f"t = {round(frame * self.delta, 2)}", xy = self.integrator.nbody.com[:2])
         for i,orbit in enumerate(self.position_orbit[:,:frame*self.animation_steps,:]):
             if frame == self.n - 1:
                 self.ax.plot(orbit[:,0], orbit[:,1], label = f"Orbit {i+1}", c = self.colours[i])
@@ -72,23 +72,27 @@ class OrbitPlotter:
             if (len(orbit) > 0):
                 self.ax.scatter(orbit[-1, 0], orbit[-1, 1], c = self.colours[i], s=10)
 
+        self.ax.set_title(f"Trajectories for a {self.n}-body Problem")
+
+        self.ax.annotate(f"t = {round(frame * self.delta * self.animation_steps, 1)}", xy=self.integrator.nbody.com[:2])
+
     def animate_orbit(self, xlims = (-5,5), ylims = (-5,5)):
 
         assert (not self.grid)
 
         if self.twodims:
-            animator = FuncAnimation(self.fig, self.animation_func_orbit_2D, repeat = False, interval = 100)
-            self.ax.set_title(f"Trajectories for a {self.n}-body Problem")
+            animator = FuncAnimation(self.fig, self.animation_func_orbit_2D,
+                                     frames = math.ceil(self.steps/self.animation_steps), repeat = False, interval = 100)
+            plt.axis("equal")
         else:
-            animator = FuncAnimation(self.fig, self.animation_func_orbit_3D, repeat = False, interval = 100)
-            self.ax.set_title(f"Trajectories for a {self.n}-body Problem", pad=40)
+            animator = FuncAnimation(self.fig, self.animation_func_orbit_3D,
+                                     frames = math.ceil(self.steps/self.animation_steps), repeat = False, interval = 100)
             self.ax.set_zlabel("z")
 
         self.ax.set_xlim(xlims)
         self.ax.set_ylim(ylims)
         self.ax.set_xlabel("x")
         self.ax.set_ylabel("y")
-        plt.axis("equal")
         plt.show()
 
     def plot_orbit(self, xlims = (-5,5), ylims = (-5,5), size = 50):

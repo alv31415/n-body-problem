@@ -12,10 +12,6 @@ class NBody:
         self.check_update_input(init_positions, init_velocities, masses)
         self.G = 1#6.67408e-11
 
-        # tensor of distances between any 2 objects
-        self.distances = np.zeros(shape = (self.n, self.n,3))
-        self.get_body_distances()
-
         self.total_mass = np.sum(self.masses)
         # stacked_masses is a convenient way of storing masses for certain computations
         self.stacked_masses = np.vstack(self.masses)
@@ -23,13 +19,23 @@ class NBody:
         # calculate simulation properties
         self.com = self.get_com()
         self.linear_momentum = self.get_lmomentum()
+        self.total_linear_momentum = np.sum(self.linear_momentum, axis=0)
+
+        # change to COM coordinates
+        self.positions = self.positions - self.com
+        self.velocities = self.velocities - (self.total_linear_momentum)/self.total_mass
+
+        # tensor of distances between any 2 objects
+        self.distances = np.zeros(shape = (self.n, self.n,3))
+        self.get_body_distances()
+
+        self.linear_momentum = self.get_lmomentum()
+        self.total_linear_momentum = np.sum(self.linear_momentum, axis=0)
         self.angular_momentum = self.get_amomentum()
-        self.total_linear_momentum = np.sum(self.linear_momentum, axis = 0)
         self.total_angular_momentum = np.sum(self.angular_momentum, axis = 0)
         self.kinetic_energy = 0
         self.gpe = 0
         self.energy = self.get_energy()
-        self.acceleration = self.get_acceleration()
 
     def check_update_input(self, init_positions, init_velocities, masses):
         """
@@ -60,7 +66,7 @@ class NBody:
         else:
             self.masses = masses
 
-    def get_body_distances(self):
+    def get_body_distances(self, positions = None, collision_tolerance = 10e-4):
         """
         Calculates the direction vector from all bodies in the n-body system
         Composed of tensor of dimensions (n,n,3),
@@ -69,13 +75,37 @@ class NBody:
         we just need to calculate the upper triangular part of the matrix
         """
         # could be vectorised by doing a transpose - do speed tests
-        for i in range(self.n):
-            for j in range(i):
-                if i != j:
-                    self.distances[i,j] = self.positions[j] - self.positions[i]
-                    self.distances[j,i] = -self.distances[i,j]
-                else:
-                    self.distances[i,j] = np.zeros(3)
+
+        if positions is None:
+            for i in range(self.n):
+                for j in range(i):
+                    if i != j:
+                        distance_vec = self.positions[j] - self.positions[i]
+
+                        assert ((abs(distance_vec) >= collision_tolerance).any()), \
+                                "A collision occurred. Stopping the simulation.\n" \
+                                f"Distance Vector: {distance_vec}\n" \
+                                f"Position i: {self.positions[i]}\n" \
+                                f"Position j: {self.positions[j]}\n"
+
+                        self.distances[i,j] = distance_vec
+                        self.distances[j,i] = -distance_vec
+                    else:
+                        self.distances[i,j] = np.zeros(3)
+        else:
+            n = len(positions)
+            distances = np.zeros(shape = (n, n, 3))
+
+            for i in range(self.n):
+                for j in range(i):
+                    if i != j:
+                        distance_vec = positions[j] - positions[i]
+
+                        distances[i, j] = distance_vec
+                        distances[j, i] = -distance_vec
+                    else:
+                        distances[i, j] = np.zeros(3)
+            return distances
 
     def get_com(self):
         """
@@ -123,13 +153,17 @@ class NBody:
 
         return kinetic_energy + gpe
 
-    def get_acceleration(self):
+    def get_acceleration(self, positions = None):
         """
         Calculates the acceleration of every particle of the system - solely depends on their position
         :return: an (n x 3) matrix, with each entry i corresponding to the acceleration of o body i
         """
         # calculate the magnitude of the distances between bodies
-        inv_dist_mag3 = nmath.ten_norm(self.distances, axis = 2, sqrt = False)
+        if positions is None:
+            inv_dist_mag3 = nmath.ten_norm(self.distances, axis = 2, sqrt = False)
+        else:
+            distances = self.get_body_distances(positions = positions)
+            inv_dist_mag3 = nmath.ten_norm(distances, axis=2, sqrt=False)
         # if any distance is 0, set it to infinity -> this indicates that the body is in the same position,
         # so to avoid division by 0 error, and to avoid unnecessary computational costs, set to infinity
         # as the force felt is expected to be 0 anyways
@@ -138,10 +172,11 @@ class NBody:
         inv_dist_mag3 = inv_dist_mag3**(-1.5)
 
         # tensor, with entry (i,j) giving a unit vector for the direction of the force felt by i due to j
-        acc_direction = inv_dist_mag3[:,:,np.newaxis] * self.distances
-
-        self.acc_direction = acc_direction
-
+        if positions is None:
+            acc_direction = inv_dist_mag3[:,:,np.newaxis] * self.distances
+            self.acc_direction = acc_direction
+        else:
+            acc_direction = inv_dist_mag3[:, :, np.newaxis] * distances
         # use slicing to obtain (n x n) matrices for the direction values (x y z) of the acceleration
         # by using a matrix product, we perform the necessary sum
         # since the direction for the force between an object and itself is the 0 vector,
@@ -171,7 +206,7 @@ class NBody:
         """
         return (np.abs(new_value - old_value) < tolerance).all()
 
-    def update(self, new_positions, new_velocities, symplectic = True, tolerance = 1e-6):
+    def update(self, new_positions, new_velocities, symplectic = True, tolerance = 10e-3):
         """
         Updates the simulation, given newly calculated positions and distances.
         :param symplectic: if symplectic, will check that conserved quantities are conserved
@@ -199,11 +234,13 @@ class NBody:
 
         new_energy = self.get_energy()
 
-        # how exactly to check for conserved COM
-        # adapt coordinates so that COM is the centre?
+        new_com = self.get_com()
 
         # check if quantities are conserved
         if (symplectic):
+            assert ((abs(new_com) <= 10e-10).all()), \
+                    f"COM should be 0, but is {new_com}"
+
             assert (self.conserved_quantity(new_total_linear_momentum, self.total_linear_momentum, tolerance = tolerance)), \
                     f"Total Linear Momentum was NOT conserved after the update.\
                     \nCurrent Total Linear Momentum: {self.total_linear_momentum}\n" \
@@ -219,16 +256,16 @@ class NBody:
                     \nCurrent Total Energy: {self.energy}\n" \
                     f"Calculated Total Energy: {new_energy}\n"
 
-            # set the properties of the system
-            self.linear_momentum = new_linear_momentum
-            self.total_linear_momentum = new_total_linear_momentum
+        # set the properties of the system
+        self.com = new_com
 
-            self.angular_momentum = new_angular_momentum
-            self.total_angular_momentum = new_total_angular_momentum
+        self.linear_momentum = new_linear_momentum
+        self.total_linear_momentum = new_total_linear_momentum
 
-            self.energy = new_energy
+        self.angular_momentum = new_angular_momentum
+        self.total_angular_momentum = new_total_angular_momentum
 
-            self.acceleration = self.get_acceleration()
+        self.energy = new_energy
 
     def copy(self):
         return deepcopy(self)
