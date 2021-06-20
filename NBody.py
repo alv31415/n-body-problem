@@ -46,7 +46,7 @@ class NBody:
         """
 
         assert (self.n == len(init_velocities) and self.n == len(masses)), \
-            f"{n} positions given; {len(init_velocities)} velocities given; \
+            f"{self.n} positions given; {len(init_velocities)} velocities given; \
                         {len(masses)} masses given. These 3 quantities must be the same."
 
         assert (len(init_positions[0]) == 3 and len(init_velocities[0]) == 3)
