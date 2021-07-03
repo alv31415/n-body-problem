@@ -20,7 +20,7 @@ class OrbitPlotter:
         self.animation_steps = animation_steps
         self.twodims = twodims
         self.colours = self.generate_colour()
-        self.times = np.arange(start=0, stop=self.steps*self.delta, step=self.delta)
+        self.times = np.arange(start=0, stop=self.steps * self.delta, step = self.delta)
 
         self.grid = grid
 
@@ -62,7 +62,7 @@ class OrbitPlotter:
 
     def animation_func_orbit_2D(self, frame):
         plt.cla()
-        for i,orbit in enumerate(self.position_orbit[:,:frame*self.animation_steps,:]):
+        for i,orbit in enumerate(self.position_orbit[:,:np.int(np.floor(frame*self.animation_steps)),:]):
             if frame == self.n - 1:
                 self.ax.plot(orbit[:,0], orbit[:,1], label = f"Orbit {i+1}", c = self.colours[i])
                 self.ax.legend()

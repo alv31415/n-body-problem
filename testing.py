@@ -39,6 +39,8 @@ def test_nmath_mat_cross():
     rand_2 = np.random.rand(4,3)
     testing.assert_equal(nm.mat_cross(rand_1, rand_2), np.cross(rand_1, rand_2))
 
+#------------------------------------------------------------------------------------------------------------------------------------
+
 # TESTING FOR NBODY
 
 init_positions = np.array([[1,1,1],
@@ -133,13 +135,86 @@ def test_nbody_init():
     testing.assert_equal(expected_kinetic_energy + expected_gpe, nbod.energy)
 
 def test_nbody_get_body_distances():
-    pass
+    test_positions = np.array([[1,1,1],
+                              [-1,2,3],
+                              [-2,-1,-0.6]])
+    # TEST: DISTANCE CALCULATION WITH EXTERIOR ARRAY OF POSITIONS
+    expected_distances = np.array([[[0,0,0], [-2,1,2], [-3,-2,-1.6]],
+                                   [[2,-1,-2], [0,0,0], [-1,-3, -3.6]],
+                                   [[3,2,1.6], [1,3,3.6], [0,0,0]]])
+
+    testing.assert_equal(expected_distances, nbod.get_body_distances(positions = test_positions))
+    testing.assert_raises(AssertionError, testing.assert_equal, expected_distances, nbod.distances)
+
+    # TEST: DISTANCE CALCULATION WITH COLLISION
+    collision_positions = np.array([[1,1,1], [1.1, 1.1, 1.1]])
+    testing.assert_raises(AssertionError, nbod.get_body_distances, collision_positions, 1)
+    nbod.get_body_distances(positions = collision_positions, collision_tolerance = 10e-10)
 
 def test_nbody_get_acceleration():
-    pass
+    test_positions = np.array([[1, 1, 1],
+                               [-1, 2, 3],
+                               [-2, -1, -0.6]])
+
+    test_expected_distances = np.array([[[0, 0, 0], [-2, 1, 2], [-3, -2, -1.6]],
+                                        [[2, -1, -2], [0, 0, 0], [-1, -3, -3.6]],
+                                        [[3, 2, 1.6], [1, 3, 3.6], [0, 0, 0]]])
+
+    # TEST: ACCELERATION WITHIN SIMULATION
+    expected_acceleration = np.array([[-2*(3**(-3/2)) - 6*(5**(-3/2)), 2*(3**(-3/2)), -2*(3**(-3/2)) + 3*(5**(-3/2))],
+                                      [1*(3**(-3/2)) - 3*(6**(-3/2)), -1*(3**(-3/2)) - 3*(6**(-3/2)), 1*(3**(-3/2)) + 6*(6**(-3/2))],
+                                      [2*(5**(-3/2)) + 2*(6**(-3/2)), 2*(6**(-3/2)), -1*(5**(-3/2)) - 4*(6**(-3/2))]])
+    testing.assert_array_almost_equal(expected_acceleration, nbod.get_acceleration(), DP)
+
+    # TEST: ACCELERATION OUTSIDE SIMULATION
+    test_expected_acceleration = np.array([[-4*9**(-3/2) - 9*15.56**(-3/2), 2*9**(-3/2) - 6*15.56**(-3/2), 4*9**(-3/2) - 4.8*15.56**(-3/2)],
+                                           [2*9**(-3/2) - 3*22.96**(-3/2), -1*9**(-3/2) - 9*22.96**(-3/2), -2*9**(-3/2) - 10.8*22.96**(-3/2)],
+                                           [3*15.56**(-3/2) + 2*22.96**(-3/2), 2*15.56**(-3/2) + 6*22.96**(-3/2), 1.6*15.56**(-3/2) + 7.2*22.96**(-3/2)]])
+    testing.assert_array_almost_equal(test_expected_acceleration, nbod.get_acceleration(positions = test_positions), DP)
 
 def test_nbody_conserved_quantity():
-    pass
+    # TEST: CONSERVE SCALAR
+    assert nbod.conserved_quantity(23,23.0001,10e-3)
+    assert not nbod.conserved_quantity(23, 23.01, 10e-3)
 
-def test_nbody_update():
-    pass
+    # TEST: CONSERVE VECTOR
+    assert nbod.conserved_quantity(np.array([12.65, 13.8, 12.00002]), np.array([12.65, 13.8, 11.999999]), 10e-4)
+    assert not nbod.conserved_quantity(np.array([12.65, 13.8, 12.00002]), np.array([12.65, 13.8, 11.999999]), 10e-8)
+
+def test_nbody_update_symp():
+    energy = nbod.energy
+    kinetic_energy = nbod.kinetic_energy
+    gpe = nbod.gpe
+    linear_momentum = nbod.linear_momentum
+    total_linear_momentum = nbod.total_linear_momentum
+    angular_momentum = nbod.angular_momentum
+    total_angular_momentum = nbod.total_angular_momentum
+
+    positions = nbod.positions
+    velocities = nbod.velocities
+    accelerations = nbod.get_acceleration()
+
+    nbod.update(new_positions = positions, new_velocities = velocities, symplectic = True, tolerance = 10e-3)
+
+    testing.assert_equal(energy, nbod.energy)
+    testing.assert_equal(kinetic_energy, nbod.kinetic_energy)
+    testing.assert_equal(gpe, nbod.gpe)
+    testing.assert_equal(linear_momentum, nbod.linear_momentum)
+    testing.assert_equal(total_linear_momentum, nbod.total_linear_momentum)
+    testing.assert_equal(angular_momentum, nbod.angular_momentum)
+    testing.assert_equal(total_angular_momentum, nbod.total_angular_momentum)
+    testing.assert_equal(np.abs(accelerations), np.abs(nbod.get_acceleration()))
+
+def test_nbody_update_errors():
+
+    # TEST: ESCAPE TOLERANCE CONDITION FAILS
+
+    nbod_escape = NBody(init_positions = init_positions, init_velocities = init_velocities, masses = masses, escape_tolerance = 1)
+
+    # check that first 2 update conditions are satisfied
+
+    assert (3 == len(init_positions) and 3 == len(init_velocities))
+
+    assert (len(init_positions[0]) == 3 and len(init_velocities[0]) == 3)
+
+    testing.assert_raises(AssertionError, nbod_escape.update, init_positions, init_velocities)

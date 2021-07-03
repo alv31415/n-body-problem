@@ -6,11 +6,13 @@ class NBody:
     """
     Class used to simulate the n-body problem.
     """
-    def __init__(self, init_positions, init_velocities, masses):
+    def __init__(self, init_positions, init_velocities, masses, collision_tolerance = 10e-4, escape_tolerance = None):
 
         self.n = len(init_positions)
         self.check_update_input(init_positions, init_velocities, masses)
+
         self.G = 1#6.67408e-11
+        self.collision_tolerance = collision_tolerance
 
         self.total_mass = np.sum(self.masses)
         # stacked_masses is a convenient way of storing masses for certain computations
@@ -24,6 +26,11 @@ class NBody:
         # change to COM coordinates
         self.positions = self.positions - self.com
         self.velocities = self.velocities - (self.total_linear_momentum)/self.total_mass
+
+        if escape_tolerance is None:
+            self.escape_tolerance = np.max(nmath.ten_norm(self.positions, sqrt = True, axis = 1))*2
+        else:
+            self.escape_tolerance = escape_tolerance
 
         # tensor of distances between any 2 objects
         self.distances = np.zeros(shape = (self.n, self.n,3))
@@ -66,7 +73,7 @@ class NBody:
         else:
             self.masses = masses
 
-    def get_body_distances(self, positions = None, collision_tolerance = 10e-4):
+    def get_body_distances(self, positions = None):
         """
         Calculates the direction vector from all bodies in the n-body system
         Composed of tensor of dimensions (n,n,3),
@@ -82,9 +89,9 @@ class NBody:
                     if i != j:
                         distance_vec = self.positions[j] - self.positions[i]
 
-                        assert ((abs(distance_vec) >= collision_tolerance).any()), \
+                        assert (nmath.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance), \
                                 "A collision occurred. Stopping the simulation.\n" \
-                                f"Distance Vector: {distance_vec}\n" \
+                                f"Distance Vector: {distance_vec} ({abs(distance_vec)})\n" \
                                 f"Position i: {self.positions[i]}\n" \
                                 f"Position j: {self.positions[j]}\n"
 
@@ -96,10 +103,16 @@ class NBody:
             n = len(positions)
             distances = np.zeros(shape = (n, n, 3))
 
-            for i in range(self.n):
+            for i in range(n):
                 for j in range(i):
                     if i != j:
                         distance_vec = positions[j] - positions[i]
+
+                        assert (nmath.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance), \
+                            "A collision occurred. Stopping the simulation.\n" \
+                            f"Distance Vector: {distance_vec} ({abs(distance_vec)})\n" \
+                            f"Position i: {positions[i]}\n" \
+                            f"Position j: {positions[j]}\n"
 
                         distances[i, j] = distance_vec
                         distances[j, i] = -distance_vec
@@ -177,28 +190,30 @@ class NBody:
             self.acc_direction = acc_direction
         else:
             acc_direction = inv_dist_mag3[:, :, np.newaxis] * distances
+
         # use slicing to obtain (n x n) matrices for the direction values (x y z) of the acceleration
         # by using a matrix product, we perform the necessary sum
         # since the direction for the force between an object and itself is the 0 vector,
         # this doesn't contribute to the sum
+        """
         acc_x = acc_direction[:, :, 0] @ self.masses
         acc_y = acc_direction[:, :, 1] @ self.masses
         acc_z = acc_direction[:, :, 2] @ self.masses
 
         # combine all of the acceleration directions into an acceleration vector
         acceleration = self.G * np.vstack((acc_x, acc_y, acc_z)).T
+        """
+
+        acceleration = np.zeros(shape = (self.n, 3))
+
+        for i in range(self.n):
+            for j in range(self.n):
+                if i != j:
+                    acceleration[i] += self.masses[j] * acc_direction[i, j]
+
+        acceleration *= self.G
 
         return acceleration
-
-    def __str__(self):
-        return f"Bodies: {self.n}\n" + \
-               f"Total Mass: {self.total_mass}\n" + \
-               f"Centre of Mass: {self.com}\n" + \
-               f"Linear Momentum:\n {self.linear_momentum}\n" + \
-               f"Total Linear Momentum: {self.total_linear_momentum}\n" + \
-               f"Angular Momentum:\n {self.angular_momentum}\n" + \
-               f"Total Angular Momentum: {self.total_angular_momentum}\n" + \
-               f"Total Energy: {self.energy}\n"
 
     def conserved_quantity(self, new_value, old_value, tolerance):
         """
@@ -217,6 +232,9 @@ class NBody:
                                     These 2 quantities must be the same."
 
         assert (len(new_positions[0]) == 3 and len(new_velocities[0]) == 3)
+
+        assert ((nmath.ten_norm(new_positions, sqrt = True, axis = 1) <= self.escape_tolerance).all()), \
+            "A body escaped beyond the allowed distance from the COM."
 
         # if positions and velocities have the correct format, update positions and velocities
         self.positions = new_positions
@@ -269,5 +287,15 @@ class NBody:
 
     def copy(self):
         return deepcopy(self)
+
+    def __str__(self):
+        return f"Bodies: {self.n}\n" + \
+               f"Total Mass: {self.total_mass}\n" + \
+               f"Centre of Mass: {self.com}\n" + \
+               f"Linear Momentum:\n {self.linear_momentum}\n" + \
+               f"Total Linear Momentum: {self.total_linear_momentum}\n" + \
+               f"Angular Momentum:\n {self.angular_momentum}\n" + \
+               f"Total Angular Momentum: {self.total_angular_momentum}\n" + \
+               f"Total Energy: {self.energy}\n"
 
 

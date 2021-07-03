@@ -14,7 +14,7 @@ class Leapfrog(Integrator):
         self.twostep = twostep
         self.previous_acceleration = self.nbody.get_acceleration()
 
-        self.half_velocity_orbit = np.zeros((self.nbody.n, steps, 3))
+        self.half_velocity_orbit = np.zeros((self.nbody.n, self.steps, 3))
         self.half_velocity_orbit[:, 0, :] = self.nbody.velocities + self.delta / 2 * self.nbody.get_acceleration()
 
     def integration_step(self, t):
