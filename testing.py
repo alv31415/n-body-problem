@@ -39,6 +39,11 @@ def test_nmath_mat_cross():
     rand_2 = np.random.rand(4,3)
     testing.assert_equal(nm.mat_cross(rand_1, rand_2), np.cross(rand_1, rand_2))
 
+def test_nmath_perc_change():
+    testing.assert_array_almost_equal(nm.perc_change(5, np.array([5,-7,8,10.5])), np.array([0,2.4,0.6,1.1]), DP)
+    testing.assert_almost_equal(nm.perc_change(5,5.832747327), 0.1665494654, DP)
+    testing.assert_array_almost_equal(nm.perc_change(5, np.array([5, -7, 8, 10.5]), perc = True), np.array([0, 240, 60, 110]), DP)
+
 #------------------------------------------------------------------------------------------------------------------------------------
 
 # TESTING FOR NBODY
@@ -148,8 +153,10 @@ def test_nbody_get_body_distances():
 
     # TEST: DISTANCE CALCULATION WITH COLLISION
     collision_positions = np.array([[1,1,1], [1.1, 1.1, 1.1]])
-    testing.assert_raises(AssertionError, nbod.get_body_distances, collision_positions, 1)
-    nbod.get_body_distances(positions = collision_positions, collision_tolerance = 10e-10)
+    nbod.collision_tolerance = 1
+    testing.assert_raises(AssertionError, nbod.get_body_distances, collision_positions)
+    nbod.collision_tolerance = 10e-10
+    nbod.get_body_distances(positions = collision_positions)
 
 def test_nbody_get_acceleration():
     test_positions = np.array([[1, 1, 1],

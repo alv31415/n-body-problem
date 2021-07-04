@@ -43,3 +43,15 @@ def mat_cross(mat1, mat2):
         mat_cross[i] = vec_cross(mat1[i], mat2[i])
 
     return mat_cross
+
+def perc_change(initial, values, perc = False):
+    """
+    Calculates absolute percentage change between the initial value and either a signle value or a series of values
+    """
+
+    change = np.abs((values - initial)/initial)
+
+    if perc:
+        return change * 100
+
+    return  change

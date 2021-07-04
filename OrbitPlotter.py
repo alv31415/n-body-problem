@@ -5,6 +5,7 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.gridspec import GridSpec
 from mpl_toolkits import mplot3d
 import random
+import NMath as nm
 
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
 matplotlib_axes_logger.setLevel('ERROR')
@@ -120,16 +121,29 @@ class OrbitPlotter:
         self.ax.legend()
         plt.show()
 
-    def plot_energies(self, ax):
+    def plot_energies(self, ax, absolute = False, e_components = False):
 
-        ax.plot(self.times, self.integrator.historic_energy, label = "Total Energy", c = "k")
-        ax.plot(self.times, self.integrator.historic_kinetic_energy, label="Kinetic Energy", c = "r")
-        ax.plot(self.times, self.integrator.historic_gpe, label="Gravitational Potential Energy", c = "b")
+        if absolute:
+            ax.plot(self.times, self.integrator.historic_energy, label = "Total Energy", c = "k")
 
-        ax.set_title("Energy Change")
-        ax.set_xlabel("Time")
-        ax.set_ylabel("Energy")
-        ax.legend()
+            if e_components:
+                ax.plot(self.times, self.integrator.historic_kinetic_energy, label="Kinetic Energy", c = "r")
+                ax.plot(self.times, self.integrator.historic_gpe, label="Gravitational Potential Energy", c = "b")
+
+            ax.set_title("Energy Change")
+            ax.set_xlabel("Time")
+            ax.set_ylabel("Energy")
+            ax.legend()
+        else:
+            ax.plot(self.times,
+                    nm.perc_change(self.integrator.historic_energy[0], self.integrator.historic_energy, perc = True),
+                    c = "k")
+
+            ax.set_ylim(0,100)
+            ax.set_title("Percentage Energy Error")
+            ax.set_xlabel("Time")
+            ax.set_ylabel("Percentage Error")
+            #ax.legend()
 
     def plot_dim(self, data, dim, ax, title, legend = False):
 
