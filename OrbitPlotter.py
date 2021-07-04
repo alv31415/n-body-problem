@@ -33,8 +33,10 @@ class OrbitPlotter:
                 self.ax = plt.axes(projection="3d")
             self.colours = self.generate_colour()
         else:
-            self.fig = plt.figure(figsize = (11, 8))
-            self.gs = GridSpec(nrows = 3, ncols = 4, figure = self.fig)
+            self.fig = plt.figure(figsize = (14, 8))
+            self.gs = GridSpec(nrows = 3, ncols = 5, figure = self.fig)
+
+        self.fig.canvas.set_window_title("Vacation Scholarship - N-Body Problem")
 
     def generate_colour(self):
         random.seed(self.seed)
@@ -139,11 +141,22 @@ class OrbitPlotter:
                     nm.perc_change(self.integrator.historic_energy[0], self.integrator.historic_energy, perc = True),
                     c = "k")
 
-            ax.set_ylim(0,100)
+            #ax.set_ylim(0,100)
             ax.set_title("Percentage Energy Error")
             ax.set_xlabel("Time")
             ax.set_ylabel("Percentage Error")
             #ax.legend()
+
+    def plot_angular_momentum(self, ax):
+
+        amomentum_z = self.integrator.historic_angular_momentum[:,2]
+        ax.plot(self.times, nm.perc_change(amomentum_z[0], amomentum_z, perc = True), c = "k")
+
+        #ax.set_ylim(0, 100)
+        ax.set_title("Percentage Angular Momentum Error")
+        ax.set_xlabel("Time")
+        ax.set_ylabel("Percentage Error")
+        # ax.legend()
 
     def plot_dim(self, data, dim, ax, title, legend = False):
 
@@ -168,13 +181,17 @@ class OrbitPlotter:
         assert self.grid, "To display a grid with the orbit information, initialise OrbitPlotter with grid = True"
 
         ax_orbit = self.fig.add_subplot(self.gs[0:2, 0:2])
+
         ax_position_x = self.fig.add_subplot(self.gs[0,2])
-        ax_position_y = self.fig.add_subplot(self.gs[1, 2])
-        ax_position_z = self.fig.add_subplot(self.gs[2, 2])
-        ax_velocity_x = self.fig.add_subplot(self.gs[0, 3])
+        ax_position_y = self.fig.add_subplot(self.gs[0, 3])
+        ax_position_z = self.fig.add_subplot(self.gs[0, 4])
+
+        ax_velocity_x = self.fig.add_subplot(self.gs[1, 2])
         ax_velocity_y = self.fig.add_subplot(self.gs[1, 3])
-        ax_velocity_z = self.fig.add_subplot(self.gs[2, 3])
+        ax_velocity_z = self.fig.add_subplot(self.gs[1, 4])
+
         ax_energy = self.fig.add_subplot(self.gs[2, 0:2])
+        ax_amomentum = self.fig.add_subplot(self.gs[2, 3:])
 
         for i, orbit in enumerate(self.position_orbit):
             ax_orbit.plot(orbit[:, 0], orbit[:, 1], label=f"Orbit {i + 1}", c = self.colours[i])
@@ -185,8 +202,9 @@ class OrbitPlotter:
         ax_orbit.legend()
 
         self.plot_energies(ax_energy)
+        self.plot_angular_momentum(ax_amomentum)
         self.plot_dim(self.position_orbit, dim = 0, ax = ax_position_x, title = r"Position $x$")
-        self.plot_dim(self.position_orbit, dim = 1, ax = ax_position_y, title=r"Position $y$")
+        self.plot_dim(self.position_orbit, dim = 1, ax = ax_position_y, title = r"Position $y$")
         self.plot_dim(self.position_orbit, dim = 2, ax = ax_position_z, title = r"Position $z$")
         self.plot_dim(self.integrator.velocity_orbit, dim = 0, ax=ax_velocity_x, title = r"Velocity $x$")
         self.plot_dim(self.integrator.velocity_orbit, dim = 1, ax = ax_velocity_y, title = r"Velocity $y$")
