@@ -44,6 +44,10 @@ class NBody:
         self.gpe = 0
         self.energy = self.get_energy()
 
+        self.first_energy = self.energy
+        self.first_angular_momentum = self.total_angular_momentum
+        self.first_linear_momentum = self.total_linear_momentum
+
     def check_update_input(self, init_positions, init_velocities, masses):
         """
         Checks that class initialisation has been done with correct parameters
@@ -259,19 +263,19 @@ class NBody:
             assert ((abs(new_com) <= 10e-10).all()), \
                     f"COM should be 0, but is {new_com}"
 
-            assert (self.conserved_quantity(new_total_linear_momentum, self.total_linear_momentum, tolerance = tolerance)), \
+            assert (self.conserved_quantity(new_total_linear_momentum, self.first_linear_momentum, tolerance = tolerance)), \
                     f"Total Linear Momentum was NOT conserved after the update.\
-                    \nCurrent Total Linear Momentum: {self.total_linear_momentum}\n" \
+                    \nInitial Total Linear Momentum: {self.total_linear_momentum}\n" \
                     f"Calculated Total Linear Momentum: {new_total_linear_momentum}\n"
 
-            assert (self.conserved_quantity(new_total_angular_momentum, self.total_angular_momentum, tolerance = tolerance)), \
+            assert (self.conserved_quantity(new_total_angular_momentum, self.first_angular_momentum, tolerance = tolerance)), \
                     f"Total Angular Momentum was NOT conserved after the update.\
-                    \nCurrent Total Angular Momentum: {self.total_angular_momentum}\n" \
+                    \nInitial Total Angular Momentum: {self.total_angular_momentum}\n" \
                     f"Calculated Total Angular Momentum: {new_total_angular_momentum}\n"
 
-            assert (self.conserved_quantity(new_energy, self.energy, tolerance = tolerance)), \
+            assert (self.conserved_quantity(new_energy, self.first_energy, tolerance = tolerance)), \
                     f"Total Energy was NOT conserved after the update.\
-                    \nCurrent Total Energy: {self.energy}\n" \
+                    \nInitial Total Energy: {self.energy}\n" \
                     f"Calculated Total Energy: {new_energy}\n"
 
         # set the properties of the system

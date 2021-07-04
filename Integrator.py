@@ -28,8 +28,8 @@ class Integrator:
         self.historic_kinetic_energy[0] = self.nbody.kinetic_energy
         self.historic_gpe = np.zeros(self.steps)
         self.historic_gpe[0] = self.nbody.gpe
-        #self.historic_angular_momentum = np.zeros(self.steps)
-        #self.historic_angular_momentum[0] = self.nbody.total_angular_momentum
+        self.historic_angular_momentum = np.zeros(shape = (self.steps, 3))
+        self.historic_angular_momentum[0] = self.nbody.total_angular_momentum
 
     def integration_step(self, t):
         pass
@@ -41,7 +41,7 @@ class Integrator:
         self.historic_energy[t] = new_energy
         self.historic_kinetic_energy[t] = new_kinetic_energy
         self.historic_gpe[t] = new_gpe
-        #self.historic_angular_momentum = new_angular_momentum
+        self.historic_angular_momentum[t] = new_angular_momentum
 
     def get_orbits(self):
         for t in range(1, self.steps):
