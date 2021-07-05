@@ -46,7 +46,7 @@ class Integrator:
     def update_historic(self, t, new_energy, new_kinetic_energy, new_gpe, new_angular_momentum):
 
         assert t != 0
-        assert self.delta > 10e-7
+        assert self.delta > 10e-8, f"Adaptive delta was made too small ({self.delta}) - orbit unfeasible"
 
         self.historic_energy[t] = new_energy
         self.historic_kinetic_energy[t] = new_kinetic_energy

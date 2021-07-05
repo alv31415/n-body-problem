@@ -19,7 +19,7 @@ class Leapfrog(Integrator):
         self.half_velocity_orbit = np.zeros((self.nbody.n, self.steps, 3))
 
         if twostep:
-            print(self.nbody.velocities + self.delta / 2 * self.nbody.get_acceleration())
+
             if self.delta < 10e-6:
                 mini_delta = self.delta
             else:
@@ -32,7 +32,6 @@ class Leapfrog(Integrator):
             helper_euler = Euler(self.nbody, steps = mini_steps, delta = mini_delta, tolerance = self.tolerance)
             helper_euler.get_orbits()
             self.half_velocity_orbit[:, 0, :] = self.nbody.velocities
-            print(self.nbody.velocities)
         else:
             self.half_velocity_orbit[:, 0, :] = self.nbody.velocities + self.delta / 2 * self.nbody.get_acceleration()
 
@@ -42,18 +41,19 @@ class Leapfrog(Integrator):
         if self.twostep:
             new_half_velocities = self.half_velocity_orbit[:, t - 1, :] + self.delta * acc_t
             new_positions = self.position_orbit[:, t - 1, :] + self.delta * new_half_velocities
+
+            self.half_velocity_orbit[:, t, :] = new_half_velocities
+            self.nbody.update(new_positions, new_half_velocities, symplectic=True, tolerance=self.tolerance)
         else:
             new_half_velocities = self.velocity_orbit[:, t - 1, :] + self.delta/2 * acc_t
             new_positions = self.position_orbit[:, t - 1, :] + self.delta * new_half_velocities
             new_acc = self.nbody.get_acceleration(positions = new_positions)
             new_velocities = new_half_velocities + self.delta/2 * new_acc
 
-        if self.twostep:
-            self.half_velocity_orbit[:, t, :] = new_half_velocities
-            self.nbody.update(new_positions, new_half_velocities, symplectic = True, tolerance=self.tolerance)
-        else:
             self.velocity_orbit[:, t, :] = new_velocities
             self.nbody.update(new_positions, new_velocities, symplectic=True, tolerance=self.tolerance)
+
+        self.position_orbit[:, t, :] = new_positions
 
         self.update_historic(t, self.nbody.energy, self.nbody.kinetic_energy, self.nbody.gpe,
                              self.nbody.total_angular_momentum)
@@ -61,6 +61,5 @@ class Leapfrog(Integrator):
         if self.adaptive:
             self.delta = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c=self.c)
 
-        self.position_orbit[:, t, :] = new_positions
 
 
