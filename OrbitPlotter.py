@@ -158,6 +158,12 @@ class OrbitPlotter:
         ax.set_ylabel("Percentage Error")
         # ax.legend()
 
+    def plot_adaptive_delta(self, ax):
+        ax.plot(self.times, self.integrator.historic_delta)
+        ax.set_title("Adaptive Delta Change")
+        ax.set_xlabel("Time")
+        ax.set_ylabel(r"$\Delta t$")
+
     def plot_dim(self, data, dim, ax, title, legend = False):
 
         #assert (dim == 0) or (dim == 1)
@@ -209,6 +215,10 @@ class OrbitPlotter:
         self.plot_dim(self.integrator.velocity_orbit, dim = 0, ax=ax_velocity_x, title = r"Velocity $x$")
         self.plot_dim(self.integrator.velocity_orbit, dim = 1, ax = ax_velocity_y, title = r"Velocity $y$")
         self.plot_dim(self.integrator.velocity_orbit, dim = 2, ax = ax_velocity_z, title = r"Velocity $z$")
+
+        if self.integrator.adaptive:
+            ax_delta = self.fig.add_subplot(self.gs[2,2])
+            self.plot_adaptive_delta(ax_delta)
 
         plt.tight_layout()
         plt.show()

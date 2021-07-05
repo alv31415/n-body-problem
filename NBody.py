@@ -90,38 +90,33 @@ class NBody:
         if positions is None:
             for i in range(self.n):
                 for j in range(i):
-                    if i != j:
-                        distance_vec = self.positions[j] - self.positions[i]
+                    distance_vec = self.positions[j] - self.positions[i]
 
-                        assert (nmath.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance), \
-                                "A collision occurred. Stopping the simulation.\n" \
-                                f"Distance Vector: {distance_vec} ({abs(distance_vec)})\n" \
-                                f"Position i: {self.positions[i]}\n" \
-                                f"Position j: {self.positions[j]}\n"
+                    assert (nmath.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance), \
+                            "A collision occurred. Stopping the simulation.\n" \
+                            f"Distance Vector: {distance_vec} ({abs(distance_vec)})\n" \
+                            f"Position i: {self.positions[i]}\n" \
+                            f"Position j: {self.positions[j]}\n"
 
-                        self.distances[i,j] = distance_vec
-                        self.distances[j,i] = -distance_vec
-                    else:
-                        self.distances[i,j] = np.zeros(3)
+                    self.distances[i,j] = distance_vec
+                    self.distances[j,i] = -distance_vec
         else:
             n = len(positions)
             distances = np.zeros(shape = (n, n, 3))
 
             for i in range(n):
                 for j in range(i):
-                    if i != j:
-                        distance_vec = positions[j] - positions[i]
+                    distance_vec = positions[j] - positions[i]
 
-                        assert (nmath.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance), \
-                            "A collision occurred. Stopping the simulation.\n" \
-                            f"Distance Vector: {distance_vec} ({abs(distance_vec)})\n" \
-                            f"Position i: {positions[i]}\n" \
-                            f"Position j: {positions[j]}\n"
+                    assert (nmath.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance), \
+                        "A collision occurred. Stopping the simulation.\n" \
+                        f"Distance Vector: {distance_vec} ({abs(distance_vec)})\n" \
+                        f"Position i: {positions[i]}\n" \
+                        f"Position j: {positions[j]}\n"
 
-                        distances[i, j] = distance_vec
-                        distances[j, i] = -distance_vec
-                    else:
-                        distances[i, j] = np.zeros(3)
+                    distances[i, j] = distance_vec
+                    distances[j, i] = -distance_vec
+
             return distances
 
     def get_com(self):

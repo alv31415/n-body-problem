@@ -55,3 +55,31 @@ def perc_change(initial, values, perc = False):
         return change * 100
 
     return  change
+
+def variable_delta(positions, velocities, c):
+    n = len(positions)
+
+    assert n == len(velocities)
+
+    if n == 1:
+        delta_x = ten_norm(positions[0], sqrt = True, axis = 0)
+        delta_v = ten_norm(velocities[0], sqrt=True, axis=0)
+        return c*delta_x/delta_v
+
+    potential_deltas = np.ones(shape = (n, n))*np.inf
+
+    for i in range(n):
+        for j in range(i):
+            if i == j:
+                potential_deltas[i, j] = np.inf
+                potential_deltas[j, i] = np.inf
+            else:
+                delta_x = ten_norm((positions[i] - positions[j]), sqrt = True, axis = 0)
+                delta_v = ten_norm((velocities[i] - velocities[j]), sqrt = True, axis = 0)
+                potential_deltas[i,j] = delta_x/delta_v
+                potential_deltas[j, i] = potential_deltas[i,j]
+
+    variable_delta = c*np.amin(potential_deltas)
+
+    return variable_delta
+

@@ -44,6 +44,13 @@ def test_nmath_perc_change():
     testing.assert_almost_equal(nm.perc_change(5,5.832747327), 0.1665494654, DP)
     testing.assert_array_almost_equal(nm.perc_change(5, np.array([5, -7, 8, 10.5]), perc = True), np.array([0, 240, 60, 110]), DP)
 
+def test_nmath_variable_delta():
+    testing.assert_equal(nm.variable_delta(np.array([array_1d]), np.array([array_1d]), c = -1), -1)
+
+    easy_positions = np.array([[1,1,1], [2,2,2]])
+    easy_velocities = np.array([[1, 2, 1], [0, 2, -2.5]])
+    testing.assert_almost_equal(nm.variable_delta(easy_positions, easy_velocities, c = 0.5), np.sqrt(3/53), DP)
+
 #------------------------------------------------------------------------------------------------------------------------------------
 
 # TESTING FOR NBODY
