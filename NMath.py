@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 
 # Helper file containing useful mathematical formulae
 
@@ -49,14 +50,29 @@ def perc_change(initial, values, perc = False):
     Calculates absolute percentage change between the initial value and either a signle value or a series of values
     """
 
-    change = np.abs((values - initial)/initial)
+    assert np.isfinite(initial).all()
+
+    if isinstance(initial, np.ndarray):
+        if (initial == 0).all():
+            warnings.warn("The initial quantity was all 0, so percentage change is meaningless!",
+                          category = RuntimeWarning, )
+            change = -1*np.ones_like(values)
+        else:
+            change = np.abs((values - initial) / initial)
+    else:
+        if (initial == 0):
+            warnings.warn("The initial quantity was 0, so percentage change is meaningless!",
+                          category=RuntimeWarning, )
+            change = -1 * np.ones_like(values)
+        else:
+            change = np.abs((values - initial) / initial)
 
     if perc:
         return change * 100
 
-    return  change
+    return change
 
-def variable_delta(positions, velocities, c):
+def variable_delta(positions, velocities, c, delta_lim = 10e-8):
     n = len(positions)
 
     assert n == len(velocities)
@@ -76,10 +92,13 @@ def variable_delta(positions, velocities, c):
             else:
                 delta_x = ten_norm((positions[i] - positions[j]), sqrt = True, axis = 0)
                 delta_v = ten_norm((velocities[i] - velocities[j]), sqrt = True, axis = 0)
-                potential_deltas[i,j] = delta_x/delta_v
-                potential_deltas[j, i] = potential_deltas[i,j]
+                potential_deltas[i, j] = delta_x/delta_v
+                potential_deltas[j, i] = potential_deltas[i, j]
 
     variable_delta = c*np.amin(potential_deltas)
+
+    if delta_lim is not None:
+        assert variable_delta > 10e-8, f"Adaptive delta was made too small ({self.delta}) - orbit unfeasible"
 
     return variable_delta
 

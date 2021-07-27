@@ -1,10 +1,12 @@
-import numpy as np
 import math
+import random
+
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.gridspec import GridSpec
 from mpl_toolkits import mplot3d
-import random
+
 import NMath as nm
 
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
@@ -147,9 +149,9 @@ class OrbitPlotter:
             ax.set_ylabel("Percentage Error")
             #ax.legend()
 
-    def plot_angular_momentum(self, ax):
+    def plot_angular_momentum(self, ax, dim = 2):
 
-        amomentum_z = self.integrator.historic_angular_momentum[:,2]
+        amomentum_z = self.integrator.historic_angular_momentum[:,dim]
         ax.plot(self.times, nm.perc_change(amomentum_z[0], amomentum_z, perc = True), c = "k")
 
         #ax.set_ylim(0, 100)
@@ -202,7 +204,7 @@ class OrbitPlotter:
         for i, orbit in enumerate(self.position_orbit):
             ax_orbit.plot(orbit[:, 0], orbit[:, 1], label=f"Orbit {i + 1}", c = self.colours[i])
             ax_orbit.scatter(orbit[0, 0], orbit[0, 1], c = self.colours[i], s=10, marker="^")
-            ax_orbit.scatter(orbit[-1, 0], orbit[-1, 1], c = self.colours[i], s=10)
+            ax_orbit.scatter(orbit[-1, 0], orbit[-1, 1], c = self.colours[i], s = 10)#*self.integrator.nbody.masses[i])
         ax_orbit.set_title(f"Trajectories for a {self.n}-body Problem")
         ax_orbit.axis("equal")
         ax_orbit.legend()

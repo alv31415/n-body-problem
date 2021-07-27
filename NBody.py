@@ -1,6 +1,8 @@
-import numpy as np
-import NMath as nmath
 from copy import deepcopy
+
+import numpy as np
+
+import NMath as nmath
 
 class NBody:
     """
@@ -28,7 +30,7 @@ class NBody:
         self.velocities = self.velocities - (self.total_linear_momentum)/self.total_mass
 
         if escape_tolerance is None:
-            self.escape_tolerance = np.max(nmath.ten_norm(self.positions, sqrt = True, axis = 1))*2
+            self.escape_tolerance = np.max(nmath.ten_norm(self.positions, sqrt = True, axis = 1))*10 # can be altered (experiment)
         else:
             self.escape_tolerance = escape_tolerance
 
@@ -92,11 +94,12 @@ class NBody:
                 for j in range(i):
                     distance_vec = self.positions[j] - self.positions[i]
 
-                    assert (nmath.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance), \
-                            "A collision occurred. Stopping the simulation.\n" \
-                            f"Distance Vector: {distance_vec} ({abs(distance_vec)})\n" \
-                            f"Position i: {self.positions[i]}\n" \
-                            f"Position j: {self.positions[j]}\n"
+                    if self.collision_tolerance is not None:
+                        assert (nmath.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance), \
+                                "A collision occurred. Stopping the simulation.\n" \
+                                f"Distance Vector: {distance_vec} ({abs(distance_vec)})\n" \
+                                f"Position i: {self.positions[i]}\n" \
+                                f"Position j: {self.positions[j]}\n"
 
                     self.distances[i,j] = distance_vec
                     self.distances[j,i] = -distance_vec
@@ -108,11 +111,12 @@ class NBody:
                 for j in range(i):
                     distance_vec = positions[j] - positions[i]
 
-                    assert (nmath.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance), \
-                        "A collision occurred. Stopping the simulation.\n" \
-                        f"Distance Vector: {distance_vec} ({abs(distance_vec)})\n" \
-                        f"Position i: {positions[i]}\n" \
-                        f"Position j: {positions[j]}\n"
+                    if self.collision_tolerance is not None:
+                        assert (nmath.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance), \
+                            "A collision occurred. Stopping the simulation.\n" \
+                            f"Distance Vector: {distance_vec} ({abs(distance_vec)})\n" \
+                            f"Position i: {positions[i]}\n" \
+                            f"Position j: {positions[j]}\n"
 
                     distances[i, j] = distance_vec
                     distances[j, i] = -distance_vec
@@ -232,8 +236,9 @@ class NBody:
 
         assert (len(new_positions[0]) == 3 and len(new_velocities[0]) == 3)
 
-        assert ((nmath.ten_norm(new_positions, sqrt = True, axis = 1) <= self.escape_tolerance).all()), \
-            "A body escaped beyond the allowed distance from the COM."
+        if self.escape_tolerance != -1:
+            assert ((nmath.ten_norm(new_positions, sqrt = True, axis = 1) <= self.escape_tolerance).all()), \
+                "A body escaped beyond the allowed distance from the COM."
 
         # if positions and velocities have the correct format, update positions and velocities
         self.positions = new_positions
@@ -260,21 +265,20 @@ class NBody:
 
             assert (self.conserved_quantity(new_total_linear_momentum, self.first_linear_momentum, tolerance = tolerance)), \
                     f"Total Linear Momentum was NOT conserved after the update.\
-                    \nInitial Total Linear Momentum: {self.total_linear_momentum}\n" \
+                    \nInitial Total Linear Momentum: {self.first_linear_momentum}\n" \
                     f"Calculated Total Linear Momentum: {new_total_linear_momentum}\n"
 
             assert (self.conserved_quantity(new_total_angular_momentum, self.first_angular_momentum, tolerance = tolerance)), \
                     f"Total Angular Momentum was NOT conserved after the update.\
-                    \nInitial Total Angular Momentum: {self.total_angular_momentum}\n" \
+                    \nInitial Total Angular Momentum: {self.first_angular_momentum}\n" \
                     f"Calculated Total Angular Momentum: {new_total_angular_momentum}\n"
 
             assert (self.conserved_quantity(new_energy, self.first_energy, tolerance = tolerance)), \
                     f"Total Energy was NOT conserved after the update.\
-                    \nInitial Total Energy: {self.energy}\n" \
+                    \nInitial Total Energy: {self.first_energy}\n" \
                     f"Calculated Total Energy: {new_energy}\n"
 
         # set the properties of the system
-        self.com = new_com
 
         self.linear_momentum = new_linear_momentum
         self.total_linear_momentum = new_total_linear_momentum
