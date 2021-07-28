@@ -26,6 +26,8 @@ class Integrator:
 
         self.set_arrays()
 
+        self.int_step = 1
+
     # overloaded method, dependent on the integration scheme utilised
     def integration_step(self, t):
         pass
@@ -48,9 +50,9 @@ class Integrator:
             self.set_arrays()
             self.get_orbits()
         else:
-            for t in range(1, self.steps):
-                    #print(f"Time {t*self.delta}")
-                    self.integration_step(t)
+            while self.int_step < self.steps:
+                #print(f"Time {t*self.delta}")
+                self.integration_step(self.int_step)
 
             self.integrated = True
 

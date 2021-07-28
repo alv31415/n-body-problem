@@ -3,7 +3,7 @@ from numpy import testing
 
 from NBody import NBody
 
-DP = 6
+DP = 12
 DP_ANGULAR = 15
 
 init_positions = np.array([[1,1,1],

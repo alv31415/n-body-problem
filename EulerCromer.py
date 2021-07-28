@@ -9,6 +9,9 @@ class EulerCromer(Integrator):
         super().__init__(nbody, steps, delta, tolerance, adaptive, c)
 
     def integration_step(self, t):
+        assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
+                                   f"Step to Integrate: {t}\n" \
+                                   f"Expected Step to Integrate: {self.int_step}\n"
 
         acc_t = self.nbody.get_acceleration()
 
@@ -23,3 +26,4 @@ class EulerCromer(Integrator):
 
         self.position_orbit[:, t, :] = new_positions
         self.velocity_orbit[:, t, :] = new_velocities
+        self.int_step = t + 1

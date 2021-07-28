@@ -152,6 +152,7 @@ class OrbitPlotter:
     def plot_angular_momentum(self, ax, dim = 2):
 
         amomentum_z = self.integrator.historic_angular_momentum[:,dim]
+        print(f"Max Angular Momentum Change at Step: {np.argmax(nm.perc_change(amomentum_z[0], amomentum_z, perc = True))}")
         ax.plot(self.times, nm.perc_change(amomentum_z[0], amomentum_z, perc = True), c = "k")
 
         #ax.set_ylim(0, 100)

@@ -10,6 +10,10 @@ class Euler(Integrator):
 
     def integration_step(self, t):
 
+        assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
+                                   f"Step to Integrate: {t}\n" \
+                                   f"Expected Step to Integrate: {self.int_step}\n"
+
         acc_t = self.nbody.get_acceleration()
 
         new_velocities = self.velocity_orbit[:, t-1, :] + self.delta * acc_t
@@ -23,5 +27,6 @@ class Euler(Integrator):
 
         self.velocity_orbit[:, t ,:] = new_velocities
         self.position_orbit[:,t, :] = new_positions
+        self.int_step = t + 1
 
 

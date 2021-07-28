@@ -17,6 +17,9 @@ class Leapfrog3(Integrator):
         self.half_velocity_orbit[:,0,:] = self.velocity_orbit[:,0,:] +  self.acc_t * self.delta * 0.5
 
     def integration_step(self, t):
+        assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
+                                   f"Step to Integrate: {t}\n" \
+                                   f"Expected Step to Integrate: {self.int_step}\n"
 
         # calculate next half velocity
         new_half_velocities = self.velocity_orbit[:,t-1,:] + self.acc_t * self.delta * 0.5
@@ -45,3 +48,4 @@ class Leapfrog3(Integrator):
         self.position_orbit[:, t, :] = new_positions
         self.half_velocity_orbit[:, t, :] = new_half_velocities
         self.velocity_orbit[:, t, :] = new_velocities
+        self.int_step = t + 1

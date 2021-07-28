@@ -2,7 +2,7 @@ import numpy as np
 from numpy import testing
 import NMath as nm
 
-DP = 6
+DP = 12
 DP_ANGULAR = 15
 
 array_1d = np.array([2,-4,5.2])
@@ -48,4 +48,4 @@ def test_nmath_variable_delta():
     easy_positions = np.array([[1,1,1], [2,2,2]])
     easy_velocities = np.array([[1, 2, 1], [0, 2, -2.5]])
     testing.assert_almost_equal(nm.variable_delta(easy_positions, easy_velocities, c = 0.5), np.sqrt(3/53), DP)
-    testing.assert_almost_equal(nm.variable_delta(easy_positions, easy_velocities, c=0.5), 0.2379154757, DP)
+    testing.assert_almost_equal(nm.variable_delta(easy_positions, easy_velocities, c = 0.5), 0.23791547571544322, DP)

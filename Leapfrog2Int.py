@@ -7,6 +7,10 @@ class Leapfrog2Int(Integrator):
         super().__init__(nbody, steps, delta, tolerance = tolerance, adaptive = adaptive, c = c)
 
     def integration_step(self, t):
+        assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
+                                   f"Step to Integrate: {t}\n" \
+                                   f"Expected Step to Integrate: {self.int_step}\n"
+
         acc_t = self.nbody.get_acceleration()
 
         new_positions = self.position_orbit[:, t - 1, :] \
@@ -26,3 +30,4 @@ class Leapfrog2Int(Integrator):
 
         self.position_orbit[:, t, :] = new_positions
         self.velocity_orbit[:, t, :] = new_velocities
+        self.int_step = t + 1
