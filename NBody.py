@@ -155,7 +155,7 @@ class NBody:
         Calculates the total energy of the system, mainly to ensure that the symplectic integrator functions correctly
         :return: the total energy of the system, given as the sum of kinetic and gravitational potential energy
         """
-        kinetic_energy = np.sum(nmath.ten_norm(self.linear_momentum, axis = 1, sqrt = False) / self.masses)/2
+        kinetic_energy = np.sum(nmath.ten_norm(self.linear_momentum, axis = 1, sqrt = False) / (2*self.masses))
         self.kinetic_energy = kinetic_energy
 
         gpe = 0
