@@ -171,7 +171,7 @@ class NBody:
 
     def get_acceleration(self, positions = None):
         """
-        Calculates the acceleration of every particle of the system - solely depends on their position
+        Calculates the acceleration of every particle of the system - solely dependent on position
         :return: an (n x 3) matrix, with each entry i corresponding to the acceleration of o body i
         """
         # calculate the magnitude of the distances between bodies
