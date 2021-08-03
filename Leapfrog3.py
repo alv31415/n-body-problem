@@ -3,7 +3,7 @@ import numpy as np
 from Integrator import Integrator
 import NMath as nm
 
-# no need for half_velcoity_orbit - only for testing purposes
+# no need for half_velocity_orbit - only for testing purposes
 
 class Leapfrog3(Integrator):
 
@@ -12,12 +12,6 @@ class Leapfrog3(Integrator):
 
         # save acceleration for next iteration (only 1 acceleration calculation per step)
         self.acc_t = self.nbody.get_acceleration()
-
-        # initialise half-velocity tensor
-        # keeps track of half velocity across the simulation
-        self.half_velocity_orbit = np.zeros(shape = (self.nbody.n, self.steps, 3))
-        self.half_velocity_orbit[:,0,:] = self.velocity_orbit[:,0,:] +  self.acc_t * self.delta * 0.5
-
 
     def integration_step(self, t):
         assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
@@ -49,6 +43,5 @@ class Leapfrog3(Integrator):
         # save calculated values for position, half velocity and velocity
         self.acc_t = acc_tt
         self.position_orbit[:, t, :] = new_positions
-        self.half_velocity_orbit[:, t, :] = new_half_velocities
         self.velocity_orbit[:, t, :] = new_velocities
         self.int_step = t + 1

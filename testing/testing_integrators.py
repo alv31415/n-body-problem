@@ -17,9 +17,6 @@ init_positions = np.array([[0,1,0], [0,-1,0]])
 init_velocities = np.array([[0.4,0,0], [-0.4,0,0]])
 masses = np.array([1,1])
 
-expected_half_velocity_init = np.array([[0.4, -DELTA*0.25*0.5, 0],
-                                        [-0.4, DELTA*0.25*0.5, 0]])
-
 def test_leapfrog3_init():
     nbod = NBody(init_positions, init_velocities, masses)
 
@@ -58,9 +55,6 @@ def test_leapfrog3_step():
     leapfrog = Leapfrog3(nbody=nbod, steps=STEPS, delta=DELTA, tolerance=TOLERANCE, adaptive=ADAPTIVE, c=C)
 
     leapfrog.integration_step(1)
-
-    # TEST: HALF VELOCITY CALCULATED CORRECTLY
-    testing.assert_array_almost_equal(leapfrog.half_velocity_orbit[:,0,:], expected_half_velocity_init, DP)
 
     # TEST: POSITION CALCULATED CORRECTLY
     expected_new_positions = np.array([[0.4*DELTA, 1 - DELTA*DELTA*0.25*0.5, 0],
