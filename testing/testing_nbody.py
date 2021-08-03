@@ -3,8 +3,7 @@ from numpy import testing
 
 from NBody import NBody
 
-DP = 12
-DP_ANGULAR = 15
+DP = 13
 
 init_positions = np.array([[1,1,1],
                            [0,2,0],
@@ -83,10 +82,10 @@ def test_nbody_init():
     expected_angular_momentum = np.array([[5/36, 1/4, 11/18],
                                          [-7/18, -7/2, -19/9],
                                          [5/12, -5/4, -1/6]])
-    testing.assert_array_almost_equal(expected_angular_momentum, nbod.angular_momentum, DP_ANGULAR)
+    testing.assert_array_almost_equal(expected_angular_momentum, nbod.angular_momentum, DP)
 
     expected_total_angular_momentum = np.array([1/6, -9/2, -5/3])
-    testing.assert_array_almost_equal(expected_total_angular_momentum, nbod.total_angular_momentum, DP_ANGULAR)
+    testing.assert_array_almost_equal(expected_total_angular_momentum, nbod.total_angular_momentum, DP)
 
     # check energy
     expected_kinetic_energy = 11/72 + 179/36 + 83/24
@@ -179,3 +178,19 @@ def test_nbody_update_errors():
     assert (len(init_positions[0]) == 3 and len(init_velocities[0]) == 3)
 
     testing.assert_raises(AssertionError, nbod_escape.update, init_positions, init_velocities)
+
+def test_main():
+    test_nbody_copy()
+    test_nbody_check_update_input()
+    test_nbody_init()
+    test_nbody_get_body_distances()
+    test_nbody_get_acceleration()
+    test_nbody_conserved_quantity()
+    test_nbody_update_symp()
+    test_nbody_update_errors()
+
+
+
+
+
+

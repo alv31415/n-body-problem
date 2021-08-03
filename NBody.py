@@ -250,6 +250,10 @@ class NBody:
 
         new_total_linear_momentum = np.sum(new_linear_momentum, axis = 0)
 
+        # assign linear momentum to the system (required for calculations of energy and angular momentum)
+        self.linear_momentum = new_linear_momentum
+        self.total_linear_momentum = new_total_linear_momentum
+
         new_angular_momentum = self.get_amomentum()
 
         new_total_angular_momentum = np.sum(new_angular_momentum, axis=0)
@@ -280,9 +284,6 @@ class NBody:
 
         # set the properties of the system
 
-        self.linear_momentum = new_linear_momentum
-        self.total_linear_momentum = new_total_linear_momentum
-
         self.angular_momentum = new_angular_momentum
         self.total_angular_momentum = new_total_angular_momentum
 
@@ -299,6 +300,8 @@ class NBody:
                f"Total Linear Momentum: {self.total_linear_momentum}\n" + \
                f"Angular Momentum:\n {self.angular_momentum}\n" + \
                f"Total Angular Momentum: {self.total_angular_momentum}\n" + \
+               f"Kinetic Energy: {self.kinetic_energy}\n" \
+               f"Gravitational Potential Energy: {self.gpe}\n" \
                f"Total Energy: {self.energy}\n"
 
 

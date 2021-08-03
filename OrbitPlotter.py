@@ -149,11 +149,14 @@ class OrbitPlotter:
             ax.set_ylabel("Percentage Error")
             #ax.legend()
 
-    def plot_angular_momentum(self, ax, dim = 2):
+    def plot_angular_momentum(self, ax, absolute = False, dim = 2):
 
         amomentum_z = self.integrator.historic_angular_momentum[:,dim]
         print(f"Max Angular Momentum Change at Step: {np.argmax(nm.perc_change(amomentum_z[0], amomentum_z, perc = True))}")
-        ax.plot(self.times, nm.perc_change(amomentum_z[0], amomentum_z, perc = True), c = "k")
+        if absolute:
+            ax.plot(self.times, amomentum_z, c="k")
+        else:
+            ax.plot(self.times, nm.perc_change(amomentum_z[0], amomentum_z, perc=True), c="k")
 
         #ax.set_ylim(0, 100)
         ax.set_title("Percentage Angular Momentum Error")
@@ -210,8 +213,8 @@ class OrbitPlotter:
         ax_orbit.axis("equal")
         ax_orbit.legend()
 
-        self.plot_energies(ax_energy)
-        self.plot_angular_momentum(ax_amomentum)
+        self.plot_energies(ax_energy, absolute = False, e_components = True)
+        self.plot_angular_momentum(ax_amomentum, absolute = False, dim = 2)
         self.plot_dim(self.position_orbit, dim = 0, ax = ax_position_x, title = r"Position $x$")
         self.plot_dim(self.position_orbit, dim = 1, ax = ax_position_y, title = r"Position $y$")
         self.plot_dim(self.position_orbit, dim = 2, ax = ax_position_z, title = r"Position $z$")
