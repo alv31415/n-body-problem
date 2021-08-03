@@ -152,7 +152,7 @@ class OrbitPlotter:
     def plot_angular_momentum(self, ax, absolute = False, dim = 2):
 
         amomentum_z = self.integrator.historic_angular_momentum[:,dim]
-        print(f"Max Angular Momentum Change at Step: {np.argmax(nm.perc_change(amomentum_z[0], amomentum_z, perc = True))}")
+
         if absolute:
             ax.plot(self.times, amomentum_z, c="k")
         else:
@@ -172,7 +172,7 @@ class OrbitPlotter:
 
     def plot_dim(self, data, dim, ax, title, legend = False):
 
-        #assert (dim == 0) or (dim == 1)
+        assert dim < data.shape[-1]
 
         dim_data = data[:,:,dim]
 
