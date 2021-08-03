@@ -10,19 +10,23 @@ class Euler(Integrator):
 
     def integration_step(self, t):
 
+        assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
+                                   f"Step to Integrate: {t}\n" \
+                                   f"Expected Step to Integrate: {self.int_step}\n"
+
         acc_t = self.nbody.get_acceleration()
 
         new_velocities = self.velocity_orbit[:, t-1, :] + self.delta * acc_t
         new_positions = self.position_orbit[:,t-1,:] + self.delta * self.velocity_orbit[:,t-1,:]
 
         self.nbody.update(new_positions, new_velocities, symplectic = False, tolerance = self.tolerance)
-        self.update_historic(t, self.nbody.energy, self.nbody.kinetic_energy, self.nbody.gpe,
-                             self.nbody.total_angular_momentum)
+        self.update_historic(t)
 
         if self.adaptive:
             self.delta = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c=self.c)
 
         self.velocity_orbit[:, t ,:] = new_velocities
         self.position_orbit[:,t, :] = new_positions
+        self.int_step = t + 1
 
 

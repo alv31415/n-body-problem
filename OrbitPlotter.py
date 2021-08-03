@@ -1,10 +1,12 @@
-import numpy as np
 import math
+import random
+
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.gridspec import GridSpec
 from mpl_toolkits import mplot3d
-import random
+
 import NMath as nm
 
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
@@ -147,10 +149,14 @@ class OrbitPlotter:
             ax.set_ylabel("Percentage Error")
             #ax.legend()
 
-    def plot_angular_momentum(self, ax):
+    def plot_angular_momentum(self, ax, absolute = False, dim = 2):
 
-        amomentum_z = self.integrator.historic_angular_momentum[:,2]
-        ax.plot(self.times, nm.perc_change(amomentum_z[0], amomentum_z, perc = True), c = "k")
+        amomentum_z = self.integrator.historic_angular_momentum[:,dim]
+        print(f"Max Angular Momentum Change at Step: {np.argmax(nm.perc_change(amomentum_z[0], amomentum_z, perc = True))}")
+        if absolute:
+            ax.plot(self.times, amomentum_z, c="k")
+        else:
+            ax.plot(self.times, nm.perc_change(amomentum_z[0], amomentum_z, perc=True), c="k")
 
         #ax.set_ylim(0, 100)
         ax.set_title("Percentage Angular Momentum Error")
@@ -202,13 +208,13 @@ class OrbitPlotter:
         for i, orbit in enumerate(self.position_orbit):
             ax_orbit.plot(orbit[:, 0], orbit[:, 1], label=f"Orbit {i + 1}", c = self.colours[i])
             ax_orbit.scatter(orbit[0, 0], orbit[0, 1], c = self.colours[i], s=10, marker="^")
-            ax_orbit.scatter(orbit[-1, 0], orbit[-1, 1], c = self.colours[i], s=10)
+            ax_orbit.scatter(orbit[-1, 0], orbit[-1, 1], c = self.colours[i], s = 10)#*self.integrator.nbody.masses[i])
         ax_orbit.set_title(f"Trajectories for a {self.n}-body Problem")
         ax_orbit.axis("equal")
         ax_orbit.legend()
 
-        self.plot_energies(ax_energy)
-        self.plot_angular_momentum(ax_amomentum)
+        self.plot_energies(ax_energy, absolute = False, e_components = True)
+        self.plot_angular_momentum(ax_amomentum, absolute = False, dim = 2)
         self.plot_dim(self.position_orbit, dim = 0, ax = ax_position_x, title = r"Position $x$")
         self.plot_dim(self.position_orbit, dim = 1, ax = ax_position_y, title = r"Position $y$")
         self.plot_dim(self.position_orbit, dim = 2, ax = ax_position_z, title = r"Position $z$")
