@@ -3,7 +3,7 @@ import NMath as nm
 
 class Leapfrog2Int(Integrator):
     """
-    Class defining an integrator via an Integer 3-Step Leapfrog 2-Step Method
+    Class defining an integrator via the Integer 3-Step Leapfrog 2-Step Method
     """
     def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1):
         """
@@ -47,8 +47,6 @@ class Leapfrog2Int(Integrator):
         new_velocities = self.velocity_orbit[:, t - 1, :] \
                          + 0.5 * (self.acc_t + acc_tt) * self.delta
 
-        self.acc_t = acc_tt
-
         # update the simulation with the calculated position and velocities
         self.nbody.update(new_positions, new_velocities, symplectic=True, tolerance=self.tolerance)
 
@@ -60,6 +58,7 @@ class Leapfrog2Int(Integrator):
             self.delta = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c=self.c)
 
         # set the newly calculated positions and velocities to the orbit arrays
+        self.acc_t = acc_tt
         self.position_orbit[:, t, :] = new_positions
         self.velocity_orbit[:, t, :] = new_velocities
 
