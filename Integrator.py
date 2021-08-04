@@ -16,20 +16,15 @@ class Integrator:
         :param adaptive: if True, the Integrator will use an adaptive timestep (instead of a fixed one)
         :param c: constant used when calculating adaptive timestep. Smaller c leads to more accurate orbits.
         """
-        # n-body simulation instance
         self.nbody = nbody
 
-        # number of iterations to perform
         self.steps = int(steps)
 
-        # flag to check if we use adaptive timestep
         self.adaptive = adaptive
         self.c = c
 
-        # error allowed when updating the simulation
         self.tolerance = tolerance
 
-        # timestep to use in the integrator
         self.delta = delta
 
         # creates all arrays used by integrator
