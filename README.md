@@ -32,3 +32,44 @@ integ.get_orbits()
 print(nbod2)
 integ.show_orbits(grid = True)
 ```
+
+This should produce the following grid plot:
+
+<p align = "center"><img src="https://github.com/alv31415/n-body-problem/blob/main/img/test_code_result.png" width = 720 height = 432></p>
+
+and display the following in terminal: 
+
+```
+Bodies: 2
+Total Mass: 2
+Centre of Mass: [0. 0. 0.]
+Linear Momentum:
+ [[ 0.4  0.   0. ]
+ [-0.4  0.   0. ]]
+Total Linear Momentum: [0. 0. 0.]
+Angular Momentum:
+ [[ 0.   0.  -0.4]
+ [-0.  -0.  -0.4]]
+Total Angular Momentum: [ 0.   0.  -0.8]
+Kinetic Energy: 0.16000000000000003
+Gravitational Potential Energy: -0.5
+Total Energy: -0.33999999999999997
+
+--------------------
+
+Bodies: 2
+Total Mass: 2
+Centre of Mass: [0. 0. 0.]
+Linear Momentum:
+ [[ 0.13593791 -0.51027534  0.        ]
+ [-0.13593791  0.51027534  0.        ]]
+Total Linear Momentum: [0. 0. 0.]
+Angular Momentum:
+ [[ 0.   0.  -0.4]
+ [-0.   0.  -0.4]]
+Total Angular Momentum: [ 0.   0.  -0.8]
+Kinetic Energy: 0.27886003434284173
+Gravitational Potential Energy: -0.6188600694601704
+Total Energy: -0.3400000351173286
+
+
