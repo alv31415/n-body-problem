@@ -4,6 +4,16 @@ import NMath as nm
 class Leapfrog2Int(Integrator):
 
     def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1):
+        """
+        :param nbody: NBody instance which we integrate
+        :param steps: the number of steps to integrate for
+        :param delta: timestep to use for the integrator. Smaller timesteps lead to more accurate orbits.
+        :param tolerance: allowed absolute error for determining conservation of calculated quantities
+        :param adaptive: if True, the Integrator will use an adaptive timestep (instead of a fixed one)
+        :param c: constant used when calculating adaptive timestep. Smaller c leads to more accurate orbits.
+        """
+
+        # execute initialisation from superclass
         super().__init__(nbody, steps, delta, tolerance = tolerance, adaptive = adaptive, c = c)
 
     def integration_step(self, t):

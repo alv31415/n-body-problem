@@ -8,6 +8,14 @@ class Integrator:
     Class defining a general integrator, acting as a "superclass" for Euler, Euler-Cromer and all Leapfrog methods
     """
     def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1):
+        """
+        :param nbody: NBody instance which we integrate
+        :param steps: the number of steps to integrate for
+        :param delta: timestep to use for the integrator. Smaller timesteps lead to more accurate orbits.
+        :param tolerance: allowed absolute error for determining conservation of calculated quantities
+        :param adaptive: if True, the Integrator will use an adaptive timestep (instead of a fixed one)
+        :param c: constant used when calculating adaptive timestep. Smaller c leads to more accurate orbits.
+        """
         # n-body simulation instance
         self.nbody = nbody
 
