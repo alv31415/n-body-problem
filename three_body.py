@@ -74,3 +74,14 @@ def get_lagrange_nbod(r_1: np.array, masses, G = 1):
     init_velocities = np.array([v_1, R @ v_1, R @ (R @ v_1)])
 
     return NBody(init_positions, init_velocities, masses, escape_tolerance=-1)
+
+# ------------------------------ FIGURE 8 ------------------------------
+
+# initial conditions taken from http://homepages.math.uic.edu/~jan/mcs320s07/Project_Two/sol_body.html
+r_1 = np.array([0.97000436, -0.24308753, 0])
+v_3 = np.array([-0.93240737,-0.86473146, 0])
+v_2 = -v_3/2
+
+figure_8 = NBody(np.array([r_1, -r_1, [0, 0, 0]]),
+                 np.array([v_2, v_2, v_3]),
+                 np.ones(shape = (3,)))
