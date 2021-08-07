@@ -8,7 +8,7 @@ class NBody:
     """
     Class used to simulate the n-body problem.
     """
-    def __init__(self, init_positions, init_velocities, masses, collision_tolerance = 10e-4, escape_tolerance = None):
+    def __init__(self, init_positions, init_velocities, masses, collision_tolerance = 10e-4, escape_tolerance = -1):
         """
         :param init_positions: Python list or numpy array of position vectors for the bodies
         :param init_velocities: Python list or numpy array of velocity vectors for the bodies
@@ -16,6 +16,8 @@ class NBody:
         :param collision_tolerance: maximum distance between 2 bodies allowed before ending simulation
                If None, collisions are not considered.
         :param escape_tolerance: maximum distance away from the centre of mass (COM) allowed before ending simulation
+                                 If None, escape_tolerance is automatically calculated
+                                 If -1, escape_tolerance is not considered
         """
 
         # number of bodies in simulation
@@ -276,7 +278,7 @@ class NBody:
         # check: vectors are in R^3
         assert (len(new_positions[0]) == 3 and len(new_velocities[0]) == 3)
 
-        if self.escape_tolerance is not None:
+        if self.escape_tolerance != -1:
             assert ((nmath.ten_norm(new_positions, sqrt = True, axis = 1) <= self.escape_tolerance).all()), \
                 "A body escaped beyond the allowed distance from the COM."
 
