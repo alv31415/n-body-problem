@@ -3,8 +3,6 @@ import numpy as np
 from Integrator import Integrator
 import NMath as nm
 
-# no need for half_velocity_orbit - only for testing purposes
-
 class Leapfrog3(Integrator):
     """
     Class defining an integrator via the 3-Step Leapfrog 2-Step Method
