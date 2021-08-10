@@ -1,3 +1,5 @@
+import warnings
+
 from Integrator import Integrator
 import NMath as nm
 
@@ -15,8 +17,15 @@ class Leapfrog2Int(Integrator):
         :param c: constant used when calculating adaptive timestep. Smaller c leads to more accurate orbits.
         """
 
+        if adaptive:
+            warnings.warn(f"Synchronised Leapfrog can't use adaptive timestep. "
+                          f"Integrator will run with the constant delta provided ({delta})")
+            adaptive = False
+
         # execute initialisation from superclass
         super().__init__(nbody, steps, delta, tolerance = tolerance, adaptive = adaptive, c = c)
+
+
 
         # save acceleration for next iteration.
         # Only require 1 expensive acceleration calculation per step
@@ -31,7 +40,7 @@ class Leapfrog2Int(Integrator):
         """
 
         # check: step t is the same as the expected step int_step.
-        # Ensures that when performing an integration_step, they happen at consercutive times
+        # Ensures that when performing an integration_step, they happen at consecutive times
         # For example, integration_step(42) can only be performed if we have previously executed integration_step(41)
         assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
                                    f"Step to Integrate: {t}\n" \
@@ -52,10 +61,6 @@ class Leapfrog2Int(Integrator):
 
         # add the newly calculated energies and angular momentum (and adaptive delta) to the historic arrays
         self.update_historic(t)
-
-        # if adaptive timestep is used, recalculate it
-        if self.adaptive:
-            self.delta = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c=self.c)
 
         # set the newly calculated positions and velocities to the orbit arrays
         self.acc_t = acc_tt

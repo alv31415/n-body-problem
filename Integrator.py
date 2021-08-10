@@ -55,7 +55,7 @@ class Integrator:
         self.historic_angular_momentum[t,:] = self.nbody.total_angular_momentum
 
         if self.adaptive:
-            self.historic_delta[t] = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c = self.c)
+            self.historic_delta[t] = self.delta
 
     def get_orbits(self):
         """
@@ -67,9 +67,9 @@ class Integrator:
             self.set_arrays()
             self.get_orbits()
         else:
-            # integration step until we have done the required steps
+            # integration step until we have done the required steps/time (if adaptive)
             while self.int_step < self.steps:
-                self.integration_step(self.int_step)
+                    self.integration_step(self.int_step)
 
             # update flag
             self.integrated = True
@@ -101,7 +101,7 @@ class Integrator:
         """
         Used to initialise all the arrays used by Integrators.
         Generates and initialises arrays for positions, velocities, energies, and angular momentum.
-        These arrays contain not only the calculated orbits, butadditional information used for plotting or debugging.
+        These arrays contain not only the calculated orbits, but additional information used for plotting or debugging.
         """
 
         # if adaptive timestep is used, create an array for it

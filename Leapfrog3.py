@@ -34,7 +34,7 @@ class Leapfrog3(Integrator):
         """
 
         # check: step t is the same as the expected step int_step.
-        # Ensures that when performing an integration_step, they happen at consercutive times
+        # Ensures that when performing an integration_step, they happen at consecutive times
         # For example, integration_step(42) can only be performed if we have previously executed integration_step(41)
         assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
                                    f"Step to Integrate: {t}\n" \
@@ -45,6 +45,19 @@ class Leapfrog3(Integrator):
         new_positions = self.position_orbit[:, t - 1, :] + new_half_velocities * self.delta
         acc_tt = self.nbody.get_acceleration(positions = new_positions)
         new_velocities = new_half_velocities + acc_tt * self.delta * 0.5
+
+        # calculate adaptive delta by using a time-reversible delta
+        if self.adaptive:
+
+            # average of adaptive delta at time t and t+1
+            reversible_delta = 0.5*(self.delta + nm.variable_delta(new_positions, new_velocities, c = self.c))
+
+            # use reversible delta at time t again to calculate new positions and velocities
+            # this ensures that when using adaptive delta, the integrator remains symplectic
+            new_half_velocities = self.velocity_orbit[:, t - 1, :] + self.acc_t * reversible_delta * 0.5
+            new_positions = self.position_orbit[:, t - 1, :] + new_half_velocities * reversible_delta
+            acc_tt = self.nbody.get_acceleration(positions=new_positions)
+            new_velocities = new_half_velocities + acc_tt * reversible_delta * 0.5
 
         # update the simulation with the calculated position and velocities
         self.nbody.update(new_positions, new_velocities, symplectic=True, tolerance=self.tolerance)

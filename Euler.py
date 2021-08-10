@@ -39,6 +39,16 @@ class Euler(Integrator):
         new_velocities = self.velocity_orbit[:, t-1, :] + self.delta * acc_t
         new_positions = self.position_orbit[:,t-1,:] + self.delta * self.velocity_orbit[:,t-1,:]
 
+        if self.adaptive:
+
+            # average of adaptive delta at time t and t+1
+            reversible_delta = 0.5*(self.delta + nm.variable_delta(new_positions, new_velocities, c = self.c))
+
+            # use reversible delta at time t again to calculate new positions and velocities
+            # this ensures that when using adaptive delta, the integrator remains symplectic
+            new_velocities = self.velocity_orbit[:, t - 1, :] + reversible_delta * acc_t
+            new_positions = self.position_orbit[:, t - 1, :] + reversible_delta * self.velocity_orbit[:,t-1,:]
+
         # update the simulation with the calculated position and velocities
         self.nbody.update(new_positions, new_velocities, symplectic = False, tolerance = self.tolerance)
 
