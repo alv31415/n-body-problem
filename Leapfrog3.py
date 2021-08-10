@@ -24,6 +24,15 @@ class Leapfrog3(Integrator):
         # Only require 1 expensive acceleration calculation per step
         self.acc_t = self.nbody.get_acceleration()
 
+    def leapfrog3_integration(self, t, delta):
+        # perform 3-Step Leapfrog step
+        new_half_velocities = self.velocity_orbit[:, t - 1, :] + self.acc_t * delta * 0.5
+        new_positions = self.position_orbit[:, t - 1, :] + new_half_velocities * delta
+        acc_tt = self.nbody.get_acceleration(positions=new_positions)
+        new_velocities = new_half_velocities + acc_tt * delta * 0.5
+
+        return new_positions, new_velocities, acc_tt
+
     def integration_step(self, t):
         """
         Integration step for the Integer 3-Step Leapfrog method.
@@ -40,11 +49,8 @@ class Leapfrog3(Integrator):
                                    f"Step to Integrate: {t}\n" \
                                    f"Expected Step to Integrate: {self.int_step}\n"
 
-        # perform 3-Step Leapfrog step
-        new_half_velocities = self.velocity_orbit[:,t-1,:] + self.acc_t * self.delta * 0.5
-        new_positions = self.position_orbit[:, t - 1, :] + new_half_velocities * self.delta
-        acc_tt = self.nbody.get_acceleration(positions = new_positions)
-        new_velocities = new_half_velocities + acc_tt * self.delta * 0.5
+        # calculate new positions and velocities
+        new_positions, new_velocities, acc_tt = self.leapfrog3_integration(t, delta = self.delta)
 
         # calculate adaptive delta by using a time-reversible delta
         if self.adaptive:
@@ -54,10 +60,7 @@ class Leapfrog3(Integrator):
 
             # use reversible delta at time t again to calculate new positions and velocities
             # this ensures that when using adaptive delta, the integrator remains symplectic
-            new_half_velocities = self.velocity_orbit[:, t - 1, :] + self.acc_t * reversible_delta * 0.5
-            new_positions = self.position_orbit[:, t - 1, :] + new_half_velocities * reversible_delta
-            acc_tt = self.nbody.get_acceleration(positions=new_positions)
-            new_velocities = new_half_velocities + acc_tt * reversible_delta * 0.5
+            new_positions, new_velocities, acc_tt = self.leapfrog3_integration(t, delta=reversible_delta)
 
         # update the simulation with the calculated position and velocities
         self.nbody.update(new_positions, new_velocities, symplectic=True, tolerance=self.tolerance)
