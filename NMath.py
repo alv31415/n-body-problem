@@ -46,33 +46,27 @@ def mat_cross(mat1, mat2):
 
     return mat_cross
 
-def perc_change(initial, values, perc = False):
+def perc_change(initial, values, perc = False, init_val = 1):
     """
-    Calculates absolute percentage change between the initial value and either a single value or a series of values
+    Calculates absolute percentage/decimal change between the initial value and either a single value or a series of values
     :param initial: either a single value, or an array of values
     :param values: the values to be compared against initial to calculate percentage change
     :param perc: if True, the change is given as a percentage; otherwise as a decimal
-    :return: the percentage change between values and initial, in absolute terms
+    :param init_val: initial value when calculating percentages, should initial be 0/array of 0s
+    :return: the percentage (as decimal or percentage) change between values and initial, in absolute terms
     """
 
     # check if initial is an array of values
-    if isinstance(initial, np.ndarray):
-        # if all values in inital are 0, percentage change is meaningless
-        if (initial == 0).all():
-            warnings.warn("The initial quantity was all 0, so percentage change is meaningless!",
-                          category = RuntimeWarning, )
-            change = -1*np.ones_like(values)
-        else:
-            change = np.abs((values - initial) / initial)
+    if isinstance(initial, np.ndarray) and (initial == 0).all():
+        warnings.warn(f"The initial quantity was all 0, so percentage change is meaningless!. Comparing with baseline value: {init_val}",
+                          category = RuntimeWarning)
+        initial = np.ones_like(initial)*init_val
+    elif (initial == 0):
+        warnings.warn(f"The initial quantity was all 0, so percentage change is meaningless!. Comparing with baseline value: {init_val}",
+                category=RuntimeWarning)
+        initial = init_val
 
-    else:
-        # if the initial value is 0, percentage change is meaningless
-        if (initial == 0):
-            warnings.warn("The initial quantity was 0, so percentage change is meaningless!",
-                          category=RuntimeWarning, )
-            change = -1 * np.ones_like(values)
-        else:
-            change = np.abs((values - initial) / initial)
+    change = np.abs((values - initial) / initial)
 
     # calculate percentage if required
     if perc:

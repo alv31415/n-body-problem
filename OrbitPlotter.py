@@ -269,7 +269,7 @@ class OrbitPlotter:
             ax.set_title("Angular Momentum Change")
             ax.set_ylabel("Angular Momentum")
         else:
-            ax.plot(self.times, nm.perc_change(amomentum_z[0], amomentum_z, perc=True), c="k")
+            ax.plot(self.times, nm.perc_change(amomentum_z[0], amomentum_z, perc=True, init_val=100), c="k")
             ax.set_title("Percentage Angular Momentum Error")
             ax.set_ylabel("Percentage Error")
 

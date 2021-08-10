@@ -53,10 +53,6 @@ class Leapfrog2Int(Integrator):
         # add the newly calculated energies and angular momentum (and adaptive delta) to the historic arrays
         self.update_historic(t)
 
-        # if adaptive timestep is used, recalculate it
-        if self.adaptive:
-            self.delta = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c=self.c)
-
         # set the newly calculated positions and velocities to the orbit arrays
         self.acc_t = acc_tt
         self.position_orbit[:, t, :] = new_positions
