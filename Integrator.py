@@ -71,10 +71,6 @@ class Integrator:
             while self.int_step < self.steps:
                 self.integration_step(self.int_step)
 
-                # if adaptive timestep is used, recalculate it
-                if self.adaptive:
-                    self.delta = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c=self.c)
-
             # update flag
             self.integrated = True
 

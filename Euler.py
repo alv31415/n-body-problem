@@ -27,7 +27,7 @@ class Euler(Integrator):
         """
 
         # check: step t is the same as the expected step int_step.
-        # Ensures that when performing an integration_step, they happen at consercutive times
+        # Ensures that when performing an integration_step, they happen at consecutive times
         # For example, integration_step(42) can only be performed if we have previously executed integration_step(41)
         assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
                                    f"Step to Integrate: {t}\n" \
@@ -44,6 +44,10 @@ class Euler(Integrator):
 
         # add the newly calculated energies and angular momentum (and adaptive delta) to the historic arrays
         self.update_historic(t)
+
+        # if adaptive timestep is used, recalculate it
+        if self.adaptive:
+            self.delta = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c=self.c)
 
         # set the newly calculated positions and velocities to the orbit arrays
         self.velocity_orbit[:, t ,:] = new_velocities
