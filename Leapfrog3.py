@@ -65,16 +65,7 @@ class Leapfrog3(Integrator):
             # recalculate adaptive timestep
             self.delta = nm.variable_delta(new_positions, new_velocities, c=self.c)
 
-        # update the simulation with the calculated position and velocities
-        self.nbody.update(new_positions, new_velocities, symplectic=True, tolerance=self.tolerance)
-        
-        # add the newly calculated energies and angular momentum (and adaptive delta) to the historic arrays
-        self.update_historic(t)
+        self.update_simulation(t, new_positions, new_velocities, symplectic=True)
 
-        # set the newly calculated positions and velocities to the orbit arrays
+        # set the calculated acceleration for the next iteration
         self.acc_t = acc_tt
-        self.position_orbit[:, t, :] = new_positions
-        self.velocity_orbit[:, t, :] = new_velocities
-
-        # increment the int_step to ensure that integration_step is performed on continuous steps
-        self.int_step = t + 1

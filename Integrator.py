@@ -57,6 +57,29 @@ class Integrator:
         if self.adaptive:
             self.historic_delta[t] = self.delta
 
+    def update_simulation(self, t, new_positions, new_velocities, symplectic):
+        """
+        Given newly calculated positions and velocities, updates NBody, alongside historic arrays
+        :param t: step at which positions and velocities were calculated
+        :param new_positions: newly calculated positions by integrator
+        :param new_velocities: newly calculated velocities by integrator
+        :param symplectic: True for symplectic integrator,
+                           checks that energy,angular momentum.etc... are conserved after the update
+        """
+
+        # update the simulation with the calculated position and velocities
+        self.nbody.update(new_positions, new_velocities, symplectic=symplectic, tolerance=self.tolerance)
+
+        # add the newly calculated energies and angular momentum (and adaptive delta) to the historic arrays
+        self.update_historic(t)
+
+        # set the newly calculated positions and velocities to the orbit arrays
+        self.position_orbit[:, t, :] = new_positions
+        self.velocity_orbit[:, t, :] = new_velocities
+
+        # increment the int_step to ensure that integration_step is performed on continuous steps
+        self.int_step = t + 1
+
     def get_orbits(self):
         """
         Performs the integration, by applying the integration step as many times as specified by the initialisation
