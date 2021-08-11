@@ -62,15 +62,14 @@ class Leapfrog3(Integrator):
             # this ensures that when using adaptive delta, the integrator remains symplectic
             new_positions, new_velocities, acc_tt = self.leapfrog3_integration(t, delta=reversible_delta)
 
+            # recalculate adaptive timestep
+            self.delta = nm.variable_delta(new_positions, new_velocities, c=self.c)
+
         # update the simulation with the calculated position and velocities
         self.nbody.update(new_positions, new_velocities, symplectic=True, tolerance=self.tolerance)
         
         # add the newly calculated energies and angular momentum (and adaptive delta) to the historic arrays
         self.update_historic(t)
-
-        # if adaptive timestep is used, recalculate it
-        if self.adaptive:
-            self.delta = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c=self.c)
 
         # set the newly calculated positions and velocities to the orbit arrays
         self.acc_t = acc_tt
