@@ -35,11 +35,41 @@ class Integrator:
         # the number of steps that the integrator has been run for
         self.int_step = 1
 
-    def integration_step(self, t):
+    def integration_step(self, t, delta):
         """
         Overloaded method, dependent on the integration scheme utilised
         """
-        pass
+        return None, None, None
+
+    def simulation_step(self, t):
+
+        # check: step t is the same as the expected step int_step.
+        # Ensures that when performing an integration_step, they happen at consecutive times
+        # For example, integration_step(42) can only be performed if we have previously executed integration_step(41)
+        assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
+                                   f"Step to Integrate: {t}\n" \
+                                   f"Expected Step to Integrate: {self.int_step}\n"
+
+        new_positions, new_velocities, acc_tt = self.integration_step(t, self.delta)
+
+        # calculate adaptive delta by using a time-reversible delta
+        if self.adaptive:
+            # average of adaptive delta at time t and t+1
+            reversible_delta = 0.5 * (self.delta + nm.variable_delta(new_positions, new_velocities, c=self.c))
+
+            # use reversible delta at time t again to calculate new positions and velocities
+            # this ensures that when using adaptive delta, the integrator remains symplectic
+            new_positions, new_velocities, acc_tt = self.integration_step(t, delta=reversible_delta)
+
+            # recalculate adaptive timestep
+            self.delta = nm.variable_delta(new_positions, new_velocities, c=self.c)
+
+        self.update_simulation(t, new_positions, new_velocities, symplectic=True)
+
+        # set the calculated acceleration for the next iteration
+        if acc_tt is not None:
+            self.acc_t = acc_tt
+
 
     def update_historic(self, t):
         """
@@ -92,7 +122,7 @@ class Integrator:
         else:
             # integration step until we have done the required steps/time (if adaptive)
             while self.int_step < self.steps:
-                    self.integration_step(self.int_step)
+                self.simulation_step(self.int_step)
 
             # update flag
             self.integrated = True

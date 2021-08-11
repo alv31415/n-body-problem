@@ -25,13 +25,11 @@ class Leapfrog2Int(Integrator):
         # execute initialisation from superclass
         super().__init__(nbody, steps, delta, tolerance = tolerance, adaptive = adaptive, c = c)
 
-
-
         # save acceleration for next iteration.
         # Only require 1 expensive acceleration calculation per step
         self.acc_t = self.nbody.get_acceleration()
 
-    def integration_step(self, t):
+    def integration_step(self, t, delta):
         """
         Integration step for the Integer 3-Step Leapfrog method.
         x_t = x_{t-1} + v_{t-1}*Δt + 0.5*a_{t-1}*Δt^2
@@ -39,24 +37,12 @@ class Leapfrog2Int(Integrator):
         :param t: the step at which the calculation is made
         """
 
-        # check: step t is the same as the expected step int_step.
-        # Ensures that when performing an integration_step, they happen at consecutive times
-        # For example, integration_step(42) can only be performed if we have previously executed integration_step(41)
-        assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
-                                   f"Step to Integrate: {t}\n" \
-                                   f"Expected Step to Integrate: {self.int_step}\n"
-
         # perform Integer 3-Step Leapfrog step
         new_positions = self.position_orbit[:, t - 1, :] \
-                        + self.delta * self.velocity_orbit[:, t - 1, :] \
-                        + 0.5 * self.acc_t * self.delta**2
-
+                        + delta * self.velocity_orbit[:, t - 1, :] \
+                        + 0.5 * self.acc_t * delta**2
         acc_tt = self.nbody.get_acceleration(positions = new_positions)
-
         new_velocities = self.velocity_orbit[:, t - 1, :] \
-                         + 0.5 * (self.acc_t + acc_tt) * self.delta
+                         + 0.5 * (self.acc_t + acc_tt) * delta
 
-        self.update_simulation(t, new_positions, new_velocities, symplectic=True)
-
-        # set the calculated acceleration for the next iteration
-        self.acc_t = acc_tt
+        return new_positions, new_velocities, acc_tt

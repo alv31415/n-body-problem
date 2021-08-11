@@ -24,48 +24,19 @@ class Leapfrog3(Integrator):
         # Only require 1 expensive acceleration calculation per step
         self.acc_t = self.nbody.get_acceleration()
 
-    def leapfrog3_integration(self, t, delta):
-        # perform 3-Step Leapfrog step
-        new_half_velocities = self.velocity_orbit[:, t - 1, :] + self.acc_t * delta * 0.5
-        new_positions = self.position_orbit[:, t - 1, :] + new_half_velocities * delta
-        acc_tt = self.nbody.get_acceleration(positions=new_positions)
-        new_velocities = new_half_velocities + acc_tt * delta * 0.5
-
-        return new_positions, new_velocities, acc_tt
-
-    def integration_step(self, t):
+    def integration_step(self, t, delta):
         """
         Integration step for the Integer 3-Step Leapfrog method.
         v_{t + 1/2} = v_t + 0.5*a_t*Δt
         x_{t + 1} = x_t + v_{t + 1/2}*Δt
         v_{t + 1} = v_{t + 1/2} + 0.5*a_{t + 1}*Δt
         :param t: the step at which the calculation is made
+        :return the new positions and velocities, alongside the acceleration for step t+1
         """
 
-        # check: step t is the same as the expected step int_step.
-        # Ensures that when performing an integration_step, they happen at consecutive times
-        # For example, integration_step(42) can only be performed if we have previously executed integration_step(41)
-        assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
-                                   f"Step to Integrate: {t}\n" \
-                                   f"Expected Step to Integrate: {self.int_step}\n"
+        new_half_velocities = self.velocity_orbit[:, t - 1, :] + self.acc_t * delta * 0.5
+        new_positions = self.position_orbit[:, t - 1, :] + new_half_velocities * delta
+        acc_tt = self.nbody.get_acceleration(positions=new_positions)
+        new_velocities = new_half_velocities + acc_tt * delta * 0.5
 
-        # calculate new positions and velocities
-        new_positions, new_velocities, acc_tt = self.leapfrog3_integration(t, delta = self.delta)
-
-        # calculate adaptive delta by using a time-reversible delta
-        if self.adaptive:
-
-            # average of adaptive delta at time t and t+1
-            reversible_delta = 0.5*(self.delta + nm.variable_delta(new_positions, new_velocities, c = self.c))
-
-            # use reversible delta at time t again to calculate new positions and velocities
-            # this ensures that when using adaptive delta, the integrator remains symplectic
-            new_positions, new_velocities, acc_tt = self.leapfrog3_integration(t, delta=reversible_delta)
-
-            # recalculate adaptive timestep
-            self.delta = nm.variable_delta(new_positions, new_velocities, c=self.c)
-
-        self.update_simulation(t, new_positions, new_velocities, symplectic=True)
-
-        # set the calculated acceleration for the next iteration
-        self.acc_t = acc_tt
+        return new_positions, new_velocities, acc_tt

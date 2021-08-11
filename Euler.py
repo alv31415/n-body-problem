@@ -18,7 +18,7 @@ class Euler(Integrator):
         # execute initialisation from superclass
         super().__init__(nbody, steps, delta, tolerance, adaptive, c)
 
-    def integration_step(self, t):
+    def integration_step(self, t, delta):
         """
         Integration step for the Euler method.
         v_t = v_{t-1} + a_{t-1}*Δt
@@ -26,32 +26,11 @@ class Euler(Integrator):
         :param t: the step at which the calculation is made
         """
 
-        # check: step t is the same as the expected step int_step.
-        # Ensures that when performing an integration_step, they happen at consecutive times
-        # For example, integration_step(42) can only be performed if we have previously executed integration_step(41)
-        assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
-                                   f"Step to Integrate: {t}\n" \
-                                   f"Expected Step to Integrate: {self.int_step}\n"
-
-        # perform Euler step
         acc_t = self.nbody.get_acceleration()
 
-        new_velocities = self.velocity_orbit[:, t-1, :] + self.delta * acc_t
-        new_positions = self.position_orbit[:,t-1,:] + self.delta * self.velocity_orbit[:,t-1,:]
+        new_velocities = self.velocity_orbit[:, t-1, :] + delta * acc_t
+        new_positions = self.position_orbit[:,t-1,:] + delta * self.velocity_orbit[:,t-1,:]
 
-        if self.adaptive:
-
-            # average of adaptive delta at time t and t+1
-            reversible_delta = 0.5*(self.delta + nm.variable_delta(new_positions, new_velocities, c = self.c))
-
-            # use reversible delta at time t again to calculate new positions and velocities
-            # this ensures that when using adaptive delta, the integrator remains symplectic
-            new_velocities = self.velocity_orbit[:, t - 1, :] + reversible_delta * acc_t
-            new_positions = self.position_orbit[:, t - 1, :] + reversible_delta * self.velocity_orbit[:,t-1,:]
-
-            # recalculate adaptive timestep
-            self.delta = nm.variable_delta(new_positions, new_velocities, c=self.c)
-
-        self.update_simulation(t, new_positions, new_velocities, symplectic = False)
+        return new_positions, new_velocities, None
 
 
