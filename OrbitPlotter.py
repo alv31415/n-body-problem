@@ -42,11 +42,10 @@ class OrbitPlotter:
         self.colours = self.generate_colour()
 
         # calculate all the times at which the orbit positions/velocities were calculated
-        self.times = np.arange(start=0, stop=self.steps * self.delta, step = self.delta)
+        self.times = np.array([i*self.delta for i in range(self.steps)])
 
         # set up the figure for plotting
         self.set_fig()
-
 
     def generate_colour(self):
         """

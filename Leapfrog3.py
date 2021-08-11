@@ -24,42 +24,19 @@ class Leapfrog3(Integrator):
         # Only require 1 expensive acceleration calculation per step
         self.acc_t = self.nbody.get_acceleration()
 
-    def integration_step(self, t):
+    def integration_step(self, t, delta):
         """
         Integration step for the Integer 3-Step Leapfrog method.
         v_{t + 1/2} = v_t + 0.5*a_t*Δt
         x_{t + 1} = x_t + v_{t + 1/2}*Δt
         v_{t + 1} = v_{t + 1/2} + 0.5*a_{t + 1}*Δt
         :param t: the step at which the calculation is made
+        :return the new positions and velocities, alongside the acceleration for step t+1
         """
 
-        # check: step t is the same as the expected step int_step.
-        # Ensures that when performing an integration_step, they happen at consercutive times
-        # For example, integration_step(42) can only be performed if we have previously executed integration_step(41)
-        assert self.int_step == t, f"Attempted to integrate with a discontinuous time step. \n" \
-                                   f"Step to Integrate: {t}\n" \
-                                   f"Expected Step to Integrate: {self.int_step}\n"
+        new_half_velocities = self.velocity_orbit[:, t - 1, :] + self.acc_t * delta * 0.5
+        new_positions = self.position_orbit[:, t - 1, :] + new_half_velocities * delta
+        acc_tt = self.nbody.get_acceleration(positions=new_positions)
+        new_velocities = new_half_velocities + acc_tt * delta * 0.5
 
-        # perform 3-Step Leapfrog step
-        new_half_velocities = self.velocity_orbit[:,t-1,:] + self.acc_t * self.delta * 0.5
-        new_positions = self.position_orbit[:, t - 1, :] + new_half_velocities * self.delta
-        acc_tt = self.nbody.get_acceleration(positions = new_positions)
-        new_velocities = new_half_velocities + acc_tt * self.delta * 0.5
-
-        # update the simulation with the calculated position and velocities
-        self.nbody.update(new_positions, new_velocities, symplectic=True, tolerance=self.tolerance)
-        
-        # add the newly calculated energies and angular momentum (and adaptive delta) to the historic arrays
-        self.update_historic(t)
-
-        # if adaptive timestep is used, recalculate it
-        if self.adaptive:
-            self.delta = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c=self.c)
-
-        # set the newly calculated positions and velocities to the orbit arrays
-        self.acc_t = acc_tt
-        self.position_orbit[:, t, :] = new_positions
-        self.velocity_orbit[:, t, :] = new_velocities
-
-        # increment the int_step to ensure that integration_step is performed on continuous steps
-        self.int_step = t + 1
+        return new_positions, new_velocities, acc_tt

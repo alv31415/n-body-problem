@@ -104,7 +104,7 @@ def variable_delta(positions, velocities, c, delta_lim = 10e-8):
                 delta_x = ten_norm((positions[i] - positions[j]), sqrt = True, axis = 0)
                 delta_v = ten_norm((velocities[i] - velocities[j]), sqrt = True, axis = 0)
                 # entry (i,j) will be the same as (j,i) as we just consider magnitudes
-                potential_deltas[i, j] = delta_x/delta_v
+                potential_deltas[i, j] = np.divide(delta_x, delta_v, where = delta_v != 0)
                 potential_deltas[j, i] = potential_deltas[i, j]
 
     # variable delta will be the smallest delta within potential_deltas, multiplied by c
