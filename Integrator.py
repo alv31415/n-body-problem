@@ -16,6 +16,7 @@ class Integrator:
         :param adaptive: if True, the Integrator will use an adaptive timestep (instead of a fixed one)
         :param c: constant used when calculating adaptive timestep. Smaller c leads to more accurate orbits.
         """
+
         self.nbody = nbody
 
         self.steps = int(steps)
@@ -37,11 +38,22 @@ class Integrator:
 
     def integration_step(self, t, delta):
         """
-        Overloaded method, dependent on the integration scheme utilised
+        Overloaded method, dependent on the integration scheme utilised.
+        At a given step t, uses delta to calculates positions, velocities and acceleration (in some cases)
+        :param t: the step at which the calculation is made
+        :param delta: the timestep to use at the integration step
+        :return: newly calculated positions, velocities (for step t), and in some cases acceleration (for time t+1)
+                 Acceleration is returned for Leapfrog2Int and Leapfrog3
         """
+
         return None, None, None
 
     def simulation_step(self, t):
+        """
+        For a given step, calculates the new positions and velocities via the integration step.
+        Then, updates the simulation with these values.
+        :param t: the step at which the calculation is made
+        """
 
         # check: step t is the same as the expected step int_step.
         # Ensures that when performing an integration_step, they happen at consecutive times
