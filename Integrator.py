@@ -132,9 +132,29 @@ class Integrator:
             self.set_arrays()
             self.get_orbits()
         else:
-            # integration step until we have done the required steps/time (if adaptive)
-            while self.int_step < self.steps:
-                self.simulation_step(self.int_step)
+            # if adaptive timestep, we iterate until a limit number of steps, or until the target time is attained
+            if self.adaptive:
+                while self.int_step < self.steps and self.times[-1] < self.target_time:
+                    self.times.append(self.delta + self.times[-1])
+                    self.simulation_step(self.int_step)
+
+                # since the limit is set to a larger number than necessary,
+                # we shorten all the position, velocity and historic arrays
+                # so that they are the same length as the nuber of steps required to integrate until the target time
+                assert len(self.times) <= self.steps
+
+                self.steps = len(self.times)
+                self.position_orbit = self.position_orbit[:, :self.steps,:]
+                self.velocity_orbit = self.velocity_orbit[:, :self.steps, :]
+                self.historic_energy = self.historic_energy[:self.steps]
+                self.historic_gpe = self.historic_gpe[:self.steps]
+                self.historic_kinetic_energy = self.historic_kinetic_energy[:self.steps]
+                self.historic_angular_momentum = self.historic_angular_momentum[:self.steps, :]
+                self.historic_delta = self.historic_delta[:self.steps]
+
+            else:
+                while self.int_step < self.steps:
+                    self.simulation_step(self.int_step)
 
             # update flag
             self.integrated = True
@@ -171,9 +191,12 @@ class Integrator:
 
         # if adaptive timestep is used, create an array for it
         if self.adaptive:
+            self.target_time = self.steps * self.delta
+            self.steps = 10**5
             self.delta = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c=self.c)
             self.historic_delta = np.zeros(self.steps)
             self.historic_delta[0] = self.delta
+            self.times = [0]
 
         # tensor of shape (n x steps x 3), containing the positions of the n bodies throughout the calculated orbit
         self.position_orbit = np.zeros((self.nbody.n, self.steps, 3))
