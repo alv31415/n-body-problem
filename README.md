@@ -14,7 +14,7 @@ from Leapfrog3 import Leapfrog3
 STEPS = 10**3
 DELTA = 10**-2
 TOLERANCE = 10**-3
-C = 0.01
+ADAPTIVE_CONSTANT = 0.1
 ADAPTIVE = False
 
 init_positions = np.array([[0,1,0], [0,-1,0]])
@@ -24,7 +24,7 @@ masses = np.array([1,1])
 nbod2 = NBody(init_positions, init_velocities, masses)
 nbod2.G = 1
 
-integ = Leapfrog3(nbod2, steps = STEPS, delta = DELTA, tolerance = TOLERANCE, adaptive = ADAPTIVE, c = C)
+integ = Leapfrog3(nbod2, steps = STEPS, delta = DELTA, tolerance = TOLERANCE, adaptive = ADAPTIVE, c = ADAPTIVE_CONSTANT)
 
 print(nbod2)
 print("-"*20 + "\n")

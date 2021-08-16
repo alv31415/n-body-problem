@@ -42,7 +42,8 @@ class OrbitPlotter:
         self.colours = self.generate_colour()
 
         # calculate all the times at which the orbit positions/velocities were calculated
-        self.times = np.array([i*self.delta for i in range(self.steps)])
+        # if adaptive, times are calculated within the integration
+        self.times = self.integrator.times if self.integrator.adaptive else np.array([i*self.delta for i in range(self.steps)])
 
         # set up the figure for plotting
         self.set_fig()
@@ -108,8 +109,9 @@ class OrbitPlotter:
             if (len(orbit) > 0):
                 self.ax.scatter3D(orbit[-1, 0], orbit[-1, 1], orbit[-1,2], c = self.colours[i], s=10)
 
-        # display time of the simulation
-        self.ax.annotate(f"t = {round(frame * self.delta * self.animation_steps, 1)}", xy=self.integrator.nbody.com[:2])
+        # display time of the simulation only for constant timestep
+        if not self.integrator.adaptive:
+            self.ax.annotate(f"t = {round(frame * self.delta * self.animation_steps, 1)}", xy=self.integrator.nbody.com[:2])
 
     def animation_func_orbit_2D(self, frame):
         """
@@ -137,8 +139,9 @@ class OrbitPlotter:
         # create title for plot
         self.ax.set_title(f"Trajectories for a {self.n}-body Problem")
 
-        # display time of the simulation
-        self.ax.annotate(f"t = {round(frame * self.delta * self.animation_steps, 1)}", xy=self.integrator.nbody.com[:2])
+        # display time of the simulation only for constant timestep
+        if not self.integrator.adaptive:
+            self.ax.annotate(f"t = {round(frame * self.delta * self.animation_steps, 1)}", xy=self.integrator.nbody.com[:2])
 
     def animate_orbit(self, xlims = (-5,5), ylims = (-5,5)):
         """
@@ -306,7 +309,8 @@ class OrbitPlotter:
         dim_data = data[:,:,dim]
 
         # ensure tha plotting data is of the expected shape
-        assert dim_data.shape == (self.n, self.steps)
+        assert dim_data.shape == (self.n, self.steps), f"Expected data shape: {(self.n, self.steps)}\n" \
+                                                       f"Actual data shape: {dim_data.shape}"
 
         # for each body in the simulation, plot the approriate data
         for i in range(len(dim_data)):
