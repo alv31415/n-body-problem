@@ -117,3 +117,5 @@ def get_figure_8(v_1, y_1):
 
     return NBody(init_positions, init_velocities, m*np.ones(shape = (3,)), collision_tolerance=-1)
 
+
+
