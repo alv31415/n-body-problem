@@ -78,10 +78,42 @@ def get_lagrange_nbod(r_1: np.array, masses, G = 1):
 # ------------------------------ FIGURE 8 ------------------------------
 
 # initial conditions taken from http://homepages.math.uic.edu/~jan/mcs320s07/Project_Two/sol_body.html
+
 r_1 = np.array([0.97000436, -0.24308753, 0])
-v_3 = np.array([-0.93240737,-0.86473146, 0])
-v_2 = -v_3/2
+v_3 = np.array([-0.93240737, -0.86473146, 0])
+v_2 = -v_3 / 2
+m = 1
 
 figure_8 = NBody(np.array([r_1, -r_1, [0, 0, 0]]),
                  np.array([v_2, v_2, v_3]),
-                 np.ones(shape = (3,)))
+                 m*np.ones(shape=(3,)), collision_tolerance=-1)
+
+E_0 = -1.2871419917663258
+
+def get_figure_8(v_1, y_1):
+    """
+    Produces an NBody instance by perturbing the Figure 8 3-Body configuration whilst conserving energy and angular momentum
+    :param v_1: the desired velocity vector of one of the side bodies.
+                The other side body will have this same velocity, whilst the central body will have velocity -2*v_1
+    :param y_1: the desired y coordinate of one of the side bodies
+    :return: an NBody instance for a perturbed Figure 8
+    """
+
+    # check: velocity on xy plane
+    assert v_1[2] == 0
+
+    # calculate the x-coordinate of position of one of the side bodies given the desired velocity and y-coordinate
+    # ensures that energy is conserved
+    x_component = np.sqrt((5/(2*(3*m*nm.ten_norm(v_1, axis = 0, sqrt = False) - E_0))) ** 2 - y_1 ** 2)
+
+    # compute initial velocities of the 3 bodies
+    init_velocities = np.array([v_1, v_1, -2*v_1])
+
+    # compute initial position of a side body
+    x_1 = np.array([x_component, y_1, 0])
+
+    # compute initial positions of the 3 bodies
+    init_positions = np.array([x_1, -x_1, [0,0,0]])
+
+    return NBody(init_positions, init_velocities, m*np.ones(shape = (3,)), collision_tolerance=-1)
+
