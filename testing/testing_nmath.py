@@ -1,6 +1,6 @@
 import numpy as np
 from numpy import testing
-import NMath as nm
+import nmath as nm
 
 DP = 13
 

@@ -1,9 +1,9 @@
-import NMath as nm
-from Integrator import Integrator
+from integrator import Integrator
+import nmath as nm
 
-class Euler(Integrator):
+class EulerCromer(Integrator):
     """
-    Class defining a non-symplectic integrator, via the Euler Method
+    Class defining an integrator via the Euler-Cromer Method
     """
     def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1):
         """
@@ -20,17 +20,15 @@ class Euler(Integrator):
 
     def integration_step(self, t, delta):
         """
-        Integration step for the Euler method.
+        Integration step for the Euler-Cromer method.
         v_t = v_{t-1} + a_{t-1}*Δt
-        x_t = x_{t-1} + v_{t-1}*Δt
+        x_t = x_{t-1} + v_{t}*Δt
         :param t: the step at which the calculation is made
         """
 
         acc_t = self.nbody.get_acceleration()
 
         new_velocities = self.velocity_orbit[:, t-1, :] + delta * acc_t
-        new_positions = self.position_orbit[:,t-1,:] + delta * self.velocity_orbit[:,t-1,:]
+        new_positions = self.position_orbit[:, t-1, :] + delta * new_velocities
 
         return new_positions, new_velocities, None
-
-

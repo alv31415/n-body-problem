@@ -1,7 +1,7 @@
 import numpy as np
 
-import NMath as nm
-from NBody import NBody
+import nmath as nm
+from nbody import NBody
 
 # ------------------------------ EULER ------------------------------
 
@@ -84,13 +84,16 @@ v_3 = np.array([-0.93240737, -0.86473146, 0])
 v_2 = -v_3 / 2
 m = 1
 
-figure_8 = NBody(np.array([r_1, -r_1, [0, 0, 0]]),
-                 np.array([v_2, v_2, v_3]),
-                 m*np.ones(shape=(3,)), collision_tolerance=-1)
+def get_og_figure_8():
+    return NBody(np.array([r_1, -r_1, [0, 0, 0]]),
+                     np.array([v_2, v_2, v_3]),
+                     m * np.ones(shape=(3,)), collision_tolerance=None)
+
+
 
 E_0 = -1.2871419917663258
 
-def get_figure_8(v_1, y_1):
+def get_figure_8(v_1, y_1, collision_tolerance = 10**(-4), escape_tolerance = 10**4):
     """
     Produces an NBody instance by perturbing the Figure 8 3-Body configuration whilst conserving energy and angular momentum
     :param v_1: the desired velocity vector of one of the side bodies.
@@ -115,7 +118,7 @@ def get_figure_8(v_1, y_1):
     # compute initial positions of the 3 bodies
     init_positions = np.array([x_1, -x_1, [0,0,0]])
 
-    return NBody(init_positions, init_velocities, m*np.ones(shape = (3,)), collision_tolerance=-1)
+    return NBody(init_positions, init_velocities, m*np.ones(shape = (3,)), collision_tolerance=collision_tolerance, escape_tolerance=escape_tolerance)
 
 
 

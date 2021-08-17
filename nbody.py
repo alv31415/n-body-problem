@@ -2,7 +2,8 @@ from copy import deepcopy
 
 import numpy as np
 
-import NMath as nmath
+import nmath as nm
+from exceptions import *
 
 class NBody:
     """
@@ -31,7 +32,7 @@ class NBody:
 
         if escape_tolerance is None:
             # escape tolerance set as 10 times the maximum distance of any body from the COM
-            self.escape_tolerance = np.max(nmath.ten_norm(self.positions, sqrt = True, axis = 1))*10 # can be altered
+            self.escape_tolerance = np.max(nm.ten_norm(self.positions, sqrt = True, axis = 1)) * 10 # can be altered
         else:
             self.escape_tolerance = escape_tolerance
 
@@ -122,11 +123,9 @@ class NBody:
 
                     if self.collision_tolerance is not None:
                         # check: no body violates the collision_tolerance distance
-                        assert (nmath.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance), \
-                                "A collision occurred. Stopping the simulation.\n" \
-                                f"Distance Vector: {distance_vec} ({abs(distance_vec)})\n" \
-                                f"Position i: {self.positions[i]}\n" \
-                                f"Position j: {self.positions[j]}\n"
+                        check_exception(nm.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance,
+                                        BodyCollisionException,
+                                        f"A collision occurred. Distance between bodies was {nm.ten_norm(distance_vec, axis=0, sqrt=True)}, but the collision distance is {self.collision_tolerance}.")
 
                     self.distances[i,j] = distance_vec
 
@@ -145,11 +144,11 @@ class NBody:
 
                     if self.collision_tolerance is not None:
                         # check: no body violates the collision_tolerance distance
-                        assert (nmath.ten_norm(distance_vec, axis = 0, sqrt = True) >= self.collision_tolerance), \
-                            "A collision occurred. Stopping the simulation.\n" \
-                            f"Distance Vector: {distance_vec} ({abs(distance_vec)})\n" \
-                            f"Position i: {positions[i]}\n" \
-                            f"Position j: {positions[j]}\n"
+                        if self.collision_tolerance is not None:
+                            # check: no body violates the collision_tolerance distance
+                            check_exception(nm.ten_norm(distance_vec, axis=0, sqrt=True) >= self.collision_tolerance,
+                                            BodyCollisionException,
+                                            f"A collision occurred. Distance between bodies was {nm.ten_norm(distance_vec, axis=0, sqrt=True)}, but the collision distance is {self.collision_tolerance}.")
 
                     distances[i, j] = distance_vec
 
@@ -184,7 +183,7 @@ class NBody:
         :return: an (n x 3) matrix, with the angular momentum of body i at entry i
         """
 
-        amomentum = nmath.mat_cross(self.positions, self.linear_momentum)
+        amomentum = nm.mat_cross(self.positions, self.linear_momentum)
 
         return amomentum
 
@@ -195,7 +194,7 @@ class NBody:
         """
 
         # calculate the total kinetic energy of the system
-        kinetic_energy = np.sum(nmath.ten_norm(self.linear_momentum, axis = 1, sqrt = False) / (2*self.masses))
+        kinetic_energy = np.sum(nm.ten_norm(self.linear_momentum, axis = 1, sqrt = False) / (2 * self.masses))
         self.kinetic_energy = kinetic_energy
 
         # calculate the total GPE of the system
@@ -203,7 +202,7 @@ class NBody:
 
         for i in range(self.n):
             for j in range(i):
-                gpe += (self.masses[i]*self.masses[j])/nmath.ten_norm(self.distances[i,j], axis = 0)
+                gpe += (self.masses[i]*self.masses[j]) / nm.ten_norm(self.distances[i, j], axis = 0)
 
         gpe *= (-self.G)
         self.gpe = gpe
@@ -220,10 +219,10 @@ class NBody:
 
         # calculate the magnitude of the distances between bodies
         if positions is None:
-            inv_dist_mag3 = nmath.ten_norm(self.distances, axis = 2, sqrt = False)
+            inv_dist_mag3 = nm.ten_norm(self.distances, axis = 2, sqrt = False)
         else:
             distances = self.get_body_distances(positions = positions)
-            inv_dist_mag3 = nmath.ten_norm(distances, axis=2, sqrt=False)
+            inv_dist_mag3 = nm.ten_norm(distances, axis=2, sqrt=False)
         # to avoid division by 0 error, and to avoid unnecessary computational costs,
         # any distance which is 0 is set to infinity, so when reciprocating, the magnitude of the force becomes 0
         inv_dist_mag3[inv_dist_mag3 == 0] = np.inf
@@ -278,9 +277,11 @@ class NBody:
         # check: vectors are in R^3
         assert (len(new_positions[0]) == 3 and len(new_velocities[0]) == 3)
 
+        # check: no bodies gone beyond escape_tolerance
         if self.escape_tolerance != -1:
-            assert ((nmath.ten_norm(new_positions, sqrt = True, axis = 1) <= self.escape_tolerance).all()), \
-                "A body escaped beyond the allowed distance from the COM."
+            check_exception((nm.ten_norm(new_positions, sqrt = True, axis = 1) <= self.escape_tolerance).all(),
+                            BodyEscapeException,
+                            "A body escaped beyond the allowed distance from the COM.")
 
         # if positions and velocities have the correct format, update them
         # also recalculate all the distances between the bodies
@@ -309,26 +310,24 @@ class NBody:
         # check if quantities are conserved if the integration update is meant to be symplectic
         if (symplectic):
             # check: COM at the origin
-            assert ((abs(new_com) <= 10e-10).all()), \
-                    f"COM should be 0, but is {new_com}"
+            check_exception((abs(new_com) <= 10e-10).all(), COMNotConservedException,f"COM should be 0, but is {new_com}")
 
             # check: total linear momentum conserved
-            assert (self.conserved_quantity(new_total_linear_momentum, self.first_linear_momentum, tolerance = tolerance)), \
-                    f"Total Linear Momentum was NOT conserved after the update.\
-                    \nInitial Total Linear Momentum: {self.first_linear_momentum}\n" \
-                    f"Calculated Total Linear Momentum: {new_total_linear_momentum}\n"
+            check_exception(self.conserved_quantity(new_total_linear_momentum, self.first_linear_momentum, tolerance = tolerance),
+                            LinearMomentumNotConservedException,
+                            f"Total Linear Momentum was NOT conserved after the update.\nInitial Total Linear Momentum: {self.first_linear_momentum}\nCalculated Total Linear Momentum: {new_total_linear_momentum}\n")
+
 
             # check: total angular momentum conserved
-            assert (self.conserved_quantity(new_total_angular_momentum, self.first_angular_momentum, tolerance = tolerance)), \
-                    f"Total Angular Momentum was NOT conserved after the update.\
-                    \nInitial Total Angular Momentum: {self.first_angular_momentum}\n" \
-                    f"Calculated Total Angular Momentum: {new_total_angular_momentum}\n"
+            check_exception(self.conserved_quantity(new_total_angular_momentum, self.first_angular_momentum, tolerance = tolerance),
+                            AngularMomentumNotConservedException,
+                            f"Total Angular Momentum was NOT conserved after the update.\nInitial Total Angular Momentum: {self.first_angular_momentum}\nCalculated Total Angular Momentum: {new_total_angular_momentum}\n")
 
             # check: total energy conserved
-            assert (self.conserved_quantity(new_energy, self.first_energy, tolerance = tolerance)), \
-                    f"Total Energy was NOT conserved after the update.\
-                    \nInitial Total Energy: {self.first_energy}\n" \
-                    f"Calculated Total Energy: {new_energy}\n"
+            check_exception(self.conserved_quantity(new_energy, self.first_energy, tolerance = tolerance),
+                            EnergyNotConservedException,
+                            f"Total Energy was NOT conserved after the update.\nInitial Total Energy: {self.first_energy}\nCalculated Total Energy: {new_energy}\n")
+
 
         # set the newly calculated values of the system
         self.angular_momentum = new_angular_momentum

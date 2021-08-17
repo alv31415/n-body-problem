@@ -1,7 +1,7 @@
-from Integrator import Integrator
-from EulerCromer import EulerCromer
+from integrator import Integrator
+from euler_cromer import EulerCromer
 import numpy as np
-import NMath as nm
+import nmath as nm
 
 class Leapfrog2(Integrator):
     """

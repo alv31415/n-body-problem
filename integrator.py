@@ -1,7 +1,7 @@
 import numpy as np
 
-import NMath as nm
-from OrbitPlotter import OrbitPlotter
+import nmath as nm
+from orbit_plotter import OrbitPlotter
 
 class Integrator:
     """

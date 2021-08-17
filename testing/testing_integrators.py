@@ -1,9 +1,9 @@
 import numpy as np
 from numpy import testing
 
-import NMath as nm
-from NBody import NBody
-from Leapfrog3 import Leapfrog3
+import nmath as nm
+from nbody import NBody
+from leapfrog_3 import Leapfrog3
 
 DP = 15
 

@@ -7,7 +7,7 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.gridspec import GridSpec
 from mpl_toolkits import mplot3d
 
-import NMath as nm
+import nmath as nm
 
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
 matplotlib_axes_logger.setLevel('ERROR')

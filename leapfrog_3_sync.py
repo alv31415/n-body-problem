@@ -1,7 +1,7 @@
 import warnings
 
-from Integrator import Integrator
-import NMath as nm
+from integrator import Integrator
+import nmath as nm
 
 class Leapfrog2Int(Integrator):
     """

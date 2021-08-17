@@ -1,6 +1,8 @@
 import numpy as np
 import warnings
 
+from exceptions import *
+
 # Helper file containing useful mathematical functions for calculations
 
 def ten_norm(ten, axis = 1, sqrt = True):
@@ -112,7 +114,7 @@ def variable_delta(positions, velocities, c, delta_lim = 10e-8):
 
     # check; if delta is provided, ensure that the calculated variable delta does not become smaller than the minimum allowed
     if delta_lim is not None:
-        assert variable_delta > 10e-8, f"Adaptive delta was made too small ({variable_delta}) - orbit unfeasible"
+        check_exception(variable_delta > delta_lim, SmallAdaptiveDeltaException, f"Adaptive delta was made too small ({variable_delta}) - orbit unfeasible")
 
     return variable_delta
 
