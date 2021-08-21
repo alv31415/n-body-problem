@@ -18,8 +18,12 @@ def get_euler_nbod(r_1: np.array, masses, G = 1):
     assert r_1[1] != 0 and r_1.shape == (3,)
     assert r_1[2] == 0
 
+    # check: side masses are the same
+    assert masses[1] == masses[2]
+
     # calculate the velocity magnitude from the positions
-    velocity_mag = np.sqrt((4*G*masses[0] + G*masses[1]) / (4 * nm.ten_norm(r_1, axis = 0, sqrt = True)))
+    velocity_mag = np.sqrt((4*G*masses[0] + G*masses[2]) / (4 * nm.ten_norm(r_1, axis = 0, sqrt = True)))
+    print(velocity_mag)
 
     # initialise positions, with a body at the origin, and the other 2 bodies equally distanced and collinear
     init_positions = np.array([np.zeros(shape=(3,)), r_1, -r_1])
@@ -40,11 +44,11 @@ def rot_mat(theta):
     """
     return np.array([[np.cos(theta), np.sin(theta), 0],[-np.sin(theta), np.cos(theta), 0], [0, 0, 1]])
 
-def get_lagrange_nbod(r_1: np.array, masses, G = 1):
+def get_lagrange_nbod(r_1: np.array, mass, G = 1):
     """
     Produces an NBody instance with velocities satisfying the Lagrange 3-Body configuration
     :param r_1: the position of any of the 3 bodies
-    :param masses: the masses for each of the 3 bodies
+    :param masses: the mass of each of the 3 bodies for each of the 3 bodies
     :param G: constant of gravitation
     :return: an NBody instance with velocities satisfying the Euler 3-Body configuration
     """
@@ -57,8 +61,8 @@ def get_lagrange_nbod(r_1: np.array, masses, G = 1):
     r_3 = R @ r_2
 
     # calculate the gravitational force exerted on the body
-    gravitational_force = G * ((masses[1]/nm.ten_norm(r_2 - r_1, axis = 0, sqrt = False)**(1.5))*(r_2 - r_1) +
-                               (masses[2]/nm.ten_norm(r_3 - r_1, axis = 0, sqrt = False)**(1.5))*(r_3 - r_1))
+    gravitational_force = G * ((mass/nm.ten_norm(r_2 - r_1, axis = 0, sqrt = False)**(1.5))*(r_2 - r_1) +
+                               (mass/nm.ten_norm(r_3 - r_1, axis = 0, sqrt = False)**(1.5))*(r_3 - r_1))
 
     # pseudo-magnitude of centripetal force. Used to obtain the ratio (v/r)^2
     centripetal_mag = -1 * np.divide(gravitational_force, r_1, out=np.zeros_like(gravitational_force), where = r_1 != 0)
@@ -73,7 +77,7 @@ def get_lagrange_nbod(r_1: np.array, masses, G = 1):
     init_positions = np.array([r_1, r_2, r_3])
     init_velocities = np.array([v_1, R @ v_1, R @ (R @ v_1)])
 
-    return NBody(init_positions, init_velocities, masses, escape_tolerance=-1)
+    return NBody(init_positions, init_velocities, mass*np.ones(shape = (3,)), escape_tolerance=-1)
 
 # ------------------------------ FIGURE 8 ------------------------------
 
