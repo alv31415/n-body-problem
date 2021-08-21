@@ -5,7 +5,7 @@ class Euler(Integrator):
     """
     Class defining a non-symplectic integrator, via the Euler Method
     """
-    def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1):
+    def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1, store_properties = False):
         """
         :param nbody: NBody instance which we integrate
         :param steps: the number of steps to integrate for
@@ -16,7 +16,7 @@ class Euler(Integrator):
         """
 
         # execute initialisation from superclass
-        super().__init__(nbody, steps, delta, tolerance, adaptive, c)
+        super().__init__(nbody, steps, delta, tolerance, adaptive, c, store_properties)
 
     def integration_step(self, t, delta):
         """

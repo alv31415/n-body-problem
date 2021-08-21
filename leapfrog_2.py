@@ -7,7 +7,7 @@ class Leapfrog2(Integrator):
     """
     Class defining an integrator via the 2-Step Leapfrog Method
     """
-    def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1):
+    def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1, store_properties = False):
         """
         :param nbody: NBody instance which we integrate
         :param steps: the number of steps to integrate for
@@ -18,7 +18,7 @@ class Leapfrog2(Integrator):
         """
 
         # execute initialisation from superclass
-        super().__init__(nbody, steps, delta, tolerance = tolerance, adaptive = adaptive, c = c)
+        super().__init__(nbody, steps, delta, tolerance = tolerance, adaptive = adaptive, c = c, store_properties = store_properties)
 
         # execute mini Euler-Cromer to accurately calculate the velocity at half timestep
         half_steps = 10e2

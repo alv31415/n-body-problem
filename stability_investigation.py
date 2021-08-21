@@ -5,7 +5,7 @@ from three_body import *
 from exceptions import *
 from leapfrog_3 import Leapfrog3
 
-def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_tolerance):
+def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_tolerance, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1):
     """
     Perturbs Figure 8 orbit, producing a matrix outlining stability regions
     :param perturb: the amount by which velocity (in x and y directions) is perturbed at each iteration
@@ -31,12 +31,6 @@ def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleranc
     # initialise stability matrix
     stability_matrix = np.zeros(shape = (n,n))
 
-    # set constants for simulation
-    STEPS = 10**4
-    DELTA = 10**-2
-    TOLERANCE = 10**-2
-    ADAPTIVE_CONSTANT = 0.1
-
     # the amount by which y component of velocity is changed
     dvy = perturb * n_trials
 
@@ -53,11 +47,15 @@ def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleranc
             nbody = get_figure_8(-0.5*np.array([-0.93240737 + dvx, -0.86473146 + dvy, 0]), -0.24308753,
                                 collision_tolerance=collision_tolerance, escape_tolerance=escape_tolerance)
 
-            integrator = Leapfrog3(nbody, steps = STEPS, delta = DELTA, tolerance=TOLERANCE, adaptive=True, c=ADAPTIVE_CONSTANT )
+            integrator = Leapfrog3(nbody, steps = steps, delta = delta, tolerance=tolerance, adaptive=True, c=adaptive_constant, store_properties=False)
 
             # integrate, and catch any exception in the process
             try:
                 integrator.get_orbits()
+
+                # if adaptive timestep took 10^5 steps (max allowed) set value
+                if integrator.full_run:
+                    stability_matrix[i, j] = 8
             except(SmallAdaptiveDeltaException,
                    COMNotConservedException,
                    LinearMomentumNotConservedException,
@@ -76,7 +74,7 @@ def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleranc
     return stability_matrix
 
 
-def plot_stability_matrix(perturb, n_trials, collision_tolerance, escape_tolerance, n_ticks = 10):
+def plot_stability_matrix(perturb, n_trials, collision_tolerance, escape_tolerance, n_ticks = 10, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1):
     """
     Plots a stability matrix given the parameters
     :param perturb: the amount by which velocity (in x and y directions) is perturbed at each iteration
@@ -88,7 +86,7 @@ def plot_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleran
     """
 
     # calculate stability matrix
-    stability_matrix = get_stability_matrix(perturb, n_trials, collision_tolerance, escape_tolerance)
+    stability_matrix = get_stability_matrix(perturb, n_trials, collision_tolerance, escape_tolerance, steps, delta, tolerance, adaptive_constant)
 
     n = n_trials*perturb
 

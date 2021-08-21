@@ -7,7 +7,7 @@ class Integrator:
     """
     Class defining a general integrator, acting as a "superclass" for Euler, Euler-Cromer and all Leapfrog methods
     """
-    def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1):
+    def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1, store_properties = False):
         """
         :param nbody: NBody instance which we integrate
         :param steps: the number of steps to integrate for
@@ -27,6 +27,8 @@ class Integrator:
         self.tolerance = tolerance
 
         self.delta = delta
+
+        self.store_properties = store_properties
 
         # creates all arrays used by integrator
         # these hold the positions and velocities of the calculated orbits,
@@ -113,7 +115,8 @@ class Integrator:
         self.nbody.update(new_positions, new_velocities, symplectic=symplectic, tolerance=self.tolerance)
 
         # add the newly calculated energies and angular momentum (and adaptive delta) to the historic arrays
-        self.update_historic(t)
+        if self.store_properties:
+            self.update_historic(t)
 
         # set the newly calculated positions and velocities to the orbit arrays
         self.position_orbit[:, t, :] = new_positions
@@ -143,14 +146,19 @@ class Integrator:
                 # so that they are the same length as the nuber of steps required to integrate until the target time
                 assert len(self.times) <= self.steps
 
+                if len(self.times) == self.steps:
+                    self.full_run = True
+
                 self.steps = len(self.times)
                 self.position_orbit = self.position_orbit[:, :self.steps,:]
                 self.velocity_orbit = self.velocity_orbit[:, :self.steps, :]
-                self.historic_energy = self.historic_energy[:self.steps]
-                self.historic_gpe = self.historic_gpe[:self.steps]
-                self.historic_kinetic_energy = self.historic_kinetic_energy[:self.steps]
-                self.historic_angular_momentum = self.historic_angular_momentum[:self.steps, :]
-                self.historic_delta = self.historic_delta[:self.steps]
+
+                if self.store_properties:
+                    self.historic_energy = self.historic_energy[:self.steps]
+                    self.historic_gpe = self.historic_gpe[:self.steps]
+                    self.historic_kinetic_energy = self.historic_kinetic_energy[:self.steps]
+                    self.historic_angular_momentum = self.historic_angular_momentum[:self.steps, :]
+                    self.historic_delta = self.historic_delta[:self.steps]
 
             else:
                 while self.int_step < self.steps:
@@ -159,7 +167,7 @@ class Integrator:
             # update flag
             self.integrated = True
 
-    def show_orbits(self, animate = False, seed = 42, animation_steps = 1, twodims = True, grid = False):
+    def show_orbits(self, animate = False, seed = 42, animation_steps = 1, twodims = True, grid = True):
         """
         Used to visualise the orbits calculated by the integrator
         :param animate: if True, will produce an animated plot of the orbits
@@ -175,6 +183,9 @@ class Integrator:
         plotter = OrbitPlotter(self, seed = seed, animation_steps = animation_steps, twodims = twodims, grid = grid)
 
         if grid:
+
+            assert self.store_properties, f"Properties were not stored, so grid can't be plotted {grid}"
+
             plotter.plot_grid()
         else:
             if animate:
@@ -197,6 +208,7 @@ class Integrator:
             self.historic_delta = np.zeros(self.steps)
             self.historic_delta[0] = self.delta
             self.times = [0]
+            self.full_run = False
 
         # tensor of shape (n x steps x 3), containing the positions of the n bodies throughout the calculated orbit
         self.position_orbit = np.zeros((self.nbody.n, self.steps, 3))
@@ -207,14 +219,15 @@ class Integrator:
         self.velocity_orbit[:, 0, :] = self.nbody.velocities
 
         # save constants (energies, angular momentum) across time (for plotting purposes)
-        self.historic_energy = np.zeros(self.steps)
-        self.historic_energy[0] = self.nbody.energy
-        self.historic_kinetic_energy = np.zeros(self.steps)
-        self.historic_kinetic_energy[0] = self.nbody.kinetic_energy
-        self.historic_gpe = np.zeros(self.steps)
-        self.historic_gpe[0] = self.nbody.gpe
-        self.historic_angular_momentum = np.zeros(shape=(self.steps, 3))
-        self.historic_angular_momentum[0] = self.nbody.total_angular_momentum
+        if self.store_properties:
+            self.historic_energy = np.zeros(self.steps)
+            self.historic_energy[0] = self.nbody.energy
+            self.historic_kinetic_energy = np.zeros(self.steps)
+            self.historic_kinetic_energy[0] = self.nbody.kinetic_energy
+            self.historic_gpe = np.zeros(self.steps)
+            self.historic_gpe[0] = self.nbody.gpe
+            self.historic_angular_momentum = np.zeros(shape=(self.steps, 3))
+            self.historic_angular_momentum[0] = self.nbody.total_angular_momentum
 
         # reset flag (this method is used when the integrator is going to be run)
         self.integrated = False
