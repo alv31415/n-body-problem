@@ -44,7 +44,7 @@ def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleranc
         dvx = -perturb * n_trials
         for j in range(n):
             print(f"{i},{j}")
-            """
+
             # initialise perturbed figure of 8
             try:
                 # check for potential exceptions (either Figure of 8 or adaptive delta) during initialisation
@@ -77,7 +77,7 @@ def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleranc
 
                 # set matrix entry according to error
                 stability_matrix[i, j] = exception_dict[e.__class__.__name__]
-            """
+
             dvx += perturb
         dvy -= perturb
 
