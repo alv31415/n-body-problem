@@ -2,6 +2,7 @@ import numpy as np
 
 import nmath as nm
 from nbody import NBody
+from exceptions import Figure8InitException, check_exception
 
 # ------------------------------ EULER ------------------------------
 
@@ -111,7 +112,9 @@ def get_figure_8(v_1, y_1, collision_tolerance = 10**(-4), escape_tolerance = 10
 
     # calculate the x-coordinate of position of one of the side bodies given the desired velocity and y-coordinate
     # ensures that energy is conserved
-    x_component = np.sqrt((5/(2*(3*m*nm.ten_norm(v_1, axis = 0, sqrt = False) - E_0))) ** 2 - y_1 ** 2)
+    squared_x_component = (5/(2*(3*m*nm.ten_norm(v_1, axis = 0, sqrt = False) - E_0))) ** 2 - y_1 ** 2
+    check_exception(squared_x_component >= 0, Figure8InitException, msg = f"Attempted to root {squared_x_component} when initialising Figure 8")
+    x_component = np.sqrt(squared_x_component)
 
     # compute initial velocities of the 3 bodies
     init_velocities = np.array([v_1, v_1, -2*v_1])

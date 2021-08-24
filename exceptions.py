@@ -26,6 +26,10 @@ class SmallAdaptiveDeltaException(Exception):
     def __init__(self, msg):
         super().__init__(msg)
 
-def check_exception(condition, exception, msg):
+class Figure8InitException(Exception):
+    def __init__(self, msg):
+        super().__init__(msg)
+
+def check_exception(condition, exception, msg = "An exception occurred!"):
     if not condition:
         raise exception(msg)

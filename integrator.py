@@ -7,7 +7,7 @@ class Integrator:
     """
     Class defining a general integrator, acting as a "superclass" for Euler, Euler-Cromer and all Leapfrog methods
     """
-    def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1, store_properties = False):
+    def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1, delta_lim = 10**-5, store_properties = False):
         """
         :param nbody: NBody instance which we integrate
         :param steps: the number of steps to integrate for
@@ -23,6 +23,7 @@ class Integrator:
 
         self.adaptive = adaptive
         self.c = c
+        self.delta_lim = delta_lim
 
         self.tolerance = tolerance
 
@@ -69,14 +70,14 @@ class Integrator:
         # calculate adaptive delta by using a time-reversible delta
         if self.adaptive:
             # average of adaptive delta at time t and t+1
-            reversible_delta = 0.5 * (self.delta + nm.variable_delta(new_positions, new_velocities, c=self.c))
+            reversible_delta = 0.5 * (self.delta + nm.variable_delta(new_positions, new_velocities, c = self.c, delta_lim = self.delta_lim))
 
             # use reversible delta at time t again to calculate new positions and velocities
             # this ensures that when using adaptive delta, the integrator remains symplectic
             new_positions, new_velocities, acc_tt = self.integration_step(t, delta=reversible_delta)
 
             # recalculate adaptive timestep
-            self.delta = nm.variable_delta(new_positions, new_velocities, c=self.c)
+            self.delta = nm.variable_delta(new_positions, new_velocities, c = self.c, delta_lim = self.delta_lim)
 
         self.update_simulation(t, new_positions, new_velocities, symplectic=True)
 
@@ -204,7 +205,7 @@ class Integrator:
         if self.adaptive:
             self.target_time = self.steps * self.delta
             self.steps = 10**5
-            self.delta = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c=self.c)
+            self.delta = nm.variable_delta(self.nbody.positions, self.nbody.velocities, c=self.c, delta_lim = self.delta_lim)
             self.historic_delta = np.zeros(self.steps)
             self.historic_delta[0] = self.delta
             self.times = [0]

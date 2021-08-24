@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
+from matplotlib import colors
 import time as t
+import os
 
 from three_body import *
 from exceptions import *
 from leapfrog_3 import Leapfrog3
 
-def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_tolerance, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1):
+def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_tolerance, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim = 10**-5):
     """
     Perturbs Figure 8 orbit, producing a matrix outlining stability regions
     :param perturb: the amount by which velocity (in x and y directions) is perturbed at each iteration
@@ -18,18 +20,20 @@ def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleranc
     """
 
     # encode errors as numbers
-    exception_dict = {"SmallAdaptiveDeltaException" : 1,
-                      "COMNotConservedException" : 2,
-                      "LinearMomentumNotConservedException" : 3,
-                      "BodyEscapeException" : 4,
-                      "BodyCollisionException" : 5,
-                      "AngularMomentumNotConservedException" : 6,
-                      "EnergyNotConservedException" : 7}
+    exception_dict = {"SmallAdaptiveDeltaException" : 2,
+                      "COMNotConservedException" : 3,
+                      "LinearMomentumNotConservedException" : 4,
+                      "BodyEscapeException" : 5,
+                      "BodyCollisionException" : 6,
+                      "AngularMomentumNotConservedException" : 7,
+                      "Figure8InitException" : 8,
+                      "EnergyNotConservedException" : 9}
 
     n = 2*n_trials + 1
 
     # initialise stability matrix
     stability_matrix = np.zeros(shape = (n,n))
+    stability_matrix = np.floor(np.random.rand(n,n)*10)
 
     # the amount by which y component of velocity is changed
     dvy = perturb * n_trials
@@ -38,34 +42,44 @@ def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleranc
     for i in range(n):
         # the amount by which x component of velocity is changed
         dvx = -perturb * n_trials
-        dvy -= perturb
         for j in range(n):
             print(f"{i},{j}")
-            dvx += perturb
-
+            """
             # initialise perturbed figure of 8
-            nbody = get_figure_8(-0.5*np.array([-0.93240737 + dvx, -0.86473146 + dvy, 0]), -0.24308753,
+            try:
+                # check for potential exceptions (either Figure of 8 or adaptive delta) during initialisation
+                nbody = get_figure_8(-0.5*np.array([-0.93240737 + dvx, -0.86473146 + dvy, 0]), -0.24308753,
                                 collision_tolerance=collision_tolerance, escape_tolerance=escape_tolerance)
 
-            integrator = Leapfrog3(nbody, steps = steps, delta = delta, tolerance=tolerance, adaptive=True, c=adaptive_constant, store_properties=False)
+                integrator = Leapfrog3(nbody, steps=steps, delta=delta, tolerance=tolerance, adaptive=True,
+                                       c=adaptive_constant, store_properties=False, delta_lim = delta_lim)
 
-            # integrate, and catch any exception in the process
-            try:
-                integrator.get_orbits()
+                # integrate, and catch any exception in the process
+                try:
+                    integrator.get_orbits()
 
-                # if adaptive timestep took 10^5 steps (max allowed) set value
-                if integrator.full_run:
-                    stability_matrix[i, j] = 8
-            except(SmallAdaptiveDeltaException,
-                   COMNotConservedException,
-                   LinearMomentumNotConservedException,
-                   BodyEscapeException,
-                   BodyCollisionException,
-                   AngularMomentumNotConservedException,
-                   EnergyNotConservedException) as e:
+                    # if adaptive timestep took 10^5 steps (max allowed) set value
+                    if integrator.full_run:
+                        stability_matrix[i, j] = 1
+
+                except(SmallAdaptiveDeltaException,
+                       COMNotConservedException,
+                       LinearMomentumNotConservedException,
+                       BodyEscapeException,
+                       BodyCollisionException,
+                       AngularMomentumNotConservedException,
+                       EnergyNotConservedException) as e:
+
+                    # set matrix entry according to error
+                    stability_matrix[i, j] = exception_dict[e.__class__.__name__]
+            except (Figure8InitException,
+                    SmallAdaptiveDeltaException) as e:
 
                 # set matrix entry according to error
-                stability_matrix[i,j] = exception_dict[e.__class__.__name__]
+                stability_matrix[i, j] = exception_dict[e.__class__.__name__]
+            """
+            dvx += perturb
+        dvy -= perturb
 
     t1 = t.time()
 
@@ -74,7 +88,7 @@ def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleranc
     return stability_matrix
 
 
-def plot_stability_matrix(perturb, n_trials, collision_tolerance, escape_tolerance, n_ticks = 10, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1):
+def plot_stability_matrix(perturb, n_trials, collision_tolerance, escape_tolerance, n_ticks = 10, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim = 10**-5, **kwargs):
     """
     Plots a stability matrix given the parameters
     :param perturb: the amount by which velocity (in x and y directions) is perturbed at each iteration
@@ -86,13 +100,19 @@ def plot_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleran
     """
 
     # calculate stability matrix
-    stability_matrix = get_stability_matrix(perturb, n_trials, collision_tolerance, escape_tolerance, steps, delta, tolerance, adaptive_constant)
+    stability_matrix = get_stability_matrix(perturb, n_trials, collision_tolerance, escape_tolerance, steps, delta, tolerance, adaptive_constant, delta_lim)
 
     n = n_trials*perturb
 
     # set up the figure and plot the matrix, with numbers giving pixel values
     fig, ax = plt.subplots()
-    cax = ax.imshow(stability_matrix, extent=(-n, n, -n, n))
+
+    # since errors are discrete numbers, use this for the cmap
+    cmap = plt.get_cmap("viridis")
+    norm = colors.BoundaryNorm(np.arange(-0.5, 10, 1), cmap.N)
+
+    cax = ax.imshow(stability_matrix, extent=(-n-perturb*0.5, n+perturb*0.5, -n-perturb*0.5, n+perturb*0.5),
+                    norm = norm, cmap = cmap, vmin = 0, vmax = 9)
 
     # set plot properties
     ax.set_xlabel(r"$\Delta v_x$")
@@ -102,8 +122,30 @@ def plot_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleran
     ax.set_xticks(np.arange(-n, n + perturb, step=2 * n / n_ticks))
     ax.set_yticks(np.arange(-n, n + perturb, step=2 * n / n_ticks))
 
-    cb = plt.colorbar(cax, ax = ax)
-    cb.set_label("Colorbar Label", labelpad = 20)
+    # show a colorbar
+    cb = plt.colorbar(cax, ticks = np.arange(0,10))
+    cb.set_label("Error Type", labelpad=20)
 
     plt.tight_layout()
+
+    # save the plot
+    if "save_fig" in kwargs:
+        if kwargs["save_fig"] and "fig_name" in kwargs:
+            if kwargs["fig_name"] is None:
+                int_to_string = lambda x: str(x).replace(".", "_")
+                save_string = f"../imgs/stability{2*n_trials + 1}-perturb{int_to_string(perturb)}-time{int(steps*delta)}-AC{int_to_string(adaptive_constant)}-DL{int_to_string(delta_lim)}"
+            else:
+                save_string = kwargs["fig_name"]
+
+            idx = 2
+            filename = save_string
+            save_file = filename + ".png"
+            # if we are to overwrite a file, check & modify the new file accordingly
+            while os.path.exists(save_file):
+                filename = save_string + f"({idx})"
+                save_file = filename + ".png"
+                idx +=1
+
+            plt.savefig(save_file)
+
     plt.show()

@@ -7,7 +7,7 @@ class Leapfrog2Int(Integrator):
     """
     Class defining an integrator via the Integer 3-Step Leapfrog 2-Step Method
     """
-    def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1, store_properties = False):
+    def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, c = 1, delta_lim = 10**-5, store_properties = False):
         """
         :param nbody: NBody instance which we integrate
         :param steps: the number of steps to integrate for
@@ -23,7 +23,7 @@ class Leapfrog2Int(Integrator):
             adaptive = False
 
         # execute initialisation from superclass
-        super().__init__(nbody, steps, delta, tolerance = tolerance, adaptive = adaptive, c = c, store_properties = store_properties)
+        super().__init__(nbody, steps, delta, tolerance = tolerance, adaptive = adaptive, c = c, delta_lim= delta_lim, store_properties = store_properties)
 
         # save acceleration for next iteration.
         # Only require 1 expensive acceleration calculation per step

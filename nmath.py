@@ -76,7 +76,7 @@ def perc_change(initial, values, perc = False, init_val = 1):
 
     return change
 
-def variable_delta(positions, velocities, c, delta_lim = 10e-8):
+def variable_delta(positions, velocities, c, delta_lim = 10**-5):
     """
     Calculates variable delta for the system
     :param positions: positions of bodies in the system
