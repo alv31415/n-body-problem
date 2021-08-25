@@ -18,16 +18,6 @@ class MPStabilityPlotter(StabilityPlotter):
 
         row, col = coords
 
-        # encode errors as numbers
-        exception_dict = {"SmallAdaptiveDeltaException": 2,
-                          "COMNotConservedException": 3,
-                          "LinearMomentumNotConservedException": 4,
-                          "BodyEscapeException": 5,
-                          "BodyCollisionException": 6,
-                          "AngularMomentumNotConservedException": 7,
-                          "Figure8InitException": 8,
-                          "EnergyNotConservedException": 9}
-
         n = self.perturb * self.n_trials
 
         # the amount by which y component of velocity is changed
@@ -63,14 +53,12 @@ class MPStabilityPlotter(StabilityPlotter):
                    EnergyNotConservedException) as e:
 
                 # set matrix entry according to error
-                return exception_dict[e.__class__.__name__]
+                return self.get_error_score(e, integrator.times[-1])
         except (Figure8InitException,
                 SmallAdaptiveDeltaException) as e:
 
             # set matrix entry according to error
-            return exception_dict[e.__class__.__name__]
-
-
+            return self.exception_dict[e.__class__.__name__]
 
     def get_stability_matrix(self):
         """
@@ -96,7 +84,7 @@ class MPStabilityPlotter(StabilityPlotter):
         n_cpus = os.cpu_count()
 
         with Pool(n_cpus) as pool:
-            results = list(tqdm.tqdm(pool.imap(func = self.get_stability_cell, iterable = args), total = n*n, colour = "#000000", ))
+            results = list(tqdm.tqdm(pool.imap(func = self.get_stability_cell, iterable = args), total = n*n))
 
         stability_matrix = np.array(results).reshape((n,n))
 

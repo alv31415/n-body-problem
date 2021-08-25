@@ -15,9 +15,29 @@ class StabilityPlotter():
         self.escape_tolerance = escape_tolerance
         self.steps = steps
         self.delta = delta
+        self.run_time = steps * delta
         self.tolerance = tolerance
         self.adaptive_constant = adaptive_constant
         self.delta_lim = delta_lim
+
+        # encode errors as numbers
+        self.exception_dict = {"SmallAdaptiveDeltaException": 2,
+                              "COMNotConservedException": 3,
+                              "BodyEscapeException": 4,
+                              "BodyCollisionException": 5,
+                              "Figure8InitException": 6,
+                              "LinearMomentumNotConservedException": 7,
+                              "AngularMomentumNotConservedException": 8,
+                              "EnergyNotConservedException": 9}
+
+    def get_error_score(self, exception, time_elapsed):
+
+        addon = time_elapsed/self.run_time
+
+        if addon == 1:
+            addon -= 10**-4
+
+        return self.exception_dict[exception.__class__.__name__] + addon
 
     def get_stability_matrix(self):
         """
@@ -30,16 +50,6 @@ class StabilityPlotter():
         :return: a (2*n_trials + 1 x 2*n_trials + 1), with numbers rnaging from 0 to 7, dependent on how the simulation ended.
                  0 indicates that the simulation ran to completion without errors.
         """
-
-        # encode errors as numbers
-        exception_dict = {"SmallAdaptiveDeltaException": 2,
-                          "COMNotConservedException": 3,
-                          "LinearMomentumNotConservedException": 4,
-                          "BodyEscapeException": 5,
-                          "BodyCollisionException": 6,
-                          "AngularMomentumNotConservedException": 7,
-                          "Figure8InitException": 8,
-                          "EnergyNotConservedException": 9}
 
         n = 2 * self.n_trials + 1
 
@@ -81,12 +91,12 @@ class StabilityPlotter():
                            EnergyNotConservedException) as e:
 
                         # set matrix entry according to error
-                        stability_matrix[i, j] = exception_dict[e.__class__.__name__]
+                        stability_matrix[i, j] = self.get_error_score(e, integrator.times[-1])
                 except (Figure8InitException,
                         SmallAdaptiveDeltaException) as e:
 
                     # set matrix entry according to error
-                    stability_matrix[i, j] = exception_dict[e.__class__.__name__]
+                    stability_matrix[i, j] = self.exception_dict[e.__class__.__name__]
 
                 dvx += self.perturb
             dvy -= self.perturb
@@ -97,7 +107,7 @@ class StabilityPlotter():
 
         return stability_matrix
 
-    def plot_stability_matrix(self, n_ticks = 10, show = True, save_fig = False, **kwargs):
+    def plot_stability_matrix(self, n_ticks = 10, grad = False, show = True, save_fig = False, **kwargs):
         """
         Plots a stability matrix given the parameters
         :param perturb: the amount by which velocity (in x and y directions) is perturbed at each iteration
@@ -116,23 +126,30 @@ class StabilityPlotter():
         # set up the figure and plot the matrix, with numbers giving pixel values
         fig, ax = plt.subplots()
 
-        # since errors are discrete numbers, use this for the cmap
-        cmap = plt.get_cmap("viridis")
-        norm = colors.BoundaryNorm(np.arange(-0.5, 10, 1), cmap.N)
+        if grad:
+            cmap = plt.get_cmap("nipy_spectral")
+            cax = ax.imshow(stability_matrix,
+                            extent=(-n - self.perturb * 0.5, n + self.perturb * 0.5, -n - self.perturb * 0.5, n + self.perturb * 0.5),
+                            cmap=cmap, vmin=0, vmax=10)
+        else:
+            cmap = plt.get_cmap("viridis")
+            # since errors are discrete numbers, use this for the cmap
+            norm = colors.BoundaryNorm(np.arange(-0.5, 10, 1), cmap.N)
 
-        cax = ax.imshow(stability_matrix, extent=(-n-self.perturb*0.5, n+self.perturb*0.5, -n-self.perturb*0.5, n+self.perturb*0.5),
-                        norm = norm, cmap = cmap, vmin = 0, vmax = 9)
+            cax = ax.imshow(stability_matrix,
+                            extent=(-n - self.perturb * 0.5, n + self.perturb * 0.5, -n - self.perturb * 0.5, n + self.perturb * 0.5),
+                            norm=norm, cmap=cmap, vmin=0, vmax=9)
 
         # set plot properties
         ax.set_xlabel(r"$\Delta v_x$")
         ax.set_ylabel(r"$\Delta v_y$")
-        ax.set_title("Stability of Figure 8 Under Perturbations", pad = 20)
+        ax.set_title("Stability of Figure 8 Under Perturbations", pad=20)
 
         ax.set_xticks(np.arange(-n, n + self.perturb, step=2 * n / n_ticks))
         ax.set_yticks(np.arange(-n, n + self.perturb, step=2 * n / n_ticks))
 
         # show a colorbar
-        cb = plt.colorbar(cax, ticks = np.arange(0,10))
+        cb = plt.colorbar(cax, ticks = range(0,10))
         cb.set_label("Error Type", labelpad=20)
 
         plt.tight_layout()
