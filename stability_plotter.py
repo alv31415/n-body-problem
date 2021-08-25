@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 import time as t
 import os
+import json
 
 from three_body import *
 from exceptions import *
@@ -107,7 +108,50 @@ class StabilityPlotter():
 
         return stability_matrix
 
-    def plot_stability_matrix(self, n_ticks = 10, grad = False, show = True, save_fig = False, **kwargs):
+    def write_stability_matrix(self, mat: np.ndarray, filename):
+        json_dict = {"perturb": self.perturb,
+                     "n_trials": self.n_trials,
+                     "collision_tolerance": self.collision_tolerance,
+                     "escape_tolerance": self.escape_tolerance,
+                     "steps": self.steps,
+                     "delta": self.delta,
+                     "tolerance": self.tolerance,
+                     "adaptive_constant": self.adaptive_constant,
+                     "delta_lim": self.delta_lim,
+                     "stability_matrix": mat.tolist()}
+
+        try:
+            if not os.path.exists(filename):
+                open(filename, "w").close()
+                zero_file = True
+            else:
+                zero_file = os.path.getsize(filename) == 0
+
+            with open(filename, "r+") as json_file:
+
+                if zero_file:
+                    json_rewrite = {"stabinv": [json_dict]}
+                else:
+                    json_rewrite = json.load(json_file)
+
+                    if "stabinv" in json_rewrite:
+                        assert isinstance(json_rewrite["stabinv"], list)
+                        json_rewrite["stabinv"].append(json_dict)
+                    else:
+                        json_rewrite = {"stabinv": [json_dict], "errors": [json_rewrite]}
+
+                json_file.seek(0)
+                json_file.truncate()
+
+                json.dump(json_rewrite, json_file, indent = 2)
+
+            return 0
+        except IOError as e:
+            print("Error saving stability params")
+            print(e)
+            return 1
+
+    def plot_stability_matrix(self, n_ticks = 10, grad = False, show = True, save_fig = False, save_matrix = True, **kwargs):
         """
         Plots a stability matrix given the parameters
         :param perturb: the amount by which velocity (in x and y directions) is perturbed at each iteration
@@ -120,6 +164,9 @@ class StabilityPlotter():
 
         # calculate stability matrix
         stability_matrix = self.get_stability_matrix()
+
+        if save_matrix:
+            self.write_stability_matrix(stability_matrix, "../report_imgs/report_test_files.json")
 
         n = self.n_trials*self.perturb
 
@@ -158,7 +205,7 @@ class StabilityPlotter():
         if save_fig and "fig_name" in kwargs:
             if kwargs["fig_name"] is None:
                 int_to_string = lambda x: str(x).replace(".", "_")
-                save_string = f"../imgs/stability{2*self.n_trials + 1}-perturb{int_to_string(self.perturb)}-time{int(self.steps*self.delta)}-AC{int_to_string(self.adaptive_constant)}-DL{int_to_string(self.delta_lim)}"
+                save_string = f"../report_imgs/stability{2*self.n_trials + 1}-perturb{int_to_string(self.perturb)}-time{int(self.steps*self.delta)}-AC{int_to_string(self.adaptive_constant)}-DL{int_to_string(self.delta_lim)}"
             else:
                 save_string = kwargs["fig_name"]
 
