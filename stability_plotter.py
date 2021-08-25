@@ -33,7 +33,6 @@ def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleranc
 
     # initialise stability matrix
     stability_matrix = np.zeros(shape = (n,n))
-    stability_matrix = np.floor(np.random.rand(n,n)*10)
 
     # the amount by which y component of velocity is changed
     dvy = perturb * n_trials
@@ -44,7 +43,6 @@ def get_stability_matrix(perturb, n_trials, collision_tolerance, escape_toleranc
         dvx = -perturb * n_trials
         for j in range(n):
             print(f"{i},{j}")
-
             # initialise perturbed figure of 8
             try:
                 # check for potential exceptions (either Figure of 8 or adaptive delta) during initialisation
