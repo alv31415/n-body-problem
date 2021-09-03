@@ -195,6 +195,9 @@ class OrbitPlotter:
                 self.ax.scatter(orbit[0, 0], orbit[0, 1], c=self.colours[i], s = size, marker="^")
                 self.ax.scatter(orbit[-1, 0], orbit[-1, 1], c=self.colours[i], s = size)
                 self.ax.set_title(f"Trajectories for a {self.n}-body Problem")
+                # plot the orbits produced by the simulation
+        
+            
         else:
             # plot in 3D each orbit, alongisde the start and end points
             for i,orbit in enumerate(self.position_orbit):
@@ -209,6 +212,7 @@ class OrbitPlotter:
         self.ax.set_ylim(ylims)
         self.ax.set_xlabel("x")
         self.ax.set_ylabel("y")
+        self.ax.axis("equal")
         self.ax.legend()
 
         # display plot
