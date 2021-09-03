@@ -11,7 +11,7 @@ class MPStabilityPlotter(StabilityPlotter):
     """
     Inherits from StabilityPlotter. Performs the same task, albeit using multiprocessing to speed up the process.
     """
-    def __init__(self, perturb, n_trials, collision_tolerance, escape_tolerance, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim = 10**-5):
+    def __init__(self, perturb, n_trials, collision_tolerance, escape_tolerance, centre_x = 0, centre_y = 0, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim = 10**-5):
         """
         :param perturb: the unit amount by which v_x and v_y can be perturbed.
                         That is,any perturbation to vx or vy is a multiple of perturb
@@ -30,7 +30,7 @@ class MPStabilityPlotter(StabilityPlotter):
         :param adaptive_constant: constant resizing factor for adaptive time step
         :param delta_lim: smallest value allowed for the adaptive time step
         """
-        super().__init__(perturb, n_trials, collision_tolerance, escape_tolerance, steps, delta, tolerance, adaptive_constant, delta_lim)
+        super().__init__(perturb, n_trials, collision_tolerance, escape_tolerance, centre_x, centre_y, steps, delta, tolerance, adaptive_constant, delta_lim)
 
     def get_stability_cell(self, coords):
         """
@@ -53,7 +53,7 @@ class MPStabilityPlotter(StabilityPlotter):
 
         try:
             # check for potential exceptions (either Figure of 8 or adaptive delta) during initialisation
-            nbody = get_figure_8(-0.5 * np.array([-0.93240737, -0.86473146, 0]) + np.array([dvx, dvy, 0]), -0.24308753,
+            nbody = get_figure_8(-0.5 * np.array([-0.93240737, -0.86473146, 0]) + np.array([dvx + self.centre_x, dvy + self.centre_y, 0]), -0.24308753,
                                  collision_tolerance=self.collision_tolerance, escape_tolerance=self.escape_tolerance)
 
             integrator = Leapfrog3(nbody, steps=self.steps, delta=self.delta, tolerance=self.tolerance, adaptive=True,

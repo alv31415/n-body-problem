@@ -53,6 +53,8 @@ class StabilityAnalyser():
                 self.n_trials = kwargs["n_trials"]
                 self.collision_tolerance = kwargs["collision_tolerance"]
                 self.escape_tolerance = kwargs["escape_tolerance"]
+                self.centre_x = kwargs["centre_x"]
+                self.centre_y = kwargs["centre_y"]
                 self.steps = kwargs["steps"]
                 self.delta = kwargs["delta"]
                 self.run_time = self.steps * self.delta
@@ -71,6 +73,8 @@ class StabilityAnalyser():
             self.n_trials = stability_plotter.n_trials
             self.collision_tolerance = stability_plotter.collision_tolerance
             self.escape_tolerance = stability_plotter.escape_tolerance
+            self.centre_x = stability_plotter.centre_x
+            self.centre_y = stability_plotter.centre_y
             self.steps = stability_plotter.steps
             self.delta = stability_plotter.delta
             self.run_time = self.steps * self.delta
@@ -120,6 +124,8 @@ class StabilityAnalyser():
                                          "n_trials": self.n_trials,
                                          "collision_tolerance": self.collision_tolerance,
                                          "escape_tolerance": self.escape_tolerance,
+                                         "centre_x": self.centre_x,
+                                         "centre_y": self.centre_y,
                                          "steps": self.steps,
                                          "delta": self.delta,
                                          "tolerance": self.tolerance,
@@ -131,7 +137,7 @@ class StabilityAnalyser():
                                 # and if found, returns the stability matrix with parameters as set during init
                                 stability_matrix = np.array(sm_dict.pop("stability_matrix"))
                                 common_dict = dict(sm_dict.items() & self_dict.items())
-                                if len(common_dict) == 9:
+                                if len(common_dict) == 9 or len(common_dict) == 11:
                                     return stability_matrix
 
                             print(f"No stability_matrix was found in {filename} with parameters {self_dict}")
@@ -173,7 +179,7 @@ class StabilityAnalyser():
         # the amount by which x component of velocity is changed
         dvx = -n + col * self.perturb
 
-        nbody = get_figure_8(-0.5 * np.array([-0.93240737, -0.86473146, 0]) + np.array([dvx, dvy, 0]), -0.24308753,
+        nbody = get_figure_8(-0.5 * np.array([-0.93240737, -0.86473146, 0]) + np.array([dvx + self.centre_x, dvy + self.centre_y, 0]), -0.24308753,
                                          collision_tolerance=self.collision_tolerance, escape_tolerance=self.escape_tolerance)
 
         integrator = Leapfrog3(nbody, steps=self.steps, delta=self.delta, tolerance=self.tolerance, adaptive=True,

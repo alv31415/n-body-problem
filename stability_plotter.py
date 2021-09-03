@@ -15,7 +15,7 @@ class StabilityPlotter():
     The outcome of the simulation is associated with a number, which is then placed within the cell.
     The resulting matrix can be plotted.
     """
-    def __init__(self, perturb, n_trials, collision_tolerance, escape_tolerance, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim = 10**-5):
+    def __init__(self, perturb, n_trials, collision_tolerance, escape_tolerance, centre_x = 0, centre_y = 0, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim = 10**-5):
         """
         :param perturb: the unit amount by which v_x and v_y can be perturbed.
                         That is,any perturbation to vx or vy is a multiple of perturb
@@ -39,6 +39,8 @@ class StabilityPlotter():
         self.n_trials = n_trials
         self.collision_tolerance = collision_tolerance
         self.escape_tolerance = escape_tolerance
+        self.centre_x = centre_x
+        self.centre_y = centre_y
         self.steps = steps
         self.delta = delta
         self.run_time = steps * delta
@@ -99,7 +101,7 @@ class StabilityPlotter():
                 # initialise perturbed figure of 8
                 try:
                     # check for potential exceptions (either Figure of 8 or adaptive delta) during initialisation
-                    nbody = get_figure_8(-0.5 * np.array([-0.93240737, -0.86473146, 0]) + np.array([dvx, dvy, 0]), -0.24308753,
+                    nbody = get_figure_8(-0.5 * np.array([-0.93240737, -0.86473146, 0]) + np.array([dvx + self.centre_x, dvy + self.centre_y, 0]), -0.24308753,
                                          collision_tolerance=self.collision_tolerance, escape_tolerance=self.escape_tolerance)
 
                     integrator = Leapfrog3(nbody, steps=self.steps, delta=self.delta, tolerance=self.tolerance, adaptive=True,
@@ -146,6 +148,8 @@ class StabilityPlotter():
                      "n_trials": self.n_trials,
                      "collision_tolerance": self.collision_tolerance,
                      "escape_tolerance": self.escape_tolerance,
+                     "centre_x": self.centre_x,
+                     "centre_y": self.centre_y,
                      "steps": self.steps,
                      "delta": self.delta,
                      "tolerance": self.tolerance,
@@ -221,7 +225,10 @@ class StabilityPlotter():
             # plot using continuous colours
             cmap = plt.get_cmap("nipy_spectral")
             cax = ax.imshow(stability_matrix,
-                            extent=(-extent_lim - self.perturb * 0.5, extent_lim + self.perturb * 0.5, -extent_lim - self.perturb * 0.5, extent_lim + self.perturb * 0.5),
+                            extent=(-extent_lim - self.perturb * 0.5 + self.centre_x,
+                                    extent_lim + self.perturb * 0.5 + self.centre_x,
+                                    -extent_lim - self.perturb * 0.5 + self.centre_y,
+                                    extent_lim + self.perturb * 0.5 + self.centre_y),
                             cmap=cmap, vmin=0, vmax=10)
         else:
             # plot using discrete colours
@@ -230,7 +237,10 @@ class StabilityPlotter():
             norm = colors.BoundaryNorm(np.arange(-0.5, 10, 1), cmap.N)
 
             cax = ax.imshow(stability_matrix,
-                            extent=(-extent_lim - self.perturb * 0.5, extent_lim + self.perturb * 0.5, -extent_lim - self.perturb * 0.5, extent_lim + self.perturb * 0.5),
+                            extent=(-extent_lim - self.perturb * 0.5 + self.centre_x,
+                                    extent_lim + self.perturb * 0.5 + self.centre_x,
+                                    -extent_lim - self.perturb * 0.5 + self.centre_y,
+                                    extent_lim + self.perturb * 0.5 + self.centre_y),
                             norm=norm, cmap=cmap, vmin=0, vmax=9)
 
         # set plot properties
@@ -238,8 +248,8 @@ class StabilityPlotter():
         ax.set_ylabel(r"$\Delta v_y$")
         ax.set_title("Stability of Figure 8 Under Perturbations", pad=20)
 
-        ax.set_xticks(np.arange(-extent_lim, extent_lim + self.perturb, step=2 * extent_lim / n_ticks))
-        ax.set_yticks(np.arange(-extent_lim, extent_lim + self.perturb, step=2 * extent_lim / n_ticks))
+        ax.set_xticks(np.arange(-extent_lim + self.centre_x, extent_lim + self.perturb + self.centre_x, step=2 * extent_lim / n_ticks))
+        ax.set_yticks(np.arange(-extent_lim + self.centre_y, extent_lim + self.perturb + self.centre_y, step=2 * extent_lim / n_ticks))
 
         # show a colorbar
         cb = plt.colorbar(cax, ticks = range(0,10))
