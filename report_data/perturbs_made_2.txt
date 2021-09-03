@@ -1,0 +1,205 @@
+"""
+print("Test 1 - Changing Perturb")
+
+mpsp_perturb1 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_perturb1.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+#done3
+
+print("\n")
+
+mpsp_perturb2 = MPStabilityPlotter(perturb = 0.005, n_trials=100, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_perturb2.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+#done
+
+print("\n")
+
+mpsp_perturb3 = MPStabilityPlotter(perturb = 0.005, n_trials=500, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_perturb3.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+#done3
+
+print("\n")
+print("-" * 50)
+print("\n")
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+"""
+print("Test 2 - Changing Trials")
+
+"""
+mpsp_trials1 = MPStabilityPlotter(perturb = 0.05, n_trials=50, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_trials1.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+#done
+
+print("\n")
+
+
+mpsp_trials2 = MPStabilityPlotter(perturb = 0.05, n_trials=100, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_trials2.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+#done
+
+print("\n")
+
+mpsp_trials3 = MPStabilityPlotter(perturb = 0.05, n_trials=25, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_trials3.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+#done
+
+print("\n")
+print("-" * 50)
+print("\n")
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+print("Test 3 - Changing Execution Time")
+
+mpsp_time1 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**5, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_time1.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+#done
+
+print("\n")
+
+mpsp_time2 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**6, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_time2.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+#done
+
+print("\n")
+print("-" * 50)
+print("-" * 50)
+print("\n")
+"""
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+# TEST: ADAPTIVE PARAMETERS
+
+print("Test 4 - Changing Adaptive Constant")
+"""
+mpsp_adaptive1 = MPStabilityPlotter(perturb = 0.05, n_trials=50, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.01, delta_lim=10**-5)
+
+mpsp_adaptive1.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+#done
+
+print("\n")
+"""
+
+mpsp_adaptive2 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.01, delta_lim=10**-5)
+
+mpsp_adaptive2.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+
+print("\n")
+
+mpsp_adaptive3 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.001, delta_lim=10**-5)
+
+mpsp_adaptive3.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+
+print("\n")
+print("-" * 50)
+print("\n")
+"""
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+print("Test 5 - Changing Delta Limit")
+
+mpsp_limit1 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.01, delta_lim=10**-6)
+
+mpsp_limit1.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+
+print("\n")
+
+time.sleep(5)
+
+mpsp_limit2 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.01, delta_lim=10**-7)
+
+mpsp_limit2.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+
+print("\n")
+
+time.sleep(5)
+
+print("\n")
+print("-" * 50)
+print("-" * 50)
+print("\n")
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+# TEST: SIMULATION PARAMETERS
+
+print("Test 6 - Changing Escape Tolerance")
+
+mpsp_escape1 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -3, escape_tolerance = 5,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_escape1.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+
+print("\n")
+
+mpsp_escape2 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -3, escape_tolerance = 20,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_escape2.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+
+print("\n")
+print("-" * 50)
+print("\n")
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+print("Test 7 - Changing Collision Tolerance")
+
+mpsp_collision1 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -2, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_collision1.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+
+print("\n")
+
+mpsp_collision2 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -1, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_collision2.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+
+print("\n")
+print("-" * 50)
+print("\n")
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+print("Test 8 - Changing Error Tolerance")
+
+mpsp_error1 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-1, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_error1.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+
+print("\n")
+
+mpsp_error2 = MPStabilityPlotter(perturb = 0.05, n_trials=10, collision_tolerance=10 ** -3, escape_tolerance = 10,
+                          steps = 10**4, delta = 10**-2, tolerance = 10**-3, adaptive_constant = 0.1, delta_lim=10**-5)
+
+mpsp_error2.plot_stability_matrix(n_ticks = 10, grad = True, show = False, save_fig = True, save_matrix = True, fig_name = None)
+
+
+print("\n")
+print("-" * 50)
+print("\n")
