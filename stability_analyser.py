@@ -173,8 +173,8 @@ class StabilityAnalyser():
         # the amount by which x component of velocity is changed
         dvx = -n + col * self.perturb
 
-        nbody = get_figure_8(-0.5 * np.array([-0.93240737 + dvx, -0.86473146 + dvy, 0]), -0.24308753,
-                             collision_tolerance=self.collision_tolerance, escape_tolerance=self.escape_tolerance)
+        nbody = get_figure_8(-0.5 * np.array([-0.93240737, -0.86473146, 0]) + np.array([dvx, dvy, 0]), -0.24308753,
+                                         collision_tolerance=self.collision_tolerance, escape_tolerance=self.escape_tolerance)
 
         integrator = Leapfrog3(nbody, steps=self.steps, delta=self.delta, tolerance=self.tolerance, adaptive=True,
                                adaptive_constant=self.adaptive_constant, store_properties=False, delta_lim=self.delta_lim)

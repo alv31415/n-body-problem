@@ -125,7 +125,11 @@ def get_figure_8(v_1, y_1, collision_tolerance = 10**(-4), escape_tolerance = 10
     # compute initial positions of the 3 bodies
     init_positions = np.array([x_1, -x_1, [0,0,0]])
 
-    return NBody(init_positions, init_velocities, m*np.ones(shape = (3,)), collision_tolerance=collision_tolerance, escape_tolerance=escape_tolerance)
+    nbod = NBody(init_positions, init_velocities, m*np.ones(shape = (3,)), collision_tolerance=collision_tolerance, escape_tolerance=escape_tolerance)
+
+    assert abs(nbod.energy - E_0) < 10**(-6)
+
+    return nbod
 
 
 

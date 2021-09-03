@@ -73,7 +73,7 @@ class StabilityPlotter():
         while addon >= 1:
             addon -= 10**-4
 
-        return self.exception_dict[exception.__class__.__name__] + addon
+        return self.exception_dict[exception.__class__.__name__] + (1 - addon)
 
     def get_stability_matrix(self):
         """
@@ -99,7 +99,7 @@ class StabilityPlotter():
                 # initialise perturbed figure of 8
                 try:
                     # check for potential exceptions (either Figure of 8 or adaptive delta) during initialisation
-                    nbody = get_figure_8(-0.5 * np.array([-0.93240737 + dvx, -0.86473146 + dvy, 0]), -0.24308753,
+                    nbody = get_figure_8(-0.5 * np.array([-0.93240737, -0.86473146, 0]) + np.array([dvx, dvy, 0]), -0.24308753,
                                          collision_tolerance=self.collision_tolerance, escape_tolerance=self.escape_tolerance)
 
                     integrator = Leapfrog3(nbody, steps=self.steps, delta=self.delta, tolerance=self.tolerance, adaptive=True,
@@ -184,7 +184,7 @@ class StabilityPlotter():
             print(e)
             return 1
 
-    def plot_stability_matrix(self, stability_matrix, n_ticks = 10, grad = False, show = True, save_fig = False, save_matrix = True, **kwargs):
+    def plot_stability_matrix(self, stability_matrix = None, n_ticks = 10, grad = False, show = True, save_fig = False, save_matrix = True, **kwargs):
         """
         Plots an stability matrix given the parameters
         :param stability_matrix: the stability matrix to plot. If None, automatically calculates it.
@@ -207,7 +207,7 @@ class StabilityPlotter():
             if "json_name" in kwargs:
                 self.stability_matrix_to_json(stability_matrix, kwargs["json_name"])
             else:
-                self.stability_matrix_to_json(stability_matrix, "report_imgs/report_test_files_3.json")
+                self.stability_matrix_to_json(stability_matrix, "report_data/report_jsons.json")
 
         # calculate the side length (to one side of 0) required for the plot
         # for example, if perturb = 0.1 and n_trials = 10,
@@ -251,7 +251,7 @@ class StabilityPlotter():
         if save_fig and "fig_name" in kwargs:
             if kwargs["fig_name"] is None:
                 int_to_string = lambda x: str(x).replace(".", "_")
-                save_string = f"report_imgs/stability{2*self.n_trials + 1}-perturb{int_to_string(self.perturb)}-time{int(self.steps*self.delta)}-AC{int_to_string(self.adaptive_constant)}-DL{int_to_string(self.delta_lim)}-ET{int_to_string(self.escape_tolerance)}-CT{int_to_string(self.collision_tolerance)}-TOL{int_to_string(self.tolerance)}"
+                save_string = f"report_data/stability{2*self.n_trials + 1}-perturb{int_to_string(self.perturb)}-time{int(self.steps*self.delta)}-AC{int_to_string(self.adaptive_constant)}-DL{int_to_string(self.delta_lim)}-ET{int_to_string(self.escape_tolerance)}-CT{int_to_string(self.collision_tolerance)}-TOL{int_to_string(self.tolerance)}"
             else:
                 save_string = kwargs["fig_name"]
 
