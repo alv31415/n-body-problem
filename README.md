@@ -102,12 +102,36 @@ mpsp.plot_stability_matrix(stability_matrix, n_ticks = 10, grad = True, show = T
 
 which produces:
 
-<p align = "center"><img src="https://github.com/alv31415/n-body-problem/tree/stability-plot/img_resources/report_data/stability1001-perturb0_005-time100-AC0_1-DL1e-05-ET10-CT0_001-TOL0_01.png" width = 720 height = 432></p>
+<p align = "center"><img src="https://github.com/alv31415/n-body-problem/blob/main/img_resources/report_data/stability1001-perturb0_005-time100-AC0_1-DL1e-05-ET10-CT0_001-TOL0_01.png"></p>
 
 Examples of the stability images, alongside the JSONs they produce can be found in <a href = "https://github.com/alv31415/n-body-problem/tree/stability-plot/img_resources/report_data">img_resources/report_data</a>.
 
-The stability image can be made more interesting by colourising the degree of stability of the stable regions. For this, use ```StabilityAnalyser```  The easiest, fastest way of instantiating is by providing a ```StabilityPlotter``` alongside the ```stability_matrix``` that we want to colourise. Alternatively, we can pass the parameters of a ```StabilityPlotter``` alongside the file path to a JSON containing the ```stability_matrix``` in order to instantiate. The simplest way to obtain the new image is by running ```plot_updated_stability_matrix()``` with ```sb_scores = None, square_size = 0.01```, alongside other arguments like the ones for ```plot_stability_matrix()```.
+The stability image can be made more interesting by colourising the degree of stability of the stable regions. For this, use ```StabilityAnalyser```  The easiest, fastest way of instantiating is by providing a ```StabilityPlotter``` alongside the ```stability_matrix``` that we want to colourise. Alternatively, we can pass the parameters of a ```StabilityPlotter``` alongside the file path to a JSON containing the ```stability_matrix``` in order to instantiate. The simplest way to obtain the new image is by running ```plot_updated_stability_matrix()``` with ```sb_scores = None, square_size = 0.01```, alongside other arguments like the ones for ```plot_stability_matrix()```. For example:
 
+```
+from stability_investigation.mp_stability_plotter import MPStabilityPlotter, StabilityAnalyser
 
+mpsp = MPStabilityPlotter(perturb=0.005, n_trials=100, collision_tolerance = 10**-3, escape_tolerance = 10, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim = 10**-5)
+stability_matrix = mpsp.get_stability_matrix()
+mpsp_analyser = MPSPAnalyser(mpsp, stability_matrix)
+mpsp_analyser.plot_updated_stability_matrix(sb_scores = None, square_size = 0.01, n_ticks = 10, grad = True, show = True, save_fig = False, save_matrix = False, fig_name = "report_imgs/sb_scores_HD")
+```
+
+which under the hood does:
+
+```
+from stability_investigation.mp_stability_plotter import MPStabilityPlotter, StabilityAnalyser
+
+mpsp = MPStabilityPlotter(perturb=0.005, n_trials=100, collision_tolerance = 10**-3, escape_tolerance = 10, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim = 10**-5)
+stability_matrix = mpsp.get_stability_matrix()
+mpsp_analyser = MPSPAnalyser(mpsp, stability_matrix)
+mpsp_analyser.update_stability_matrix(sb_scores)
+sb_scores = mpsp_analyser.get_stability_scores(0.01)
+mpsp_analyser.plot_updated_stability_matrix(n_ticks = 10, grad = True, show = True, save_fig = False, save_matrix = False, fig_name = "report_imgs/sb_scores_HD")
+```
+
+resulting in:
+
+<p align = "center"><img src="https://github.com/alv31415/n-body-problem/blob/main/img_resources/report_data/sb_scores_HD.png"></p>
 
 
