@@ -3,7 +3,7 @@ from numpy import testing
 
 import nmath as nm
 from nbody import NBody
-from leapfrog_3 import Leapfrog3
+from integrators.leapfrog_3 import Leapfrog3
 
 DP = 15
 
