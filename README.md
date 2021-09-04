@@ -86,9 +86,23 @@ To produce a Stability Image, you simply need a file from ```stability_investiga
 
 1) **Instantiate ```MPStabilityPlotter```**: this requires parameters for the size and number of perturbations, alongside parameters to instantiate the simulations.
 2) **Calculate Stability Matrix**: simply use the ```get_stability_matrix()``` method of the ```MPStabilityPlotter``` instance.
-3) **Display the Stability Matrix**: simply use the ```plot_stability_matrix()``` method of the ```MPStabilityPlotter``` instance. You can also specify arguments for the plot (number of ticks, continuous colormap, etc ...), as well as for saving the output (as an image, or as JSON). JSON saving can also be used without plotting via the ```stability_matrix_to_json()``` method.
+3) **Display the Stability Matrix**: simply use the ```plot_stability_matrix()``` method of the ```MPStabilityPlotter``` instance. You can also specify arguments for the plot (number of ticks, continuous colormap, etc ...), as well as for saving the output (as an image, or as JSON). JSON saving can also be used without plotting via the ```stability_matrix_to_json()``` method. If we specify ```fig_name = None```, it automatically generates a file path using the parameters of the instance.
 
 Alternatively, after instantiating the plotter, running ```plot_stability_matrix()``` with ```stability_matrix = None``` will automatically calculate the stability matrix and plot it.
+
+For example:
+
+```
+from stability_investigation.mp_stability_plotter import MPStabilityPlotter
+
+mpsp = MPStabilityPlotter(perturb=0.005, n_trials=500, collision_tolerance = 10**-3, escape_tolerance = 10, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim = 10**-5)
+stability_matrix = mpsp.get_stability_matrix()
+mpsp.plot_stability_matrix(stability_matrix, n_ticks = 10, grad = True, show = True, save_fig = True, save_matrix = False, fig_name = None, json_name = "my_json.json")
+```
+
+which produces:
+
+<p align = "center"><img src="https://github.com/alv31415/n-body-problem/tree/stability-plot/img_resources/report_data/stability1001-perturb0_005-time100-AC0_1-DL1e-05-ET10-CT0_001-TOL0_01.png" width = 720 height = 432></p>
 
 Examples of the stability images, alongside the JSONs they produce can be found in <a href = "https://github.com/alv31415/n-body-problem/tree/stability-plot/img_resources/report_data">img_resources/report_data</a>.
 
