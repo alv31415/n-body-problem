@@ -1,6 +1,8 @@
+import random
+
 import numpy as np
 from numpy import testing
-import NMath as nm
+import nmath as nm
 
 DP = 13
 
@@ -42,12 +44,44 @@ def test_perc_change():
     testing.assert_array_almost_equal(nm.perc_change(5, np.array([5, -7, 8, 10.5]), perc = True), np.array([0, 240, 60, 110]), DP)
 
 def test_variable_delta():
-    testing.assert_equal(nm.variable_delta(np.array([array_1d]), np.array([array_1d]), c = -1), -1)
+    testing.assert_equal(nm.variable_delta(np.array([array_1d]), np.array([array_1d]), adaptive_constant= -1), -1)
 
     easy_positions = np.array([[1,1,1], [2,2,2]])
     easy_velocities = np.array([[1, 2, 1], [0, 2, -2.5]])
-    testing.assert_almost_equal(nm.variable_delta(easy_positions, easy_velocities, c = 0.5), np.sqrt(3/53), DP)
-    testing.assert_almost_equal(nm.variable_delta(easy_positions, easy_velocities, c = 0.5), 0.23791547571544322, DP)
+    testing.assert_almost_equal(nm.variable_delta(easy_positions, easy_velocities, adaptive_constant= 0.5), np.sqrt(3 / 53), DP)
+    testing.assert_almost_equal(nm.variable_delta(easy_positions, easy_velocities, adaptive_constant= 0.5), 0.23791547571544322, DP)
+
+def test_relative_normalised_positions():
+    pass
+
+def test_pair_encoder():
+
+    for _ in range(100):
+        x = random.randint(0,1000)
+        y = random.randint(0,1000)
+
+        a = random.randint(0, 1000)
+        b = random.randint(0, 1000)
+
+        while a == x and b == y:
+            a = random.randint(0, 1000)
+            b = random.randint(0, 1000)
+
+        assert nm.pair_encoder(x, y) != nm.pair_encoder(a, b), f"x = {x}, y = {y}, a = {a}, b = {b}"
+
+    # test for array of pairs
+    for _  in range(100):
+        x = np.random.randint(0, 1000, size = 1000)
+        y = np.random.randint(0, 1000, size = 1000)
+
+        a = np.random.randint(0, 1000, size = 1000)
+        b = np.random.randint(0, 1000, size = 1000)
+
+        while (a == x).any() and (b == y).any():
+            a = random.randint(0, 1000)
+            b = random.randint(0, 1000)
+
+        assert (nm.pair_encoder(x, y) != nm.pair_encoder(a, b)).all(), f"x = {x}, y = {y}, a = {a}, b = {b}, {nm.pair_encoder(x, y)}, {nm.pair_encoder(a, b)}"
 
 def test_main():
     test_ten_norm()
@@ -55,3 +89,5 @@ def test_main():
     test_mat_cross()
     test_perc_change()
     test_variable_delta()
+    test_relative_normalised_positions()
+    test_pair_encoder()

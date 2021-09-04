@@ -1,9 +1,9 @@
 import numpy as np
 from numpy import testing
 
-import NMath as nm
-from NBody import NBody
-from Leapfrog3 import Leapfrog3
+import nmath as nm
+from nbody import NBody
+from integrators.leapfrog_3 import Leapfrog3
 
 DP = 15
 
@@ -20,7 +20,7 @@ masses = np.array([1,1])
 def test_leapfrog3_init():
     nbod = NBody(init_positions, init_velocities, masses)
 
-    leapfrog = Leapfrog3(nbody = nbod, steps = STEPS, delta = DELTA, tolerance = TOLERANCE, adaptive = ADAPTIVE, c = C)
+    leapfrog = Leapfrog3(nbody = nbod, steps = STEPS, delta = DELTA, tolerance = TOLERANCE, adaptive = ADAPTIVE, adaptive_constant= C)
 
     assert not leapfrog.integrated
 
@@ -52,7 +52,7 @@ def test_leapfrog3_init():
 def test_leapfrog3_step():
     nbod = NBody(init_positions, init_velocities, masses)
 
-    leapfrog = Leapfrog3(nbody=nbod, steps=STEPS, delta=DELTA, tolerance=TOLERANCE, adaptive=ADAPTIVE, c=C)
+    leapfrog = Leapfrog3(nbody=nbod, steps=STEPS, delta=DELTA, tolerance=TOLERANCE, adaptive=ADAPTIVE, adaptive_constant=C)
 
     leapfrog.integration_step(1)
 

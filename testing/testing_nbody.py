@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import testing
 
-from NBody import NBody
+from nbody import NBody
 
 DP = 13
 
