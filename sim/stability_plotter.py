@@ -5,7 +5,7 @@ import json
 
 from three_body import *
 from exceptions import *
-from integrators.leapfrog_3 import Leapfrog3
+from leapfrog_3 import Leapfrog3
 
 class StabilityPlotter():
     """
@@ -213,7 +213,7 @@ class StabilityPlotter():
             if "json_name" in kwargs:
                 self.stability_matrix_to_json(stability_matrix, kwargs["json_name"])
             else:
-                self.stability_matrix_to_json(stability_matrix, "../img_resources/report_data/report_jsons.json")
+                self.stability_matrix_to_json(stability_matrix, "img_resources/report_data/report_jsons.json")
 
         # calculate the side length (to one side of 0) required for the plot
         # for example, if perturb = 0.1 and n_trials = 10,

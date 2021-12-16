@@ -1,0 +1,49 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.block input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 12pt;
+  display:inline-block;
+  vertical-align: middle;
+  margin-left:20px
+}
+
+.block label {
+  display:inline-block;
+  font-size: 12pt;
+  float: left;
+  padding-top: 5px;
+  text-align: right;
+  width: 140px;
+}
+
+.modebar{
+  display: none !important;
+}
+
+html, body {
+  overscroll-behavior: none;
+}
+
+input {
+  resize: horizontal;
+  width: 200px;
+}

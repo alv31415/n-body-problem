@@ -4,8 +4,8 @@ import tqdm
 
 from three_body import *
 from exceptions import *
-from integrators.leapfrog_3 import Leapfrog3
-from stability_plotter import StabilityPlotter
+from sim.leapfrog_3 import Leapfrog3
+from stability_investigation.stability_plotter import StabilityPlotter
 
 class MPStabilityPlotter(StabilityPlotter):
     """

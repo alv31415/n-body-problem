@@ -1,7 +1,7 @@
 import numpy as np
 
-from integrator import Integrator
-import nmath as nm
+from .integrator import Integrator
+from sim import nmath as nm
 
 class Leapfrog3(Integrator):
     """
