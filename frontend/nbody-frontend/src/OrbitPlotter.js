@@ -77,6 +77,7 @@ class OrbitPlotter extends React.Component {
             const response = await fetch(getUrl, {method: "GET"});
             const data = await response.json();
             data.sort();
+            console.log(data);
             
             if (response.ok) {
                 this.setState({...this.state, integratorIDs: data, integratorID: data[0]});
