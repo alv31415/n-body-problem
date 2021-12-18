@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path("", views.apiOverview, name = "api-overview"),
+
     path("nbody-list/", views.nbodyList, name = "api-nbody-list"),
     path("nbody-list-ids/", views.nbodyListIDs, name = "api-nbody-list-ids"),
     path("nbody-create/", views.nbodyCreate, name = "api-nbody-create"),
@@ -11,6 +12,7 @@ urlpatterns = [
     path("nbody-update/<str:pk>", views.nbodyUpdate, name = "api-nbody-update"),
     path("nbody-delete/<str:pk>", views.nbodyDelete, name = "api-nbody-delete"),
     path("nbody-delete-all/", views.nbodyDeleteAll, name = "api-nbody-delete-all"),
+    
     path("integrator-list/", views.integratorList, name = "api-integrator-list"),
     path("integrator-list-ids/", views.integratorListIDs, name = "api-integrator-list-ids"),
     path("integrator-create/", views.integratorCreate, name = "api-integrator-create"),
