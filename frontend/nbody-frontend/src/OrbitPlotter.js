@@ -26,6 +26,7 @@ class OrbitPlotter extends React.Component {
             integratorID: this.props.integratorID,
             integratorIDs: [],
             orbitSize: 0,
+            integratorIDChanged: false,
             data: [{x: [0], 
                     y: [0], 
                     type: "line",
@@ -34,17 +35,30 @@ class OrbitPlotter extends React.Component {
                 dragmode: "pan", 
                 width: 640, 
                 height: 640, 
-                plot_bgcolor:"black",
+                plot_bgcolor: "black",
+                paper_bgcolor: "black",
                 yaxis: {
                     title: {
                         text: "y"
-                    }
+                    },
+                    color: "white",
+                    gridcolor: "grey"
                 },
                 xaxis: {
                     title: {
                         text: "x"
+                    },
+                    color: "white",
+                    gridcolor: "grey"
+                },
+                legend: {
+                    font: {
+                      //family: 'sans-serif',
+                      size: 12,
+                      color: "white"
                     }
-                }}
+            }
+        }
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -70,7 +84,7 @@ class OrbitPlotter extends React.Component {
 
     handleChange(e){
         const newIntegratorID = e.target.value;
-        this.setState({...this.state, integratorID: newIntegratorID})
+        this.setState({...this.state, integratorID: newIntegratorID, integratorIDChanged: true})
     }
 
     /**
@@ -96,9 +110,9 @@ class OrbitPlotter extends React.Component {
     /**
      * Computes the orbits using the current integrator.
      */
-    async getOrbits(integratorID) {
+    async getOrbits() {
 
-        if (integratorID === this.state.integratorID && this.state.orbitSize !== 0) {
+        if (this.state.integratorIDChanged == false && this.state.orbitSize !== 0) {
 
             return ;
         }
@@ -134,6 +148,13 @@ class OrbitPlotter extends React.Component {
         }     
     
     }
+
+    getOrbitColour(i) {
+        let nOrbits = this.orbits.length;
+        let step = Math.floor((this.colours.length - 1) / (nOrbits - 1));
+        
+        return this.colours[step * i];
+    }
     
     /**
      * Given the positions (as an array of arrays) of a body in the simulation, generates a list of 2 objects.
@@ -148,6 +169,7 @@ class OrbitPlotter extends React.Component {
 
         let orbitX = [];
         let orbitY = [];
+        let orbitColour = this.getOrbitColour(bodyNumber);
     
         let x, y, z;
 
@@ -164,15 +186,21 @@ class OrbitPlotter extends React.Component {
                 y: orbitY,
                 type: 'line',
                 mode: 'lines',
-                name: `Orbit ${parseInt(bodyNumber) + 1}`
+                name: `Orbit ${parseInt(bodyNumber) + 1}`,
+                line : {
+                    color: orbitColour
+                }
             },
             {
                 x: [orbitX[orbitX.length - 1]],
                 y: [orbitY[orbitY.length - 1]],
                 type: 'scatter',
                 mode: 'marker',
-                marker: {size: 10},
-                showlegend: false
+                showlegend: false,
+                marker : {
+                    size: 10,
+                    color: orbitColour
+                }
             }
             ]
         )
@@ -194,13 +222,14 @@ class OrbitPlotter extends React.Component {
 
         this.setState((state) => {
                         return ({...state, 
-                        data: lineData
+                        data: lineData,
+                        integratorIDChanged: false
                     })
                 });
     }
 
-    plotOrbits(integratorID) {
-        this.getOrbits(integratorID);
+    plotOrbits() {
+        this.getOrbits();
         setTimeout(() => this.updatePlot(this.orbits), 500);
     }
 
@@ -215,9 +244,14 @@ class OrbitPlotter extends React.Component {
                 <Plot data = {this.state.data} 
                       layout = {this.state.layout} 
                       config={{scrollZoom:true}}
-                      useResizeHandler={true}/>;
+                      useResizeHandler={true}/>
                 <br/>
-                <FormBlock labelName = "Integrator ID" name = "integratorID" type = "select" value = {this.state.integratorIDs[0]} data_list = {this.state.integratorIDs} onChange = {this.handleChange}/>
+                <FormBlock labelName = "Integrator ID" 
+                           name = "integratorID" 
+                           type = "select" 
+                           value = {this.state.integratorIDs[0]} 
+                           data_list = {this.state.integratorIDs} 
+                           onChange = {this.handleChange}/>
                 <br/>
                 <button onClick = {() => this.plotOrbits(this.state.integratorID)}>{this.state.btnLabel}</button>
             </div>
