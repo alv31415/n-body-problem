@@ -1,28 +1,39 @@
 import React from "react";
 import FormBlock from "./FormBlock";
 import Plot from "react-plotly.js"
-import isEqual from "lodash/isEqual";
 
 class OrbitPlotter extends React.Component {
     constructor(props) {
         super(props);
         this.orbits = [];
+
+        // https://learnui.design/tools/data-color-picker.html#divergent
+        this.colours = ["#00876c",
+                        "#3d9a70",
+                        "#64ad73",
+                        "#89bf77",
+                        "#afd17c",
+                        "#d6e184",
+                        "#fff18f",
+                        "#fdd576",
+                        "#fbb862",
+                        "#f59b56",
+                        "#ee7d4f",
+                        "#e35e4e",
+                        "#d43d51]"]
         this.state = {
-            simOn: false,
-            btnLabel: "Start",
+            btnLabel: "Plot!",
             integratorID: this.props.integratorID,
             integratorIDs: [],
-            orbitIndex: 1,
-            orbitIndexIncrease: 1,
-            continuePlot: true,
             orbitSize: 0,
-            data: [{x: [1], 
-                    y: [1], 
-                    type: 'line',
-                    mode: 'lines'}],
-            layout: {datarevision: 0,
-                width: 320, 
-                height: 320, 
+            data: [{x: [0], 
+                    y: [0], 
+                    type: "line",
+                    mode: "lines"}],
+            layout: {
+                dragmode: "pan", 
+                width: 640, 
+                height: 640, 
                 plot_bgcolor:"black",
                 yaxis: {
                     title: {
@@ -33,14 +44,11 @@ class OrbitPlotter extends React.Component {
                     title: {
                         text: "x"
                     }
-                }},
-            revision: 0
+                }}
         };
 
-        this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.getIntegratorIDs = this.getIntegratorIDs.bind(this);
-        this.updateData = this.updateData.bind(this);
         this.updatePlot = this.updatePlot.bind(this);
     }
 
@@ -65,11 +73,9 @@ class OrbitPlotter extends React.Component {
         this.setState({...this.state, integratorID: newIntegratorID})
     }
 
-    handleClick() {
-        const newSimOn = !this.state.simOn
-        this.setState({...this.state, simOn: newSimOn, btnLabel: newSimOn ? "Stop" : "Start"});
-    }
-
+    /**
+     * Gets the IDs of all integrators in the database
+     */
     async getIntegratorIDs() {
         const getUrl = "http://localhost:8000/api/integrator-list-ids/"
 
@@ -77,7 +83,6 @@ class OrbitPlotter extends React.Component {
             const response = await fetch(getUrl, {method: "GET"});
             const data = await response.json();
             data.sort();
-            console.log(data);
             
             if (response.ok) {
                 this.setState({...this.state, integratorIDs: data, integratorID: data[0]});
@@ -88,25 +93,15 @@ class OrbitPlotter extends React.Component {
         }     
     }
 
-    updateData() {
-        const x = Math.floor(Math.random() * 10);
-        const y = Math.floor(Math.random() * 10);
-        let newData = this.state.data.slice(0);
-        
-        let newX = newData[0].x;
-        let newY = newData[0].y;
-        newX.push(x);
-        newY.push(y);
-        const data = [{...newData[0], x: newX, y:newY, name: "Orbit"}, {x: [newX[newX.length - 1]], y: [newY[newY.length - 1]], showlegend: false, type: 'marker',
-        mode: 'markers', marker: {size: 10, color: "red"}}]
+    /**
+     * Computes the orbits using the current integrator.
+     */
+    async getOrbits(integratorID) {
 
-        this.setState({...this.state, data: data, revision: this.state.revision + 1, layout: {...this.state.layout, datarevision: this.state.revision + 1}});
+        if (integratorID === this.state.integratorID && this.state.orbitSize !== 0) {
 
-    }
-
-    async getOrbits() {
-
-        console.log("Getting orbits")
+            return ;
+        }
 
         const postUrl = "http://localhost:8000/api/integrator-update/" + this.state.integratorID;
     
@@ -128,23 +123,10 @@ class OrbitPlotter extends React.Component {
             if (response.ok) {
                 const newPositions = data.position_orbits
 
-                for (let i in newPositions) {
-                    console.log(`${newPositions[i].length} positions calculated`)
-                }
-
                 let orbitSize = newPositions[0].length;
-
-                console.log("Setting orbits")
 
                 this.setState({ ...this.state, orbitSize: orbitSize });
                 this.orbits = newPositions;
-
-                console.log("Done")
-
-                console.log(this.state.orbitSize)
-                console.log(orbitSize)
-                console.log(this.orbits)
-                console.log(newPositions)
             }
         } 
         catch (e) {
@@ -153,23 +135,26 @@ class OrbitPlotter extends React.Component {
     
     }
     
+    /**
+     * Given the positions (as an array of arrays) of a body in the simulation, generates a list of 2 objects.
+     * The first one represents the actual orbits of the body in the xy plane.
+     * The second one represents the ending point of the orbit.
+     * These objects are used by Plotly to plot the orbits
+     * @param {*} positions positions of the body, an array of [x,y,z] coordinates
+     * @param {*} bodyNumber the body within the ismulation
+     * @returns a list of 2 objects, representing the motion of the body associated witht he bodyNumber
+     */
     setPlot(positions, bodyNumber) {
 
         let orbitX = [];
         let orbitY = [];
     
         let x, y, z;
-    
-        for (let i = 0; i < this.state.orbitIndex; i++) {
+
+        for (let i = 0; i < this.state.orbitSize; i++) {
             [x, y, z] = positions[i];
             orbitX.push(x);
             orbitY.push(y)
-        }
-
-        if (orbitX.length > 100 && orbitY.length > 100) {
-            let excess = orbitX.length - 100;
-            orbitX.splice(0, excess);
-            orbitY.splice(0, excess);
         }
     
         return (
@@ -205,40 +190,36 @@ class OrbitPlotter extends React.Component {
             lineData.push(dot);
         }
 
+        
+
         this.setState((state) => {
                         return ({...state, 
-                        orbitIndex: state.orbitIndex + state.orbitIndexIncrease,
-                        data: lineData, 
-                        layout: {...state.layout, datarevision: state.layout.datarevision + 1},
-                        revision: state.revision + 1
+                        data: lineData
                     })
                 });
-        console.log(this.state.revision);
     }
 
-    componentDidMount(){
+    plotOrbits(integratorID) {
+        this.getOrbits(integratorID);
+        setTimeout(() => this.updatePlot(this.orbits), 500);
+    }
+
+    componentDidMount() {
         this.getIntegratorIDs()
-    }
-
-    componentDidUpdate() {
-        console.log("Orbit Index", this.state.orbitIndex);
-        console.log("Orbit Size", this.state.orbitSize);
-        console.log("Component should update", this.state.orbitIndex < this.state.orbitSize)
-        if (this.state.orbitIndex < this.state.orbitSize) {
-            console.log("Updating plot")
-            setTimeout(this.updatePlot, 1000);
-        }
     }
 
     render() {
 
         return (
             <div>
-                <Plot data = {this.state.data} layout = {this.state.layout}/>
+                <Plot data = {this.state.data} 
+                      layout = {this.state.layout} 
+                      config={{scrollZoom:true}}
+                      useResizeHandler={true}/>;
                 <br/>
                 <FormBlock labelName = "Integrator ID" name = "integratorID" type = "select" value = {this.state.integratorIDs[0]} data_list = {this.state.integratorIDs} onChange = {this.handleChange}/>
                 <br/>
-                <button onClick = {() => this.getOrbits()}>{this.state.btnLabel}</button>
+                <button onClick = {() => this.plotOrbits(this.state.integratorID)}>{this.state.btnLabel}</button>
             </div>
         )
     }

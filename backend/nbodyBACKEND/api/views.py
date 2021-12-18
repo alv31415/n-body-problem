@@ -141,6 +141,23 @@ def integratorUpdate(request, pk):
     # get corresponding nbody from database
     nbody = NBody.objects.get(id = integrator.nbody_id.id)
 
+    print(len(np.array(integrator.position_orbits).shape))
+
+    # if request was already made, we can return same data as already calculated
+    # otherwise repeated calls will keep updating the integrator, which is rather inefficient
+    if (len(np.array(integrator.position_orbits).shape) == 3):
+
+        integrator_data = model_to_dict(integrator)
+
+        serialised_integrator = IntegratorSerialiser(instance = integrator, data = integrator_data, many = False)
+
+        if serialised_integrator.is_valid(raise_exception = True):
+            serialised_integrator.save()
+
+        # respond with the old positions of the nbody
+        
+        return Response(serialised_integrator.data)
+
     # instantiate nbody and integrator, and calculate orbits
     try:
         nbod = nb.NBody(np.array(nbody.positions), np.array(nbody.velocities), np.array(nbody.masses),
