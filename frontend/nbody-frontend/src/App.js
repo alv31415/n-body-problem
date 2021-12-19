@@ -69,6 +69,7 @@ render() {
   return (
     <div className="App">
       <header className="App-header">
+      <h1>N Body Simulation</h1>
         <div className = "row-forms">
             <NBodyForm className = "bg-form" onNBodyCreate = {this.updateNBodyIDs}/>
             <IntegratorForm className = "bg-form" onIntegratorCreate = {this.updateIntegratorIDs} nbodyIDs = {this.state.nbodyIDs}/>

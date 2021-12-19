@@ -20,7 +20,7 @@ class OrbitPlotter extends React.Component {
                         "#f59b56",
                         "#ee7d4f",
                         "#e35e4e",
-                        "#d43d51]"]
+                        "#d43d51"]
         this.state = {
             btnLabel: "Plot!",
             orbitSize: 0,
@@ -174,6 +174,7 @@ class OrbitPlotter extends React.Component {
                 y: [orbitY[orbitY.length - 1]],
                 type: 'scatter',
                 mode: 'marker',
+                name: `Orbit ${parseInt(bodyNumber) + 1}`,
                 showlegend: false,
                 marker : {
                     size: 10,
@@ -219,6 +220,7 @@ class OrbitPlotter extends React.Component {
 
         return (
             <div>
+                <h2>Plot Simulation</h2>
                 <Plot data = {this.state.data} 
                       layout = {this.state.layout} 
                       config={{scrollZoom: true}}
@@ -232,7 +234,7 @@ class OrbitPlotter extends React.Component {
                            data_list = {this.props.integratorIDs} 
                            onChange = {this.handleChange}/>
                 <br/>
-                <button onClick = {() => this.plotOrbits(this.state.integratorID)}>{this.state.btnLabel}</button>
+                <button className = "button" onClick = {() => this.plotOrbits(this.state.integratorID)}>{this.state.btnLabel}</button>
             </div>
         )
     }

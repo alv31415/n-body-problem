@@ -40,7 +40,7 @@ class IntegratorForm extends React.Component {
         e.preventDefault()
 
         if (!this.canSubmit()) {
-            console.log("Fill in all inputs to submit!")
+            alert("Fill in all inputs to create an Integrator!")
             return null;
         }
 
@@ -63,6 +63,7 @@ class IntegratorForm extends React.Component {
             
             if (response.ok) {
                 this.props.onIntegratorCreate();
+                alert(`Integrator with ID ${data.id} succesfully created!`)
             }
         } 
         catch (e) {
@@ -84,6 +85,7 @@ class IntegratorForm extends React.Component {
     }
 
     canSubmit() {
+
         return !(this.state.steps === ""
                 || this.state.delta === ""
                 || this.state.tolerance === ""
@@ -92,9 +94,12 @@ class IntegratorForm extends React.Component {
     }
 
     render() {
+
+        let buttonClass = "button" + (this.canSubmit() ? "" : " disabled");
         
         return (
             <div className = {this.props.className}>
+                <h2>Create Integrator For Simulation</h2>
                 <form type = "submit" onSubmit = {this.handleSubmit}>
                     <FormBlock hoverLabel = "The number of integration steps to make. If integration is adaptive, this is used to define the simulation time via steps * time steps."
                                labelName = "Integration Steps" 
@@ -149,7 +154,7 @@ class IntegratorForm extends React.Component {
                                value = {this.state.nbody_id} 
                                data_list = {this.props.nbodyIDs} 
                                onChange = {this.handleChange}/>
-                    <button type="submit">Create Integrator</button>
+                    <button type="submit" className = {buttonClass}>Create Integrator</button>
                 </form>
             </div>
         )

@@ -36,7 +36,7 @@ class NBodyForm extends React.Component {
         e.preventDefault()
 
         if (!this.canSubmit()) {
-            console.log("Fill in all inputs to submit!")
+            alert("Fill in all inputs to create an NBody!")
             return null;
         }
 
@@ -61,6 +61,7 @@ class NBodyForm extends React.Component {
             
             if (response.ok) {
                 this.props.onNBodyCreate();
+                alert(`NBody with ID ${data.id} succesfully created!`)
             }
         } 
         catch (e) {
@@ -83,9 +84,12 @@ class NBodyForm extends React.Component {
     }
 
     render() {
+
+        let buttonClass = "button" + (this.canSubmit() ? "" : " disabled");
         
         return (
             <div className = {this.props.className}>
+                <h2>Create NBody Simulation</h2>
                 <form type = "submit" onSubmit = {this.handleSubmit}>
                     <FormBlock hoverLabel = "A list of the initial positions of the bodies in [x,y,z] coordinates."
                                labelName = "Positions" 
@@ -123,7 +127,7 @@ class NBodyForm extends React.Component {
                                placeholder = "1000" 
                                value = {this.state.escape_tolerance} 
                                onChange = {this.handleChange}/>       
-                    <button type="submit">Create NBody</button>
+                    <button className = {buttonClass} type="submit">Create NBody</button>
                 </form>
             </div>
         )
