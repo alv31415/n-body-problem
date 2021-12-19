@@ -84,7 +84,9 @@ class IntegratorForm extends React.Component {
     render() {
         
         return (
-            <div className = "n-body-form">
+            <div style = {{backgroundColor: "gray",
+                           padding: "20pt",
+                           borderRadius: "20px"}}>
                 <form type = "submit" onSubmit = {this.handleSubmit}>
                     <FormBlock labelName = "Integration Steps" name = "steps" type = "number" step = "1" placeholder = "1000" value = {this.state.steps} onChange = {this.handleChange}/>
                     <FormBlock labelName = "Time Step" name = "delta" type = "number" step = "any" placeholder = "0.1" value = {this.state.delta} onChange = {this.handleChange}/>

@@ -73,7 +73,9 @@ class NBodyForm extends React.Component {
     render() {
         
         return (
-            <div className = "n-body-form">
+            <div style = {{backgroundColor: "gray",
+                           padding: "20pt",
+                           borderRadius: "20px"}}>
                 <form type = "submit" onSubmit = {this.handleSubmit}>
                     <FormBlock labelName = "Positions" name = "positions" type = "text" placeholder = "[[1,2,3], [4,7,9], [2,3,4]]" value = {this.state.body.positions} onChange = {this.handleChange}/>
                     <FormBlock labelName = "Velocities" name = "velocities" type = "text" placeholder = "[[1,2,3], [4,7,9], [2,3,4]]" value = {this.state.body.velocities} onChange = {this.handleChange}/>

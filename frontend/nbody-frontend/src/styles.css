@@ -11,6 +11,8 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding-top: 5%;
+  padding-bottom: 5%;
 }
 
 .App-link {
@@ -21,7 +23,7 @@
   margin-top: 5px;
   margin-bottom: 5px;
   font-size: 12pt;
-  display:inline-block;
+  display: inline-block;
   vertical-align: middle;
   margin-left:20px
 }
