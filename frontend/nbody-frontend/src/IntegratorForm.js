@@ -5,15 +5,15 @@ class IntegratorForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            nbody_id: this.props.nbodyIDs[0],
             name: "Leapfrog3",
             steps: "",
             delta: "",
             tolerance: "",
             adaptive: false,
-            adaptive_constant: "",
-            delta_lim: "",
+            adaptive_constant: "0.1",
+            delta_lim: "0.00001",
             position_orbits: [],
-            nbody_id: this.props.nbodyID
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -39,6 +39,11 @@ class IntegratorForm extends React.Component {
 
         e.preventDefault()
 
+        if (!this.canSubmit()) {
+            console.log("Fill in all inputs to submit!")
+            return null;
+        }
+
         const postUrl = "http://127.0.0.1:8000/api/integrator-create/";
 
         var csrfToken = this.getCookie("csrftoken");
@@ -52,15 +57,12 @@ class IntegratorForm extends React.Component {
             body: JSON.stringify(this.state)
         };
 
-        console.log(this.state);
-
         try {
             const response = await fetch(postUrl, reqBody)
             const data = await response.json();
             
             if (response.ok) {
-                console.log(data);
-                this.props.onIntegratorCreate(data.id);
+                this.props.onIntegratorCreate();
             }
         } 
         catch (e) {
@@ -79,6 +81,14 @@ class IntegratorForm extends React.Component {
         }
         
         this.setState(newIntegrator);
+    }
+
+    canSubmit() {
+        return !(this.state.steps === ""
+                || this.state.delta === ""
+                || this.state.tolerance === ""
+                || this.state.adaptive_constant === ""
+                || this.state.delta_lim === "") 
     }
 
     render() {
@@ -133,11 +143,11 @@ class IntegratorForm extends React.Component {
                                value = {this.state.delta_lim} 
                                onChange = {this.handleChange}/>
                     <FormBlock hoverLabel = "The ID of the NBody which will be simulated."
-                               labelName = "NBody ID" 
+                               labelName = "NBody ID"  
                                name = "nbody_id" 
-                               type = "number"
-                               placeholder = "1" 
+                               type = "select" 
                                value = {this.state.nbody_id} 
+                               data_list = {this.props.nbodyIDs} 
                                onChange = {this.handleChange}/>
                     <button type="submit">Create Integrator</button>
                 </form>

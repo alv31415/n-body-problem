@@ -6,8 +6,9 @@ function FormBlock(props) {
 
         return (
             <div className = "block">
-                <label>{props.labelName}</label>
-                <select name = {props.name} style={{width: "100px"}} onChange = {props.onChange}>
+                <label title = {props.hoverLabel}>{props.labelName}</label>
+                <select name = {props.name} 
+                        onChange = {props.onChange}>
                     {props.data_list.map((elm) => {return <option key = {elm} value = {elm} label = {elm}/>})}
                 </select>
             </div>
@@ -18,11 +19,11 @@ function FormBlock(props) {
             <div className = "block">
                 <label title = {props.hoverLabel}>{props.labelName}</label>
                 <input name = {props.name} 
-                    type = {props.type} 
-                    placeholder = {props.placeholder} 
-                    value = {props.value} 
-                    step = {props.step}
-                    onChange = {props.onChange}/>
+                       type = {props.type} 
+                       placeholder = {props.placeholder} 
+                       value = {props.value} 
+                       step = {props.step}
+                       onChange = {props.onChange}/>
             </div>
         )
     }

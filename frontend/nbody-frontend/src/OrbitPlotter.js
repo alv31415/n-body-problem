@@ -23,9 +23,8 @@ class OrbitPlotter extends React.Component {
                         "#d43d51]"]
         this.state = {
             btnLabel: "Plot!",
-            integratorID: this.props.integratorID,
-            integratorIDs: [],
             orbitSize: 0,
+            integratorID: this.props.integratorIDs[0],
             integratorIDChanged: false,
             data: [{x: [0], 
                     y: [0], 
@@ -62,7 +61,6 @@ class OrbitPlotter extends React.Component {
         };
 
         this.handleChange = this.handleChange.bind(this);
-        this.getIntegratorIDs = this.getIntegratorIDs.bind(this);
         this.updatePlot = this.updatePlot.bind(this);
     }
 
@@ -88,31 +86,11 @@ class OrbitPlotter extends React.Component {
     }
 
     /**
-     * Gets the IDs of all integrators in the database
-     */
-    async getIntegratorIDs() {
-        const getUrl = "http://localhost:8000/api/integrator-list-ids/"
-
-        try {
-            const response = await fetch(getUrl, {method: "GET"});
-            const data = await response.json();
-            data.sort();
-            
-            if (response.ok) {
-                this.setState({...this.state, integratorIDs: data, integratorID: data[0]});
-            }
-        } 
-        catch (e) {
-            console.error("Error occurred during GET request", e)
-        }     
-    }
-
-    /**
      * Computes the orbits using the current integrator.
      */
     async getOrbits() {
 
-        if (this.state.integratorIDChanged == false && this.state.orbitSize !== 0) {
+        if (this.state.integratorIDChanged === false && this.state.orbitSize !== 0) {
 
             return ;
         }
@@ -234,7 +212,7 @@ class OrbitPlotter extends React.Component {
     }
 
     componentDidMount() {
-        this.getIntegratorIDs()
+        this.props.onIntegratorUpdate();
     }
 
     render() {
@@ -243,14 +221,15 @@ class OrbitPlotter extends React.Component {
             <div>
                 <Plot data = {this.state.data} 
                       layout = {this.state.layout} 
-                      config={{scrollZoom:true}}
+                      config={{scrollZoom: true}}
                       useResizeHandler={true}/>
                 <br/>
-                <FormBlock labelName = "Integrator ID" 
+                <FormBlock hoverLabel = "The integrator to use for plotting."
+                           labelName = "Integrator ID" 
                            name = "integratorID" 
                            type = "select" 
-                           value = {this.state.integratorIDs[0]} 
-                           data_list = {this.state.integratorIDs} 
+                           value = {this.state.integratorID} 
+                           data_list = {this.props.integratorIDs} 
                            onChange = {this.handleChange}/>
                 <br/>
                 <button onClick = {() => this.plotOrbits(this.state.integratorID)}>{this.state.btnLabel}</button>

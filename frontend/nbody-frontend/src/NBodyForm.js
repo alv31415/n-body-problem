@@ -5,13 +5,11 @@ class NBodyForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            body: {
-                positions: "",
-                velocities: "",
-                masses: "",
-                collision_tolerance: 0.001,
-                escape_tolerance: 1000
-            }
+            positions: "",
+            velocities: "",
+            masses: "",
+            collision_tolerance: "0.001",
+            escape_tolerance: "1000"
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -37,6 +35,13 @@ class NBodyForm extends React.Component {
 
         e.preventDefault()
 
+        if (!this.canSubmit()) {
+            console.log("Fill in all inputs to submit!")
+            return null;
+        }
+
+        console.log(this.state)
+
         const postUrl = "http://127.0.0.1:8000/api/nbody-create/";
 
         var csrfToken = this.getCookie("csrftoken");
@@ -47,7 +52,7 @@ class NBodyForm extends React.Component {
                 "Content-Type" : "application/json",
                 "X-CSRFToken": csrfToken
             },
-            body: JSON.stringify(this.state.body)
+            body: JSON.stringify(this.state)
         };
 
         try {
@@ -55,8 +60,7 @@ class NBodyForm extends React.Component {
             const data = await response.json();
             
             if (response.ok) {
-                console.log(data);
-                this.props.onNBodyCreate(data.id);
+                this.props.onNBodyCreate();
             }
         } 
         catch (e) {
@@ -65,9 +69,17 @@ class NBodyForm extends React.Component {
     }
 
     handleChange(e) {
-        const newBody = {...this.state.body};
+        const newBody = {...this.state};
         newBody[e.target.name] = e.target.value;
-        this.setState({body: newBody});
+        this.setState(newBody);
+    }
+
+    canSubmit() {
+        return !(this.state.positions === ""
+                || this.state.velocities === ""
+                || this.state.masses === ""
+                || this.state.collision_tolerance === ""
+                || this.state.escape_tolerance === "") 
     }
 
     render() {
@@ -80,28 +92,28 @@ class NBodyForm extends React.Component {
                                name = "positions" 
                                type = "text" 
                                placeholder = "[[1,2,3], [4,7,9], [2,3,4]]" 
-                               value = {this.state.body.positions} 
+                               value = {this.state.positions} 
                                onChange = {this.handleChange}/>
                     <FormBlock hoverLabel = "A list of the initial velocities of the bodies in [x,y,z] coordinates."
                                labelName = "Velocities" 
                                name = "velocities" 
                                type = "text" 
                                placeholder = "[[1,2,3], [4,7,9], [2,3,4]]" 
-                               value = {this.state.body.velocities} 
+                               value = {this.state.velocities} 
                                onChange = {this.handleChange}/>
                     <FormBlock hoverLabel = "A list of the masses of the bodies."
                                labelName = "Masses" 
                                name = "masses" 
                                type = "text" 
                                placeholder = "[3,1,4]" 
-                               value = {this.state.body.masses} 
+                               value = {this.state.masses} 
                                onChange = {this.handleChange}/>
                     <FormBlock hoverLabel = "The minimum distance between 2 bodies, before they are considered to have collided."
                                labelName = "Collision Tolerance" 
                                name = "collision_tolerance" 
                                type = "number" step = "any" 
                                placeholder = "0.001" 
-                               value = {this.state.body.collision_tolerance} 
+                               value = {this.state.collision_tolerance} 
                                onChange = {this.handleChange}/>
                     <FormBlock hoverLabel = "The maximum distance of any body away from the centre of mass, before it is considered to escape the system."
                                labelName = "Escape Tolerance" 
@@ -109,7 +121,7 @@ class NBodyForm extends React.Component {
                                type = "number" 
                                step = "any" 
                                placeholder = "1000" 
-                               value = {this.state.body.escape_tolerance} 
+                               value = {this.state.escape_tolerance} 
                                onChange = {this.handleChange}/>       
                     <button type="submit">Create NBody</button>
                 </form>
