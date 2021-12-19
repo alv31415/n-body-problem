@@ -73,16 +73,44 @@ class NBodyForm extends React.Component {
     render() {
         
         return (
-            <div style = {{backgroundColor: "gray",
-                           padding: "20pt",
-                           borderRadius: "20px"}}>
+            <div className = {this.props.className}>
                 <form type = "submit" onSubmit = {this.handleSubmit}>
-                    <FormBlock labelName = "Positions" name = "positions" type = "text" placeholder = "[[1,2,3], [4,7,9], [2,3,4]]" value = {this.state.body.positions} onChange = {this.handleChange}/>
-                    <FormBlock labelName = "Velocities" name = "velocities" type = "text" placeholder = "[[1,2,3], [4,7,9], [2,3,4]]" value = {this.state.body.velocities} onChange = {this.handleChange}/>
-                    <FormBlock labelName = "Masses" name = "masses" type = "text" placeholder = "[3,1,4]" value = {this.state.body.masses} onChange = {this.handleChange}/>
-                    <FormBlock labelName = "Collision Tolerance" name = "collision_tolerance" type = "number" step = "any" placeholder = "0.001" value = {this.state.body.collision_tolerance} onChange = {this.handleChange}/>
-                    <FormBlock labelName = "Escape Tolerance" name = "escape_tolerance" type = "number" step = "any" placeholder = "1000" value = {this.state.body.escape_tolerance} onChange = {this.handleChange}/>       
-                    <br/>
+                    <FormBlock hoverLabel = "A list of the initial positions of the bodies in [x,y,z] coordinates."
+                               labelName = "Positions" 
+                               name = "positions" 
+                               type = "text" 
+                               placeholder = "[[1,2,3], [4,7,9], [2,3,4]]" 
+                               value = {this.state.body.positions} 
+                               onChange = {this.handleChange}/>
+                    <FormBlock hoverLabel = "A list of the initial velocities of the bodies in [x,y,z] coordinates."
+                               labelName = "Velocities" 
+                               name = "velocities" 
+                               type = "text" 
+                               placeholder = "[[1,2,3], [4,7,9], [2,3,4]]" 
+                               value = {this.state.body.velocities} 
+                               onChange = {this.handleChange}/>
+                    <FormBlock hoverLabel = "A list of the masses of the bodies."
+                               labelName = "Masses" 
+                               name = "masses" 
+                               type = "text" 
+                               placeholder = "[3,1,4]" 
+                               value = {this.state.body.masses} 
+                               onChange = {this.handleChange}/>
+                    <FormBlock hoverLabel = "The minimum distance between 2 bodies, before they are considered to have collided."
+                               labelName = "Collision Tolerance" 
+                               name = "collision_tolerance" 
+                               type = "number" step = "any" 
+                               placeholder = "0.001" 
+                               value = {this.state.body.collision_tolerance} 
+                               onChange = {this.handleChange}/>
+                    <FormBlock hoverLabel = "The maximum distance of any body away from the centre of mass, before it is considered to escape the system."
+                               labelName = "Escape Tolerance" 
+                               name = "escape_tolerance" 
+                               type = "number" 
+                               step = "any" 
+                               placeholder = "1000" 
+                               value = {this.state.body.escape_tolerance} 
+                               onChange = {this.handleChange}/>       
                     <button type="submit">Create NBody</button>
                 </form>
             </div>

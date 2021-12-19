@@ -16,7 +16,7 @@ function FormBlock(props) {
     else {
         return (
             <div className = "block">
-                <label>{props.labelName}</label>
+                <label title = {props.hoverLabel}>{props.labelName}</label>
                 <input name = {props.name} 
                     type = {props.type} 
                     placeholder = {props.placeholder} 

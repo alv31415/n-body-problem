@@ -3,7 +3,6 @@
 }
 
 .App-header {
-  background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -21,20 +20,24 @@
 
 .block input {
   margin-top: 5px;
-  margin-bottom: 5px;
+  margin-bottom: 20px;
   font-size: 12pt;
   display: inline-block;
-  vertical-align: middle;
-  margin-left:20px
+  vertical-align: center;
+  margin-left:10px;
+  width: 200px;
 }
 
 .block label {
   display:inline-block;
   font-size: 12pt;
   float: left;
+  font-weight: bold;
   padding-top: 5px;
   text-align: right;
-  width: 140px;
+  width: 160px;
+  clear: both;
+  margin-right:15px;
 }
 
 .modebar{
@@ -42,10 +45,23 @@
 }
 
 html, body {
-  overscroll-behavior: none;
+  overscroll-behavior: contain;
+  background-color: #282c34;
 }
 
 input {
   resize: horizontal;
   width: 200px;
+}
+
+.row-forms {
+  display: flex;
+  flexDirection: row;
+  gap: 100px;
+}
+
+.bg-form {
+  background-color: gray;
+  padding: 20pt;
+  border-radius: 20px;
 }

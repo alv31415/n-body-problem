@@ -84,18 +84,61 @@ class IntegratorForm extends React.Component {
     render() {
         
         return (
-            <div style = {{backgroundColor: "gray",
-                           padding: "20pt",
-                           borderRadius: "20px"}}>
+            <div className = {this.props.className}>
                 <form type = "submit" onSubmit = {this.handleSubmit}>
-                    <FormBlock labelName = "Integration Steps" name = "steps" type = "number" step = "1" placeholder = "1000" value = {this.state.steps} onChange = {this.handleChange}/>
-                    <FormBlock labelName = "Time Step" name = "delta" type = "number" step = "any" placeholder = "0.1" value = {this.state.delta} onChange = {this.handleChange}/>
-                    <FormBlock labelName = "Tolerance" name = "tolerance" type = "number" step = "any" placeholder = "0.01" value = {this.state.tolerance} onChange = {this.handleChange}/>
-                    <FormBlock labelName = "Adaptive" name = "adaptive" type = "checkbox" value = {this.state.adaptive} onChange = {this.handleChange}/>
-                    <FormBlock labelName = "Adaptive Constant" name = "adaptive_constant" type = "number" step = "any" placeholder = "0.1" value = {this.state.adaptive_constant} onChange = {this.handleChange}/>
-                    <FormBlock labelName = "Time Step Limit" name = "delta_lim" type = "number" step = "any" placeholder = "0.00001" value = {this.state.delta_lim} onChange = {this.handleChange}/>
-                    <FormBlock labelName = "NBody ID" name = "nbody_id" type = "number" placeholder = "1" value = {this.state.nbody_id} onChange = {this.handleChange}/>
-                    <br/>
+                    <FormBlock hoverLabel = "The number of integration steps to make. If integration is adaptive, this is used to define the simulation time via steps * time steps."
+                               labelName = "Integration Steps" 
+                               name = "steps" 
+                               type = "number" 
+                               step = "1" 
+                               placeholder = "1000" 
+                               value = {this.state.steps} 
+                               onChange = {this.handleChange}/>
+                    <FormBlock hoverLabel = "The size of an integration step, h. If integration is adaptive, this is used to define the simulation time via steps * time steps."
+                               labelName = "Time Step" 
+                               name = "delta" 
+                               type = "number" 
+                               step = "any" 
+                               placeholder = "0.1" 
+                               value = {this.state.delta} 
+                               onChange = {this.handleChange}/>
+                    <FormBlock hoverLabel = "The error tolerance when computing quantities like energy or angular momentum."
+                               labelName = "Tolerance" 
+                               name = "tolerance" 
+                               type = "number" 
+                               step = "any" 
+                               placeholder = "0.01" 
+                               value = {this.state.tolerance} 
+                               onChange = {this.handleChange}/>
+                    <FormBlock hoverLabel = "Whether an adaptive time step should be used to integrate."
+                               labelName = "Adaptive" 
+                               name = "adaptive" 
+                               type = "checkbox" 
+                               value = {this.state.adaptive} 
+                               onChange = {this.handleChange}/>
+                    <FormBlock hoverLabel = "The constant used to define the adaptive time step. Ignored if adaptive is not checked."
+                               labelName = "Adaptive Constant" 
+                               name = "adaptive_constant" 
+                               type = "number" 
+                               step = "any" 
+                               placeholder = "0.1" 
+                               value = {this.state.adaptive_constant} 
+                               onChange = {this.handleChange}/>
+                    <FormBlock hoverLabel = "The minimum time step size allowed when using an adaptive time step. Ignored if adaptive is not checked."
+                               labelName = "Time Step Limit" 
+                               name = "delta_lim" 
+                               type = "number" 
+                               step = "any" 
+                               placeholder = "0.00001" 
+                               value = {this.state.delta_lim} 
+                               onChange = {this.handleChange}/>
+                    <FormBlock hoverLabel = "The ID of the NBody which will be simulated."
+                               labelName = "NBody ID" 
+                               name = "nbody_id" 
+                               type = "number"
+                               placeholder = "1" 
+                               value = {this.state.nbody_id} 
+                               onChange = {this.handleChange}/>
                     <button type="submit">Create Integrator</button>
                 </form>
             </div>

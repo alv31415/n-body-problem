@@ -1,4 +1,4 @@
-import styles from './styles.css';
+import './styles.css';
 import React, { useLayoutEffect } from "react";
 import NBodyForm from './NBodyForm';
 import IntegratorForm from "./IntegratorForm"
@@ -36,9 +36,9 @@ render() {
   return (
     <div className="App">
       <header className="App-header">
-        <div style={{ display: "flex", flexDirection: "row", gap: "100px"}}>
-            <NBodyForm onNBodyCreate = {this.updateNBodyID}/>
-            <IntegratorForm onIntegratorCreate = {this.updateIntegratorID} nbodyID = {this.state.nbodyID}/>
+        <div className = "row-forms">
+            <NBodyForm className = "bg-form" onNBodyCreate = {this.updateNBodyID}/>
+            <IntegratorForm className = "bg-form" onIntegratorCreate = {this.updateIntegratorID} nbodyID = {this.state.nbodyID}/>
         </div>
         <br/>
         <OrbitPlotter integratorID = {this.state.integratorID} onIntegratorUpdate = {this.updateIntegratorID}/>
