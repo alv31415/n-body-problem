@@ -6,7 +6,7 @@ import OrbitPlotter from './OrbitPlotter';
 import ImgLink from './ImgLink';
 
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
+import { faFileAlt } from "@fortawesome/free-solid-svg-icons";
 
 
 class App extends React.Component {
@@ -75,15 +75,13 @@ render() {
     <div className="App">
       <header className="App-header">
       <h1>N Body Problem Simulation</h1>
-      <div className = "row-icons">
+      <div className="row-icons">
         <ImgLink icon = {faGithub} 
-                 className = "icon github" 
-                 size = "2x" 
+                 className = "img-link fa-fw" 
                  link = "https://github.com/alv31415/n-body-problem/tree/website"/>
         <ImgLink icon = {faFileAlt} 
-                 className = "icon file" 
-                 size = "2x" 
-                 link = "https://github.com/alv31415/n-body-problem/tree/website/n-body-report.pdf"/>
+                 className = "img-link fa-fw" 
+                 link = "https://alv31415.github.io/n-body-problem/n-body-report.pdf"/>
       </div>
       </header>
       <div className = "row-forms">
@@ -92,7 +90,6 @@ render() {
         </div>
         <br/>
         <OrbitPlotter integratorIDs = {this.state.integratorIDs} onIntegratorUpdate = {this.updateIntegratorIDs}/>
-        <iframe src="https://github.com/alv31415/n-body-problem/tree/website/n-body-report.pdf" height="200" width="300"></iframe>
     </div>
   );
 };

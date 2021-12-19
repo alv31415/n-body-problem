@@ -7,9 +7,9 @@ class ImgLink extends React.Component {
     }
     render() { 
         return (  
-            <div class="social-container">
-                <a href={this.props.link} target = "_blank">
-                    <FontAwesomeIcon icon={this.props.icon} size={this.props.size} />
+            <div className= "icon">
+                <a href={this.props.link} target = "_blank" className = {this.props.className}>
+                    <FontAwesomeIcon icon={this.props.icon}/>
                 </a>
             </div>
         );
