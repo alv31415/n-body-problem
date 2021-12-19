@@ -3,6 +3,11 @@ import React from "react";
 import NBodyForm from './NBodyForm';
 import IntegratorForm from "./IntegratorForm"
 import OrbitPlotter from './OrbitPlotter';
+import ImgLink from './ImgLink';
+
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
+
 
 class App extends React.Component {
   constructor(props) {
@@ -69,14 +74,25 @@ render() {
   return (
     <div className="App">
       <header className="App-header">
-      <h1>N Body Simulation</h1>
-        <div className = "row-forms">
+      <h1>N Body Problem Simulation</h1>
+      <div className = "row-icons">
+        <ImgLink icon = {faGithub} 
+                 className = "icon github" 
+                 size = "2x" 
+                 link = "https://github.com/alv31415/n-body-problem/tree/website"/>
+        <ImgLink icon = {faFileAlt} 
+                 className = "icon file" 
+                 size = "2x" 
+                 link = "https://github.com/alv31415/n-body-problem/tree/website/n-body-report.pdf"/>
+      </div>
+      </header>
+      <div className = "row-forms">
             <NBodyForm className = "bg-form" onNBodyCreate = {this.updateNBodyIDs}/>
             <IntegratorForm className = "bg-form" onIntegratorCreate = {this.updateIntegratorIDs} nbodyIDs = {this.state.nbodyIDs}/>
         </div>
         <br/>
         <OrbitPlotter integratorIDs = {this.state.integratorIDs} onIntegratorUpdate = {this.updateIntegratorIDs}/>
-      </header>
+        <iframe src="https://github.com/alv31415/n-body-problem/tree/website/n-body-report.pdf" height="200" width="300"></iframe>
     </div>
   );
 };

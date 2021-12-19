@@ -219,7 +219,7 @@ class OrbitPlotter extends React.Component {
     render() {
 
         return (
-            <div>
+            <div className="bg-form">
                 <h2>Plot Simulation</h2>
                 <Plot data = {this.state.data} 
                       layout = {this.state.layout} 
@@ -233,7 +233,6 @@ class OrbitPlotter extends React.Component {
                            value = {this.state.integratorID} 
                            data_list = {this.props.integratorIDs} 
                            onChange = {this.handleChange}/>
-                <br/>
                 <button className = "button" onClick = {() => this.plotOrbits(this.state.integratorID)}>{this.state.btnLabel}</button>
             </div>
         )

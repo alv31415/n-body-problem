@@ -1,8 +1,5 @@
 .App {
   text-align: center;
-}
-
-.App-header {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -11,6 +8,14 @@
   font-size: calc(10px + 2vmin);
   color: white;
   padding-top: 5%;
+  padding-bottom: 5%;
+}
+
+.App-header {
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
   padding-bottom: 5%;
 }
 
@@ -35,7 +40,7 @@
   font-size: 12pt;
   display: inline-block;
   vertical-align: center;
-  width: 100px;
+  width: 200px;
   border-color: black;
 }
 
@@ -68,6 +73,15 @@ input {
   display: flex;
   flex-direction: row;
   gap: 100px;
+  margin-bottom: 5%;
+}
+
+.row-icons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 5%;
 }
 
 .bg-form {
