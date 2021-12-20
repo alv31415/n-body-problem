@@ -57,7 +57,6 @@ def nbodyListIDs(request):
 @api_view(["POST"])
 def nbodyCreate(request):
     serialised_nbody = NBodySerialiser(data = validate_nbody_post(request))
-    print(validate_nbody_post(request))
 
     if serialised_nbody.is_valid(raise_exception = True):
         serialised_nbody.save()
@@ -74,7 +73,6 @@ def nbodyView(request, pk):
 def nbodyUpdate(request, pk):
     nbody = NBody.objects.get(id = pk)
     serialised_nbody = NBodySerialiser(instance = nbody, data = request.data)
-    print(request.data)
 
     if serialised_nbody.is_valid():
         serialised_nbody.save()
@@ -140,8 +138,6 @@ def integratorUpdate(request, pk):
 
     # get corresponding nbody from database
     nbody = NBody.objects.get(id = integrator.nbody_id.id)
-
-    print(len(np.array(integrator.position_orbits).shape))
 
     # if request was already made, we can return same data as already calculated
     # otherwise repeated calls will keep updating the integrator, which is rather inefficient

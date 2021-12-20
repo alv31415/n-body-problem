@@ -80,13 +80,19 @@ input {
   display: flex;
   flex-direction: row;
   position: relative;
-  left: 40%;
+  left: 30%;
   gap: 2%;
 }
 
 .bg-form {
   background-color: gray;
   padding: 20pt;
+  border-radius: 20px;
+}
+
+.bg-form-plot {
+  background-color: gray;
+  padding: 1%;
   border-radius: 20px;
 }
 
@@ -112,6 +118,13 @@ p {
 
 li {
   margin-bottom: 2%;
+}
+
+.img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 3%;
 }
 
 .button {
@@ -156,4 +169,27 @@ a.img-link:hover {
 
 a.link-inline {
   color: white;
+}
+
+.copyright {
+  color: gray;
+  font-size: 10pt;
+}
+
+.scroll-button {
+  font-size: 30pt;
+  color: #61dafb;
+  border-color: rgba(0,0,0,0);;
+  background-color: rgba(0,0,0,0);
+  font-size: 1.5em;
+  padding: 0.6%;
+  position: fixed;
+  right: 2%;
+  bottom: 2%;
+  transition-duration: 0.4s;
+}
+
+.scroll-button:hover {
+  opacity: 0.8;
+  transform: translateY(-2px);
 }

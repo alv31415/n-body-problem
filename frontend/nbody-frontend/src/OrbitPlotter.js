@@ -32,8 +32,8 @@ class OrbitPlotter extends React.Component {
                     mode: "lines"}],
             layout: {
                 dragmode: "pan", 
-                width: 640, 
-                height: 640, 
+                width: 500, 
+                height: 500, 
                 plot_bgcolor: "black",
                 paper_bgcolor: "black",
                 yaxis: {
@@ -219,7 +219,7 @@ class OrbitPlotter extends React.Component {
     render() {
 
         return (
-            <div className="bg-form">
+            <div className="bg-form-plot">
                 <h2>Plot Simulation</h2>
                 <Plot data = {this.state.data} 
                       layout = {this.state.layout} 
