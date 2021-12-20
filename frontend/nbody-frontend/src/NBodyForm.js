@@ -112,7 +112,7 @@ class NBodyForm extends React.Component {
                                placeholder = "[3,1,4]" 
                                value = {this.state.masses} 
                                onChange = {this.handleChange}/>
-                    <FormBlock hoverLabel = "The minimum distance between 2 bodies, before they are considered to have collided."
+                    <FormBlock hoverLabel = "The maximum distance between 2 bodies, before they are considered to have collided."
                                labelName = "Collision Tolerance" 
                                name = "collision_tolerance" 
                                type = "number" step = "any" 

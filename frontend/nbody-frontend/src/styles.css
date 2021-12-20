@@ -137,3 +137,18 @@ a.img-link {
 a.img-link:hover {
   transform: translateY(-2px);
 }
+
+a.link-inline {
+  color: white;
+}
+
+p {
+  font-size: 14pt;
+  text-align: left;
+  line-height: 30pt;
+  margin: 0 10% 5% 10%;
+}
+
+li {
+  margin-bottom: 2%;
+}

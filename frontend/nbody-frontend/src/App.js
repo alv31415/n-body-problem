@@ -1,98 +1,25 @@
 import './styles.css';
-import React from "react";
-import NBodyForm from './NBodyForm';
-import IntegratorForm from "./IntegratorForm"
-import OrbitPlotter from './OrbitPlotter';
-import ImgLink from './ImgLink';
 
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faFileAlt } from "@fortawesome/free-solid-svg-icons";
+import Simulation from './Simulation';
+import About from './About';
+import Math from './Math';
+import NavBar from './NavBar';
+import SocialLinks from './SocialLinks';
 
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      nbodyIDs: [],
-      integratorIDs: []
-    }
-
-    this.updateNBodyIDs = this.updateNBodyIDs.bind(this);
-    this.updateIntegratorIDs = this.updateIntegratorIDs.bind(this);
-  }
-
-
-  async getIntegratorIDs() {
-    const getUrl = "http://localhost:8000/api/integrator-list-ids/"
-
-    try {
-        const response = await fetch(getUrl, {method: "GET"});
-        const data = await response.json();
-        data.sort();
-        
-        if (response.ok) {
-            this.setState({...this.state, integratorIDs: data});
-        }
-    } 
-    catch (e) {
-        console.error("Error occurred during GET request", e)
-    }     
-}
-
-async getNBodyIDs() {
-  const getUrl = "http://localhost:8000/api/nbody-list-ids/"
-
-  try {
-      const response = await fetch(getUrl, {method: "GET"});
-      const data = await response.json();
-      data.sort();
-      
-      if (response.ok) {
-          this.setState({...this.state, nbodyIDs: data});
-      }
-  } 
-  catch (e) {
-      console.error("Error occurred during GET request", e)
-  }     
-}
-
-componentDidMount() {
-  this.getNBodyIDs();
-  this.getIntegratorIDs();
-}
-
-updateNBodyIDs() {
-  this.getNBodyIDs();
-}
-
-updateIntegratorIDs() {
-  this.getIntegratorIDs();
-}
-
-render() {
+function App() {
 
   return (
     <div className="App">
       <header className="App-header">
-      <h1>N Body Problem Simulation</h1>
-      <div className="row-icons">
-        <ImgLink icon = {faGithub} 
-                 className = "img-link fa-fw" 
-                 link = "https://github.com/alv31415/n-body-problem/tree/website"/>
-        <ImgLink icon = {faFileAlt} 
-                 className = "img-link fa-fw" 
-                 link = "https://alv31415.github.io/n-body-problem/n-body-report.pdf"/>
-      </div>
+        <h1>N Body Problem Simulation</h1>
+        <SocialLinks/>
       </header>
-      <div className = "row-forms">
-            <NBodyForm className = "bg-form" onNBodyCreate = {this.updateNBodyIDs}/>
-            <IntegratorForm className = "bg-form" onIntegratorCreate = {this.updateIntegratorIDs} nbodyIDs = {this.state.nbodyIDs}/>
-        </div>
-        <br/>
-        <OrbitPlotter integratorIDs = {this.state.integratorIDs} onIntegratorUpdate = {this.updateIntegratorIDs}/>
-    </div>
+      <Simulation/>
+      <hr></hr>
+      <About/>
+      </div>
   );
-};
-};
+}
 
 export default App;
