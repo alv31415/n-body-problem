@@ -36,6 +36,9 @@ function About() {
                 To create a simulation, you need to produce an <i>NBody</i>, which holds all the simulation data, 
                 such as the position, velocity and mass of each body in the simulation, 
                 alongside the physical information of the system, like energy, angular momentum or linear momentum. 
+                It is important to note that in the code, the gravitational constant <MathInline formula = "G"/> is set to 1, 
+                whilst its real value is actually <MathInline formula = "6.67408 \times 10^{-11}"/>. This was done so that when defining initial conditions, 
+                we could use smaller, more understandable numbers.
                 To create the simulation, you need to provide:
                 <ul>
                     <li>

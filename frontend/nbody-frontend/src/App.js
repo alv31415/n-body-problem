@@ -18,6 +18,7 @@ function App() {
       <Simulation/>
       <hr></hr>
       <About/>
+      <Math/>
       </div>
   );
 }
