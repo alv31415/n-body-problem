@@ -1,5 +1,5 @@
 # n-body-problem
-Investigation of the N-Body problem via numerical methods
+Investigation of the N-Body problem via numerical methods. This branch focuses on producing a wesbite from the project, which explains the problem, and gives functionality to plot simulations. The website is up and running at https://nbody-89ffd.web.app . I used a React frontend (hosted in `firebase`), and a Django backend (hosted in `heroku`).
 
 ## Running the Server
 
@@ -23,3 +23,8 @@ To run the React App, we need to have ```npm``` installed. Then once we are in t
 ```
 npm start
 ```
+Currently, the React App is made to run with the backend at https://nbody-api.herokuapp.com/api/.
+
+## The N-Body Simulation
+
+The simulation files are still in this branch, and can be found at https://github.com/alv31415/n-body-problem/tree/website/backend/nbodyBACKEND/sim .
