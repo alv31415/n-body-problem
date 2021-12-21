@@ -19,7 +19,7 @@ class Simulation extends React.Component {
 
 
   async getIntegratorIDs() {
-    const getUrl = "http://localhost:8000/api/integrator-list-ids/"
+    const getUrl = "https://nbody-api.herokuapp.com/api/integrator-list-ids/"
 
     try {
         const response = await fetch(getUrl, {method: "GET"});
@@ -36,7 +36,7 @@ class Simulation extends React.Component {
 }
 
 async getNBodyIDs() {
-  const getUrl = "http://localhost:8000/api/nbody-list-ids/"
+  const getUrl = "https://nbody-api.herokuapp.com/api/nbody-list-ids/"
 
   try {
       const response = await fetch(getUrl, {method: "GET"});

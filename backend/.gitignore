@@ -1,1 +1,6 @@
 backend
+nbodyBACKEND/.env
+nbodyBACKEND/runtime.txt
+nbodyBACKEND/Procfile
+nbodyBACKEND/requirements.txt
+nbodyBACKEND/staticfiles

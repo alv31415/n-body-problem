@@ -44,7 +44,7 @@ class IntegratorForm extends React.Component {
             return null;
         }
 
-        const postUrl = "http://127.0.0.1:8000/api/integrator-create/";
+        const postUrl = "https://nbody-api.herokuapp.com/api/integrator-create/";
 
         var csrfToken = this.getCookie("csrftoken");
 

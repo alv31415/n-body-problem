@@ -1,10 +1,6 @@
 # https://www.youtube.com/watch?v=TmsD8QExZ84
 
-import sys
-
 import numpy as np
-
-sys.path.insert(0,'../../')
 
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render

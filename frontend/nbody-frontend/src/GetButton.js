@@ -13,10 +13,10 @@ class GetButton extends React.Component {
         let getUrl;
 
         if (this.props.getPk === "") {
-             getUrl = "http://127.0.0.1:8000/api/nbody-list/";
+             getUrl = "https://nbody-api.herokuapp.com/api/nbody-list/";
         }
         else {
-            getUrl = "http://127.0.0.1:8000/api/nbody-view/" + this.props.getPk;
+            getUrl = "https://nbody-api.herokuapp.com//api/nbody-view/" + this.props.getPk;
         }
 
         try {

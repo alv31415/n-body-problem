@@ -30,10 +30,10 @@ class PostButton extends React.Component {
         let getUrl;
 
         if (this.props.getPk === "") {
-             getUrl = "http://127.0.0.1:8000/api/nbody-create/";
+             getUrl = "https://nbody-api.herokuapp.com/api/nbody-create/";
         }
         else {
-            getUrl = "http://127.0.0.1:8000/api/nbody-update/" + this.props.getPk;
+            getUrl = "https://nbody-api.herokuapp.com/api/nbody-update/" + this.props.getPk;
         }
 
         var csrfToken = this.getCookie("csrftoken");

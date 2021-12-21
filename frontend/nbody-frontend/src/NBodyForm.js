@@ -42,7 +42,7 @@ class NBodyForm extends React.Component {
 
         console.log(this.state)
 
-        const postUrl = "http://127.0.0.1:8000/api/nbody-create/";
+        const postUrl = "https://nbody-api.herokuapp.com/api/nbody-create/";
 
         var csrfToken = this.getCookie("csrftoken");
 

@@ -95,7 +95,7 @@ class OrbitPlotter extends React.Component {
             return ;
         }
 
-        const postUrl = "http://localhost:8000/api/integrator-update/" + this.state.integratorID;
+        const postUrl = "https://nbody-api.herokuapp.com/api/integrator-update/" + this.state.integratorID;
     
         var csrfToken = this.getCookie("csrftoken");
     
