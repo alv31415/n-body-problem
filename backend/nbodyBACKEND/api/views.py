@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from django.http.response import HttpResponse, JsonResponse
+from django.http.response import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
@@ -23,15 +23,19 @@ def apiOverview(request):
 
     api_urls = {
         "NBody List": "/nbody-list/",
+        "NBody List IDs": "/nbody-list-ids/",
         "NBody Create": "/nbody-create/",
         "NBody View": "/nbody-view/<str:pk>",
         "NBody Update": "/nbody-update/<str:pk>",
         "NBody Delete": "/nbody-delete/<str:pk>",
+        "NBody Delete All": "/nbody-delete-all/",
         "Integrator List": "/integrator-list/",
+        "Integrator List IDs": "/integrator-list-ids/",
         "Integrator Create": "/integrator-create/",
         "Integrator View": "/integrator-view/<str:pk>",
         "Integrator Update": "/integrator-update/<str:pk>",
-        "Integrator Delete": "/integrator-delete/<str:pk>"
+        "Integrator Delete": "/integrator-delete/<str:pk>",
+        "Integrator Delete All": "/integrator-delete-all/"
     }
 
     return Response(api_urls)
@@ -52,12 +56,15 @@ def nbodyListIDs(request):
 
 @api_view(["POST"])
 def nbodyCreate(request):
-    serialised_nbody = NBodySerialiser(data = validate_nbody_post(request))
+    try:
+        serialised_nbody = NBodySerialiser(data = validate_nbody_post(request))
 
-    if serialised_nbody.is_valid(raise_exception = True):
-        serialised_nbody.save()
+        if serialised_nbody.is_valid(raise_exception = True):
+            serialised_nbody.save()
 
-    return Response(serialised_nbody.data)
+        return Response(serialised_nbody.data)
+    except ParseError as e:
+        return HttpResponse(status=418, reason = e)
 
 @api_view(["GET"])
 def nbodyView(request, pk):
@@ -113,13 +120,18 @@ def integratorCreate(request):
     nbody = NBody.objects.get(id = data["nbody_id"])
     data["position_orbits"] = nbody.positions
     data["velocity_orbits"] = nbody.velocities
-    data = validate_integrator_post(data)
-    serialised_integrator = IntegratorSerialiser(data = data)
 
-    if serialised_integrator.is_valid(raise_exception = True):
-        serialised_integrator.save()
+    try:
+        data = validate_integrator_post(data)
+        serialised_integrator = IntegratorSerialiser(data = data)
 
-    return Response(serialised_integrator.data)
+        if serialised_integrator.is_valid(raise_exception = True):
+            serialised_integrator.save()
+
+        return Response(serialised_integrator.data)
+    except ParseError as e:
+        return HttpResponse(status=418, reason = e)
+
 
 @api_view(["GET"])
 def integratorView(request, pk):
@@ -129,6 +141,11 @@ def integratorView(request, pk):
 
 @api_view(["POST"])
 def integratorUpdate(request, pk):
+
+    # need to read request body to avoid Heroku H18 error
+    # https://stackoverflow.com/questions/12704777/how-should-i-interpret-heroku-h18-errors/26783847
+    unnecessary = request.data
+
     # get integrator from database
     integrator = Integrator.objects.get(id = pk)
 
@@ -205,14 +222,12 @@ def integratorUpdate(request, pk):
                 AngularMomentumNotConservedException,
                 EnergyNotConservedException) as e:
 
-                print("Error during integration. Restarting system")
-                new_positions = np.array(integrator.position_orbits)[:,0,:]
-                new_velocities = np.array(integrator.velocity_orbits)[:,0,:]
+                return HttpResponse(status=418, reason = f"Error during integration: {e}")
 
     except (Figure8InitException,
             SmallAdaptiveDeltaException) as e:
 
-            raise ParseError(f"Error during initialisation: {e}", code = 418)
+            return HttpResponse(status=418, reason = f"Error during initialisation: {e}")
 
     integrator_data = model_to_dict(integrator)
     integrator_data["position_orbits"] = new_positions.tolist()
@@ -222,16 +237,6 @@ def integratorUpdate(request, pk):
 
     if serialised_integrator.is_valid(raise_exception = True):
         serialised_integrator.save()
-    
-    # update NBody to the latest position
-    nbody_data = model_to_dict(nbody)
-    nbody_data["positions"] = new_positions[:,-1,:].tolist()
-    nbody_data["velocities"] = new_velocities[:,-1,:].tolist()
-
-    serialised_nbody = NBodySerialiser(instance = nbody, data = nbody_data, many = False)
-
-    if serialised_nbody.is_valid(raise_exception = True):
-        serialised_nbody.save()
 
     # respond with the new positions of the nbody
     

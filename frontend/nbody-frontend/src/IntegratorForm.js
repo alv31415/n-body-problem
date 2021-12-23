@@ -1,5 +1,6 @@
 import React from "react";
 import FormBlock from "./FormBlock";
+import {getCookie, POST_INTEGRATOR_CREATE_URL} from "./reqResources";
 
 class IntegratorForm extends React.Component {
     constructor(props) {
@@ -12,27 +13,10 @@ class IntegratorForm extends React.Component {
             tolerance: "",
             adaptive: false,
             adaptive_constant: "0.1",
-            delta_lim: "0.00001",
-            position_orbits: [],
+            delta_lim: "0.00001"
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
-    }
-
-    getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
     }
 
     async handleSubmit(e) {
@@ -40,13 +24,11 @@ class IntegratorForm extends React.Component {
         e.preventDefault()
 
         if (!this.canSubmit()) {
-            alert("Fill in all inputs to create an Integrator!")
+            alert("Fill in all inputs to create an Integrator!");
             return null;
         }
 
-        const postUrl = "https://nbody-api.herokuapp.com/api/integrator-create/";
-
-        var csrfToken = this.getCookie("csrftoken");
+        var csrfToken = getCookie("csrftoken");
 
         const reqBody = {
             method: "POST",
@@ -57,25 +39,24 @@ class IntegratorForm extends React.Component {
             body: JSON.stringify(this.state)
         };
 
-        try {
-            const response = await fetch(postUrl, reqBody)
+        const response = await fetch(POST_INTEGRATOR_CREATE_URL, reqBody);
+
+        if (response.ok) {
             const data = await response.json();
-            
-            if (response.ok) {
-                this.props.onIntegratorCreate();
-                alert(`Integrator with ID ${data.id} succesfully created!`)
-            }
-        } 
-        catch (e) {
-            console.error("Error occurred during POST request", e)
-        }     
+            this.props.onIntegratorCreate();
+            alert(`Integrator with ID ${data.id} succesfully created!`)
+        }
+        else {
+            alert(`There was a problem setting the integrator: ${response.statusText}`);
+        }
+   
     }
 
     handleChange(e) {
 
         const newIntegrator = {...this.state};
         if (e.target.name === "adaptive") {
-            newIntegrator[e.target.name] = !this.state.adaptive
+            newIntegrator[e.target.name] = !this.state.adaptive;
         }
         else {
             newIntegrator[e.target.name] = e.target.value;
@@ -90,7 +71,7 @@ class IntegratorForm extends React.Component {
                 || this.state.delta === ""
                 || this.state.tolerance === ""
                 || this.state.adaptive_constant === ""
-                || this.state.delta_lim === "") 
+                || this.state.delta_lim === "");
     }
 
     render() {
@@ -99,7 +80,7 @@ class IntegratorForm extends React.Component {
         
         return (
             <div className = {this.props.className}>
-                <h2>Create Integrator For Simulation</h2>
+                <h2>Integrator Properties</h2>
                 <form type = "submit" onSubmit = {this.handleSubmit}>
                     <FormBlock hoverLabel = "The number of integration steps to make. If integration is adaptive, this is used to define the simulation time via steps * time steps."
                                labelName = "Integration Steps" 
@@ -154,10 +135,10 @@ class IntegratorForm extends React.Component {
                                value = {this.state.nbody_id} 
                                data_list = {this.props.nbodyIDs} 
                                onChange = {this.handleChange}/>
-                    <button type="submit" className = {buttonClass}>Create Integrator</button>
+                    <button type="submit" className = {buttonClass}>Set Integrator Properties</button>
                 </form>
             </div>
-        )
+        );
     }
 
 }

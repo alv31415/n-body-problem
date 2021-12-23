@@ -16,7 +16,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-  padding-bottom: 5%;
+  padding-bottom: 1%;
 }
 
 .App-link {
@@ -80,8 +80,8 @@ input {
   display: flex;
   flex-direction: row;
   position: relative;
-  left: 30%;
-  gap: 2%;
+  left: 35vw;
+  gap: 2vw;
 }
 
 .bg-form {
@@ -113,7 +113,7 @@ p {
   font-size: 14pt;
   text-align: left;
   line-height: 30pt;
-  margin: 0 10% 5% 10%;
+  margin: 0 10% 1% 10%;
 }
 
 li {
@@ -195,4 +195,28 @@ a.link-inline {
 .scroll-button:hover {
   opacity: 0.8;
   transform: translateY(-2px);
+}
+
+.navbar {
+  display: flex;
+  list-style: none;
+  justify-content: space-around;
+  cursor: pointer;
+  pointer-events: all;
+  padding: 0;
+  width: 80vw;
+  margin-top: -5%;
+}
+
+.navbar li {
+  text-align: center;
+  margin: 0;
+  width: 16vw;
+}
+
+.navbar li:hover {
+  opacity: 0.8;
+  transform: translateY(-2px);
+  border-bottom: 2px solid #61dafb;
+  padding-bottom: 5px;
 }

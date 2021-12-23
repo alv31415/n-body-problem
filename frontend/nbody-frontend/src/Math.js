@@ -8,12 +8,17 @@ import MathJax from "react-mathjax";
 
 function Math() {
     return (
-    <div style={{padding: 50}}>
+    <div id = "math" style={{padding: 50}}>
         <MathJax.Provider>
         <h2>The Math</h2>
         <p>We now consider the mathematical formulation of the N Body Problem, 
         alongside the recursion which defines the integrator, and how the adaptive time step is computed.</p>
         <h3>Defining the N Body Problem</h3>
+        <p>
+            The N Body Problem refers to the computation of the orbits 
+            of <MathJax.Node inline formula = "n"/> bodies, which interact solely via gravitational forces.
+            To do this, we recall 2 key laws of physics.
+        </p>
         <p>
            <b>Newton's Second Law of Motion</b> relates the net force exerted on a body with its acceleration:
             <MathJax.Node formula = "\sum \vec{F} = m\vec{a}"/>

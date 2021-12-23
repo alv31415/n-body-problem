@@ -4,16 +4,17 @@ import MathJax from "react-mathjax";
 function AboutRunSimulation() {
 
     return (
-        <div style={{padding: 50}}>
+        <div id = "integrator" style={{padding: 50}}>
             <MathJax.Provider>
-                <h2>Running a Simulation</h2>
+                <h2>Setting the Integrator to Run the Simulation</h2>
                 <p>
-                    Once the simulation has been created, we need to produce a numerical integrator, which actually computes the paths of the <MathJax.Node inline formula = "n"/> bodies. 
+                    Once the simulation has been created, we need to set the parameters of the numerical integrator which 
+                    computes the paths of the <MathJax.Node inline formula = "n"/> bodies. 
                     To do this, we employ <i>numerical integration</i>. In particular, we use 
                     the <i>3-Step Leapfrog Method</i> (also known as 
                     the <a className = "link-inline" href = "http://physics.ucsc.edu/~peter/242/leapfrog.pdf">Velocity Verlet Method</a>). This is a <b>second order</b>, <b>symplectic</b> method, 
                     which is desirable in the context of physical simulations, as it will respect the conservation laws. 
-                    To geneerate the <i>Integrator</i>, you need to provide:
+                    To generate the integrator, you need to provide:
                 </p>
                 <ul>
                     <li>
@@ -55,12 +56,14 @@ function AboutRunSimulation() {
                         We have found that setting this to <MathJax.Node inline formula = "10^{-5}"/> is enough to handle most simulations.
                     </li>
                     <li>
-                        <b>NBody ID</b>: the ID identifying a given simulation. 
+                        <b>NBody ID</b>: the NBody ID identifying a given simulation. 
                         This means that different integration parameters can be tested on the same simulation
                     </li>
                 </ul>
                 <p>
-                    Once a <i>Integrator</i> has been created, we can use its ID to plot the simulation.
+                    Once the conditions are submitted, you should obtain a <b>Integrator ID</b>: this 
+                    is used to uniquely identify the integrator parameters which will be used to run a given simulation. 
+                    You can then provide this <b>Integrator ID</b> to the plotter, which should result in the orbits performed by the simulated bodies.
                 </p>
             </MathJax.Provider>
         </div>

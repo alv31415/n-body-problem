@@ -1,11 +1,13 @@
 import React from "react";
 import FormBlock from "./FormBlock";
-import Plot from "react-plotly.js"
+import Plot from "react-plotly.js";
+import {getCookie, POST_INTEGRATOR_UPDATE_URL} from "./reqResources";
 
 class OrbitPlotter extends React.Component {
     constructor(props) {
         super(props);
         this.orbits = [];
+        console.log(this.props.integratorIDs);
 
         // https://learnui.design/tools/data-color-picker.html#divergent
         this.colours = ["#00876c",
@@ -64,22 +66,6 @@ class OrbitPlotter extends React.Component {
         this.updatePlot = this.updatePlot.bind(this);
     }
 
-    getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
     handleChange(e){
         const newIntegratorID = e.target.value;
         this.setState({...this.state, integratorID: newIntegratorID, integratorIDChanged: true})
@@ -95,9 +81,9 @@ class OrbitPlotter extends React.Component {
             return ;
         }
 
-        const postUrl = "https://nbody-api.herokuapp.com/api/integrator-update/" + this.state.integratorID;
+        const postUrl = POST_INTEGRATOR_UPDATE_URL + this.state.integratorID;
     
-        var csrfToken = this.getCookie("csrftoken");
+        var csrfToken = getCookie("csrftoken");
     
         const reqBody = {
             method: "POST",
@@ -107,23 +93,21 @@ class OrbitPlotter extends React.Component {
             },
             body: JSON.stringify({})
         };
-    
-        try {
-            const response = await fetch(postUrl, reqBody)
+
+        const response = await fetch(postUrl, reqBody);
+
+        if (response.ok) {
             const data = await response.json();
-            
-            if (response.ok) {
-                const newPositions = data.position_orbits
+            const newPositions = data.position_orbits;
 
-                let orbitSize = newPositions[0].length;
+            let orbitSize = newPositions[0].length;
 
-                this.setState({ ...this.state, orbitSize: orbitSize });
-                this.orbits = newPositions;
-            }
-        } 
-        catch (e) {
-            console.error("Error occurred during POST request", e)
-        }     
+            this.setState({ ...this.state, orbitSize: orbitSize });
+            this.orbits = newPositions;
+        }
+        else {
+            alert(`There was a problem when computing the orbits : ${response.statusText}`);
+        }
     
     }
 
@@ -212,10 +196,6 @@ class OrbitPlotter extends React.Component {
         setTimeout(() => this.updatePlot(this.orbits), 500);
     }
 
-    componentDidMount() {
-        this.props.onIntegratorUpdate();
-    }
-
     render() {
 
         return (
@@ -235,7 +215,7 @@ class OrbitPlotter extends React.Component {
                            onChange = {this.handleChange}/>
                 <button className = "button" onClick = {() => this.plotOrbits(this.state.integratorID)}>{this.state.btnLabel}</button>
             </div>
-        )
+        );
     }
 
 

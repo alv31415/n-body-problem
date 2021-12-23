@@ -7,7 +7,8 @@ import Math from './Math';
 import SocialLinks from './SocialLinks';
 import AboutSimulation from './AboutSimulation';
 import AboutRunSimulation from './AboutRunSimulation';
-import ScrollButton from './ScrollTop';
+import ScrollButton from './ScrollButton';
+import NavBar from './NavBar';
 
 
 function App() {
@@ -16,11 +17,12 @@ function App() {
     <>
     <div className="App">
       <header className="App-header">
+        <NavBar/>
         <h1>N Body Problem Simulation</h1>
         <SocialLinks/>
       </header>
-      <Simulation/>
       <About/>
+      <Simulation/>
       <AboutSimulation/>
       <AboutRunSimulation/>
       <Math/>

@@ -1,5 +1,6 @@
 import React from "react";
 import FormBlock from "./FormBlock";
+import {getCookie, POST_NBODY_CREATE_URL} from "./reqResources";
 
 class NBodyForm extends React.Component {
     constructor(props) {
@@ -15,36 +16,16 @@ class NBodyForm extends React.Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
-    getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
     async handleSubmit(e) {
 
-        e.preventDefault()
+        e.preventDefault();
 
         if (!this.canSubmit()) {
-            alert("Fill in all inputs to create an NBody!")
+            alert("Fill in all inputs to create an NBody!");
             return null;
         }
 
-        console.log(this.state)
-
-        const postUrl = "https://nbody-api.herokuapp.com/api/nbody-create/";
-
-        var csrfToken = this.getCookie("csrftoken");
+        var csrfToken = getCookie("csrftoken");
 
         const reqBody = {
             method: "POST",
@@ -55,18 +36,16 @@ class NBodyForm extends React.Component {
             body: JSON.stringify(this.state)
         };
 
-        try {
-            const response = await fetch(postUrl, reqBody)
-            const data = await response.json();
+        const response = await fetch(POST_NBODY_CREATE_URL, reqBody);
             
-            if (response.ok) {
-                this.props.onNBodyCreate();
-                alert(`NBody with ID ${data.id} succesfully created!`)
-            }
-        } 
-        catch (e) {
-            console.error("Error occurred during POST request", e)
-        }     
+        if (response.ok) {
+            const data = await response.json();
+            this.props.onNBodyCreate();
+            alert(`Initial conditions set succesfully!. NBody ID: ${data.id}`);
+        }
+        else {
+            alert(`There was a problem setting the initial conditions: ${response.statusText}`);
+        }
     }
 
     handleChange(e) {
@@ -80,7 +59,7 @@ class NBodyForm extends React.Component {
                 || this.state.velocities === ""
                 || this.state.masses === ""
                 || this.state.collision_tolerance === ""
-                || this.state.escape_tolerance === "") 
+                || this.state.escape_tolerance === "");
     }
 
     render() {
@@ -89,7 +68,7 @@ class NBodyForm extends React.Component {
         
         return (
             <div className = {this.props.className}>
-                <h2>Create NBody Simulation</h2>
+                <h2>Initial Conditions</h2>
                 <form type = "submit" onSubmit = {this.handleSubmit}>
                     <FormBlock hoverLabel = "A list of the initial positions of the bodies in [x,y,z] coordinates."
                                labelName = "Positions" 
@@ -127,10 +106,10 @@ class NBodyForm extends React.Component {
                                placeholder = "1000" 
                                value = {this.state.escape_tolerance} 
                                onChange = {this.handleChange}/>       
-                    <button className = {buttonClass} type="submit">Create NBody</button>
+                    <button className = {buttonClass} type="submit">Set Initial Conditions</button>
                 </form>
             </div>
-        )
+        );
     }
 
 }

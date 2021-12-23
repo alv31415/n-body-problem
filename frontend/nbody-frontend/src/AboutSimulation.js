@@ -5,17 +5,16 @@ function AboutSimulation() {
 
     return (
         
-        <div style={{padding: 50}}>
+        <div id = "initial-conditions" style={{padding: 50}}>
             <MathJax.Provider>
-                <h2>Creating a Simulation</h2>
+                <h2>Setting the Initial Conditions for the Simulation</h2>
                 <p>
-                    To create a simulation, you need to produce an <i>NBody</i>, which holds all the simulation data, 
-                    such as the position, velocity and mass of each body in the simulation, 
-                    alongside the physical information of the system, like energy, angular momentum or linear momentum. 
-                    It is important to note that in the code, the gravitational constant <MathJax.Node inline formula = "G"/> is set to 1, 
+                    The first step is to set all the initial conditions which define the simulation.
+                    It is important to note that in the code, 
+                    the gravitational constant <MathJax.Node inline formula = "G"/> is set to 1, 
                     whilst its real value is actually <MathJax.Node inline formula = "6.67408 \times 10^{-11}"/>. This was done so that when defining initial conditions, 
                     we could use smaller, more understandable numbers.
-                    To create the simulation, you need to provide:
+                    The initial conditions required are:
                 </p>
                     <ul>
                         <li>
@@ -49,6 +48,10 @@ function AboutSimulation() {
                             any of the <MathJax.Node inline formula = "n"/> bodies, before the simulation is ended.
                         </li>
                     </ul>
+                    <p>
+                        Once the initial conditions are submitted, you should obtain a <b>NBody ID</b>: this is used to uniquely
+                         identify the simulation associated with the initial conditions submitted.
+                    </p>
             </MathJax.Provider>
         </div>
     );
