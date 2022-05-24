@@ -194,7 +194,7 @@ function Math() {
             Admittedly, this is all too dramatic, since the fix is as simple as taking the average. 
             Indeed, our <i>actual</i> adaptive time step can be made time symmetric by using:
             <MathJax.Node formula = "h(t) = \frac{h^*(t) + h^*(t+1)}{2}"/>
-            With this, we get all the ebenfits of a time-symmetric integrator, whilst being able to adapt 
+            With this, we get all the benefits of a time-symmetric integrator, whilst being able to adapt 
             our integration based on how the system is behaving. Admittedly, computing <MathJax.Node inline formula = "h(t)"/> is quite 
             involved since to perform a single integration step we need to:
         </p>
