@@ -94,7 +94,7 @@ Alternatively, after instantiating the plotter, running ```plot_stability_matrix
 For example:
 
 ```
-from stability_investigation.mp_stability_plotter import MPStabilityPlotter
+from nbodysim.stability_investigator.mp_stability_plotter import MPStabilityPlotter
 
 mpsp = MPStabilityPlotter(perturb=0.005, n_trials=500, collision_tolerance = 10**-3, escape_tolerance = 10, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim = 10**-5)
 stability_matrix = mpsp.get_stability_matrix()
@@ -110,7 +110,8 @@ Examples of the stability images, alongside the JSONs they produce can be found 
 The stability image can be made more interesting by colourising the degree of stability of the stable regions. For this, use ```StabilityAnalyser```  The easiest, fastest way of instantiating is by providing a ```StabilityPlotter``` alongside the ```stability_matrix``` that we want to colourise. Alternatively, we can pass the parameters of a ```StabilityPlotter``` alongside the file path to a JSON containing the ```stability_matrix``` in order to instantiate. The simplest way to obtain the new image is by running ```plot_updated_stability_matrix()``` with ```sb_scores = None, square_size = 0.01```, alongside other arguments like the ones for ```plot_stability_matrix()```. For example:
 
 ```
-from stability_investigation.mp_stability_plotter import MPStabilityPlotter, StabilityAnalyser
+from nbodysim.stability_investigator.mp_stability_plotter import MPStabilityPlotter
+from nbodysim.stability_investigator.stability_analyser importStabilityAnalyser
 
 mpsp = MPStabilityPlotter(perturb=0.005, n_trials=100, collision_tolerance = 10**-3, escape_tolerance = 10, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim = 10**-5)
 stability_matrix = mpsp.get_stability_matrix()
@@ -121,7 +122,8 @@ mpsp_analyser.plot_updated_stability_matrix(sb_scores = None, square_size = 0.01
 which under the hood does:
 
 ```
-from stability_investigation.mp_stability_plotter import MPStabilityPlotter, StabilityAnalyser
+from nbodysim.stability_investigator.mp_stability_plotter import MPStabilityPlotter
+from nbodysim.stability_investigator.stability_analyser importStabilityAnalyser
 
 mpsp = MPStabilityPlotter(perturb=0.005, n_trials=100, collision_tolerance = 10**-3, escape_tolerance = 10, steps = 10**4, delta = 10**-2, tolerance = 10**-2, adaptive_constant = 0.1, delta_lim = 10**-5)
 stability_matrix = mpsp.get_stability_matrix()
