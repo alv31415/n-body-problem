@@ -1,7 +1,7 @@
 import numpy as np
 import warnings
 
-from exceptions import *
+from nbodysim.exceptions import *
 
 # Helper file containing useful mathematical functions for calculations
 

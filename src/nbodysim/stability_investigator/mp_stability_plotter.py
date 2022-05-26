@@ -2,10 +2,10 @@ import os
 from multiprocessing import Pool
 import tqdm
 
-from three_body import *
-from exceptions import *
-from integrators.leapfrog_3 import Leapfrog3
-from stability_plotter import StabilityPlotter
+from nbodysim.three_body import *
+from nbodysim.exceptions import *
+from nbodysim.integrators.leapfrog_3 import Leapfrog3
+from nbodysim.stability_investigator.stability_plotter import StabilityPlotter
 
 class MPStabilityPlotter(StabilityPlotter):
     """

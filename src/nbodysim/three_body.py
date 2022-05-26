@@ -1,8 +1,8 @@
 import numpy as np
 
-import nmath as nm
-from nbody import NBody
-from exceptions import Figure8InitException, check_exception
+from nbodysim import nmath as nm
+from nbodysim.nbody import NBody
+from nbodysim.exceptions import Figure8InitException, check_exception
 
 # ------------------------------ EULER ------------------------------
 

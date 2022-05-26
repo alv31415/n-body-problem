@@ -5,11 +5,11 @@ import os
 import tqdm
 from matplotlib import pyplot as plt
 
-from integrators.leapfrog_3 import Leapfrog3
-from stability_plotter import StabilityPlotter
-from mp_stability_plotter import MPStabilityPlotter
-from three_body import get_figure_8
-import nmath as nm
+from nbodysim.integrators.leapfrog_3 import Leapfrog3
+from nbodysim.stability_investigator.stability_plotter import StabilityPlotter
+from nbodysim.stability_investigator.mp_stability_plotter import MPStabilityPlotter
+from nbodysim.three_body import get_figure_8
+from nbodysim import nmath as nm
 
 class StabilityAnalyser():
     """

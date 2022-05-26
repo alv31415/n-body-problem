@@ -1,11 +1,9 @@
-import numpy as np
+from nbodysim.integrator import Integrator
+from nbodysim import nmath as nm
 
-from integrator import Integrator
-import nmath as nm
-
-class Leapfrog3(Integrator):
+class EulerCromer(Integrator):
     """
-    Class defining an integrator via the 3-Step Leapfrog 2-Step Method
+    Class defining an integrator via the Euler-Cromer Method
     """
     def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, adaptive_constant = 1, delta_lim =10 ** -5, store_properties = False):
         """
@@ -20,23 +18,17 @@ class Leapfrog3(Integrator):
         # execute initialisation from superclass
         super().__init__(nbody, steps, delta, tolerance = tolerance, adaptive = adaptive, adaptive_constant= adaptive_constant, delta_lim = delta_lim, store_properties = store_properties)
 
-        # save acceleration for next iteration.
-        # Only require 1 expensive acceleration calculation per step
-        self.acc_t = self.nbody.get_acceleration()
-
     def integration_step(self, t, delta):
         """
-        Integration step for the Integer 3-Step Leapfrog method.
-        v_{t + 1/2} = v_t + 0.5*a_t*Δt
-        x_{t + 1} = x_t + v_{t + 1/2}*Δt
-        v_{t + 1} = v_{t + 1/2} + 0.5*a_{t + 1}*Δt
+        Integration step for the Euler-Cromer method.
+        v_t = v_{t-1} + a_{t-1}*Δt
+        x_t = x_{t-1} + v_{t}*Δt
         :param t: the step at which the calculation is made
-        :return the new positions and velocities, alongside the acceleration for step t+1
         """
 
-        new_half_velocities = self.velocity_orbit[:, t - 1, :] + self.acc_t * delta * 0.5
-        new_positions = self.position_orbit[:, t - 1, :] + new_half_velocities * delta
-        acc_tt = self.nbody.get_acceleration(positions=new_positions)
-        new_velocities = new_half_velocities + acc_tt * delta * 0.5
+        acc_t = self.nbody.get_acceleration()
 
-        return new_positions, new_velocities, acc_tt
+        new_velocities = self.velocity_orbit[:, t-1, :] + delta * acc_t
+        new_positions = self.position_orbit[:, t-1, :] + delta * new_velocities
+
+        return new_positions, new_velocities, None

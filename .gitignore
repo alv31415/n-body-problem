@@ -133,3 +133,5 @@ dmypy.json
 main.py
 .DS_Store
 .idea
+dist
+nbodysim.egg-info

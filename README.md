@@ -15,8 +15,8 @@ Below is an example of what can be run:
 ```
 import numpy as np
 
-from NBody import NBody
-from integrators.leapfrog_3 import Leapfrog3
+from nbodysim.nbody import NBody
+from nbodysim.integrators.leapfrog_3 import Leapfrog3
 
 STEPS = 10**3
 DELTA = 10**-2
@@ -28,21 +28,22 @@ init_positions = np.array([[0,1,0], [0,-1,0]])
 init_velocities = np.array([[0.4,0,0], [-0.4,0,0]])
 masses = np.array([1,1])
 
-nbod2 = NBody(init_positions, init_velocities, masses)
-nbod2.G = 1
+nbod = NBody(init_positions, init_velocities, masses)
+nbod.G = 1
 
-integ = Leapfrog3(nbod2, steps = STEPS, delta = DELTA, tolerance = TOLERANCE, adaptive = ADAPTIVE, c = ADAPTIVE_CONSTANT)
+integ = Leapfrog3(nbod, steps = STEPS, delta = DELTA, tolerance = TOLERANCE, 
+                  adaptive = ADAPTIVE, adaptive_constant = ADAPTIVE_CONSTANT, store_properties = True)
 
-print(nbod2)
+print(nbod)
 print("-"*20 + "\n")
 integ.get_orbits()
-print(nbod2)
+print(nbod)
 integ.show_orbits(grid = True)
 ```
 
 This should produce the following grid plot:
 
-<p align = "center"><img src="https://github.com/alv31415/n-body-problem/blob/main/img/test_code_result.png" width = 720 height = 432></p>
+<p align = "center"><img src="https://github.com/alv31415/n-body-problem/blob/main/img_resources/test_code_result.png" width = 720 height = 432></p>
 
 and display the following in terminal: 
 

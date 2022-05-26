@@ -2,8 +2,8 @@ from copy import deepcopy
 
 import numpy as np
 
-import nmath as nm
-from exceptions import *
+from nbodysim import nmath as nm
+from nbodysim.exceptions import *
 
 class NBody:
     """

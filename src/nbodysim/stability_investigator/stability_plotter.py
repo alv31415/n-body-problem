@@ -3,9 +3,9 @@ from matplotlib import colors
 import os
 import json
 
-from three_body import *
-from exceptions import *
-from integrators.leapfrog_3 import Leapfrog3
+from nbodysim.three_body import *
+from nbodysim.exceptions import *
+from nbodysim.integrators.leapfrog_3 import Leapfrog3
 
 class StabilityPlotter():
     """
@@ -263,7 +263,7 @@ class StabilityPlotter():
         if save_fig and "fig_name" in kwargs:
             if kwargs["fig_name"] is None:
                 int_to_string = lambda x: str(x).replace(".", "_")
-                save_string = f"img_resources/report_data/stability{2*self.n_trials + 1}-perturb{int_to_string(self.perturb)}-time{int(self.steps*self.delta)}-AC{int_to_string(self.adaptive_constant)}-DL{int_to_string(self.delta_lim)}-ET{int_to_string(self.escape_tolerance)}-CT{int_to_string(self.collision_tolerance)}-TOL{int_to_string(self.tolerance)}-({self.centre_x}-{self.centre_y})"
+                save_string = f"stability{2*self.n_trials + 1}-perturb{int_to_string(self.perturb)}-time{int(self.steps*self.delta)}-AC{int_to_string(self.adaptive_constant)}-DL{int_to_string(self.delta_lim)}-ET{int_to_string(self.escape_tolerance)}-CT{int_to_string(self.collision_tolerance)}-TOL{int_to_string(self.tolerance)}-({self.centre_x}-{self.centre_y})"
             else:
                 save_string = kwargs["fig_name"]
 

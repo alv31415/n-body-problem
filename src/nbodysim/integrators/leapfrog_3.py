@@ -1,11 +1,11 @@
-import warnings
+import numpy as np
 
-from integrator import Integrator
-import nmath as nm
+from nbodysim.integrators.integrator import Integrator
+from nbodysim import nmath as nm
 
-class Leapfrog2Int(Integrator):
+class Leapfrog3(Integrator):
     """
-    Class defining an integrator via the Integer 3-Step Leapfrog 2-Step Method
+    Class defining an integrator via the 3-Step Leapfrog 2-Step Method
     """
     def __init__(self, nbody, steps, delta, tolerance = 1e-6, adaptive = False, adaptive_constant = 1, delta_lim =10 ** -5, store_properties = False):
         """
@@ -17,13 +17,8 @@ class Leapfrog2Int(Integrator):
         :param adaptive_constant: constant used when calculating adaptive timestep. Smaller adaptive_constant leads to more accurate orbits.
         """
 
-        if adaptive:
-            warnings.warn(f"Synchronised Leapfrog can't use adaptive timestep. "
-                          f"Integrator will run with the constant delta provided ({delta})")
-            adaptive = False
-
         # execute initialisation from superclass
-        super().__init__(nbody, steps, delta, tolerance = tolerance, adaptive = adaptive, adaptive_constant= adaptive_constant, delta_lim= delta_lim, store_properties = store_properties)
+        super().__init__(nbody, steps, delta, tolerance = tolerance, adaptive = adaptive, adaptive_constant= adaptive_constant, delta_lim = delta_lim, store_properties = store_properties)
 
         # save acceleration for next iteration.
         # Only require 1 expensive acceleration calculation per step
@@ -32,17 +27,16 @@ class Leapfrog2Int(Integrator):
     def integration_step(self, t, delta):
         """
         Integration step for the Integer 3-Step Leapfrog method.
-        x_t = x_{t-1} + v_{t-1}*Δt + 0.5*a_{t-1}*Δt^2
-        v_t = v_{t-1} + 0.5*(a_t + a_{t-1}*Δt
+        v_{t + 1/2} = v_t + 0.5*a_t*Δt
+        x_{t + 1} = x_t + v_{t + 1/2}*Δt
+        v_{t + 1} = v_{t + 1/2} + 0.5*a_{t + 1}*Δt
         :param t: the step at which the calculation is made
+        :return the new positions and velocities, alongside the acceleration for step t+1
         """
 
-        # perform Integer 3-Step Leapfrog step
-        new_positions = self.position_orbit[:, t - 1, :] \
-                        + delta * self.velocity_orbit[:, t - 1, :] \
-                        + 0.5 * self.acc_t * delta**2
-        acc_tt = self.nbody.get_acceleration(positions = new_positions)
-        new_velocities = self.velocity_orbit[:, t - 1, :] \
-                         + 0.5 * (self.acc_t + acc_tt) * delta
+        new_half_velocities = self.velocity_orbit[:, t - 1, :] + self.acc_t * delta * 0.5
+        new_positions = self.position_orbit[:, t - 1, :] + new_half_velocities * delta
+        acc_tt = self.nbody.get_acceleration(positions=new_positions)
+        new_velocities = new_half_velocities + acc_tt * delta * 0.5
 
         return new_positions, new_velocities, acc_tt
