@@ -43,7 +43,7 @@ integ.show_orbits(grid = True)
 
 This should produce the following grid plot:
 
-<p align = "center"><img src="https://github.com/alv31415/n-body-problem/blob/main/img_resources/test_code_result.png" width = 720 height = 432></p>
+<p align = "center"><img src="https://github.com/alv31415/n-body-problem/raw/main/img_resources/test_code_result.png" width = 720 height = 432></p>
 
 and display the following in terminal: 
 
@@ -103,9 +103,9 @@ mpsp.plot_stability_matrix(stability_matrix, n_ticks = 10, grad = True, show = T
 
 which produces:
 
-<p align = "center"><img src="https://github.com/alv31415/n-body-problem/blob/main/img_resources/report_data/stability1001-perturb0_005-time100-AC0_1-DL1e-05-ET10-CT0_001-TOL0_01.png"></p>
+<p align = "center"><img src="https://github.com/alv31415/n-body-problem/raw/main/img_resources/report_data/stability1001-perturb0_005-time100-AC0_1-DL1e-05-ET10-CT0_001-TOL0_01.png"></p>
 
-Examples of the stability images, alongside the JSONs they produce can be found in <a href = "https://github.com/alv31415/n-body-problem/tree/stability-plot/img_resources/report_data">img_resources/report_data</a>.
+Examples of the stability images, alongside the JSONs they produce can be found in my GitHub repo <a href = "https://github.com/alv31415/n-body-problem/tree/main/img_resources">here</a>.
 
 The stability image can be made more interesting by colourising the degree of stability of the stable regions. For this, use ```StabilityAnalyser```  The easiest, fastest way of instantiating is by providing a ```StabilityPlotter``` alongside the ```stability_matrix``` that we want to colourise. Alternatively, we can pass the parameters of a ```StabilityPlotter``` alongside the file path to a JSON containing the ```stability_matrix``` in order to instantiate. The simplest way to obtain the new image is by running ```plot_updated_stability_matrix()``` with ```sb_scores = None, square_size = 0.01```, alongside other arguments like the ones for ```plot_stability_matrix()```. For example:
 
@@ -135,6 +135,6 @@ mpsp_analyser.plot_updated_stability_matrix(n_ticks = 10, grad = True, show = Tr
 
 resulting in:
 
-<p align = "center"><img src="https://github.com/alv31415/n-body-problem/blob/main/img_resources/report_data/sb_scores_HD.png"></p>
+<p align = "center"><img src="https://github.com/alv31415/n-body-problem/raw/main/img_resources/report_data/sb_scores_HD.png"></p>
 
 
